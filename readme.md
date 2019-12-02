@@ -1,4 +1,4 @@
-# Arx (C#)
+# Alternate Reality X (C#)
 
 Playground project for seeing if I can get [Alternate Reality X](http://www.landbeyond.net/arx/index.php) running under C#/.NET.
 
