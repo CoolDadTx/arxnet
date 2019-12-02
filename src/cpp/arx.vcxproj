@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{349039A4-BF29-46B2-8A85-26C776291EB2}</ProjectGuid>
+    <RootNamespace>arx</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)data" "$(TargetDir)data" /Y /R /S /I
+del "$(TargetDir)data\arx.ini"
+xcopy "$(SolutionDir)data\arx.ini" "$(TargetDir)" /Y /R</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)data" "$(TargetDir)data" /Y /R /S /I
+del "$(TargetDir)data\arx.ini"
+xcopy "$(SolutionDir)data\arx.ini" "$(TargetDir)" /Y /R</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="3Dview.cpp" />
+    <ClCompile Include="actor.cpp" />
+    <ClCompile Include="arena.cpp" />
+    <ClCompile Include="ARX.cpp" />
+    <ClCompile Include="audio.cpp" />
+    <ClCompile Include="automap.cpp" />
+    <ClCompile Include="back_inventory.cpp" />
+    <ClCompile Include="bank.cpp" />
+    <ClCompile Include="chapel.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="createCharacter.cpp" />
+    <ClCompile Include="damon.cpp" />
+    <ClCompile Include="dev.cpp" />
+    <ClCompile Include="display.cpp" />
+    <ClCompile Include="dwarvenSmithy.cpp" />
+    <ClCompile Include="encounter.cpp" />
+    <ClCompile Include="ferry.cpp" />
+    <ClCompile Include="font.cpp" />
+    <ClCompile Include="fountain.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="goblins.cpp" />
+    <ClCompile Include="guild.cpp" />
+    <ClCompile Include="healer.cpp" />
+    <ClCompile Include="inn.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="items.cpp" />
+    <ClCompile Include="itemSelect.cpp" />
+    <ClCompile Include="level.cpp" />
+    <ClCompile Include="lift.cpp" />
+    <ClCompile Include="lyrics.cpp" />
+    <ClCompile Include="misc.cpp" />
+    <ClCompile Include="module.cpp" />
+    <ClCompile Include="oracle.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="rathskeller.cpp" />
+    <ClCompile Include="retreat.cpp" />
+    <ClCompile Include="saveGame.cpp" />
+    <ClCompile Include="shop.cpp" />
+    <ClCompile Include="smithy.cpp" />
+    <ClCompile Include="spells.cpp" />
+    <ClCompile Include="staircase.cpp" />
+    <ClCompile Include="tavern.cpp" />
+    <ClCompile Include="trolls.cpp" />
+    <ClCompile Include="undeadKing.cpp" />
+    <ClCompile Include="vaults.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3Dview.h" />
+    <ClInclude Include="actor.h" />
+    <ClInclude Include="arena.h" />
+    <ClInclude Include="ARX.h" />
+    <ClInclude Include="audio.h" />
+    <ClInclude Include="automap.h" />
+    <ClInclude Include="back_inventory.h" />
+    <ClInclude Include="bank.h" />
+    <ClInclude Include="chapel.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="createCharacter.h" />
+    <ClInclude Include="damon.h" />
+    <ClInclude Include="dev.h" />
+    <ClInclude Include="display.h" />
+    <ClInclude Include="dwarvenSmithy.h" />
+    <ClInclude Include="encounter.h" />
+    <ClInclude Include="ferry.h" />
+    <ClInclude Include="font.h" />
+    <ClInclude Include="fountain.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="goblins.h" />
+    <ClInclude Include="guild.h" />
+    <ClInclude Include="healer.h" />
+    <ClInclude Include="inn.h" />
+    <ClInclude Include="items.h" />
+    <ClInclude Include="itemSelect.h" />
+    <ClInclude Include="level.h" />
+    <ClInclude Include="lift.h" />
+    <ClInclude Include="lyrics.h" />
+    <ClInclude Include="misc.h" />
+    <ClInclude Include="module.h" />
+    <ClInclude Include="oracle.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="rathskeller.h" />
+    <ClInclude Include="retreat.h" />
+    <ClInclude Include="saveGame.h" />
+    <ClInclude Include="shop.h" />
+    <ClInclude Include="smithy.h" />
+    <ClInclude Include="spells.h" />
+    <ClInclude Include="staircase.h" />
+    <ClInclude Include="tavern.h" />
+    <ClInclude Include="trolls.h" />
+    <ClInclude Include="undeadKing.h" />
+    <ClInclude Include="vaults.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
