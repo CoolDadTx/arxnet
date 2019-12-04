@@ -1,8 +1,8 @@
-# Arx (C#)
+# Alternate Reality X (C#)
 
 Playground project for seeing if I can get [Alternate Reality X](http://www.landbeyond.net/arx/index.php) running under C#/.NET.
 
-Original Source Version: 0.82
+Original Source Version: 0.82 \
 Conversion Tool: [C++ to C# Converter](https://www.tangiblesoftwaresolutions.com/)
 
 ## Building Code 
