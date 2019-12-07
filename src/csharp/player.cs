@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -23,7 +22,7 @@ namespace P3Net.Arx
         public int positiveValue { get; set; }
     }
 
-	public class DoorDetail
+    public class DoorDetail
     {
         public int direction { get; set; }
 
@@ -34,7 +33,7 @@ namespace P3Net.Arx
         public int y { get; set; }
     }
 
-	public class Player
+    public class Player
     {
         public int alcohol { get; set; }
 
@@ -139,7 +138,7 @@ namespace P3Net.Arx
         public bool goblinsDefeated { get; set; }
 
         public bool goblinsReforged { get; set; }
-        
+
         public bool goblinsVisited { get; set; }
 
         public int gold { get; set; }
@@ -355,22 +354,22 @@ namespace P3Net.Arx
         public int zoneSet { get; set; }
     }
 
-	public partial class GlobalMembers
+    public partial class GlobalMembers
     {
         public static bool[,] autoMapExplored = new bool[5, 4096]; // 5 levels of 4096 on/off values
 
         public static EffectItem[] effectBuffer = Arrays.InitializeWithDefaultInstances<EffectItem>(50); // active time limited effects from spells, scrolls, eyes
-        
-		public static Player plyr = new Player();
+
+        public static Player plyr = new Player();
 
         public static int[,] shopDailyWares = new int[15, 12]; //15 shops with 12 items each a day for sale
         public static int[,] smithyDailyWares = new int[4, 10]; // 4 smithies with 10 items each a day for sale
         public static int[,] tavernDailyDrinks = new int[14, 6]; // 14 taverns with 6 drink items each day for sale
         public static int[,] tavernDailyFoods = new int[14, 6]; // 14 taverns with 6 food items each day for sale
 
-        public static void AddDay()
+        public static void AddDay ()
         {
-            if(plyr.days == 31)
+            if (plyr.days == 31)
             {
                 plyr.days = 1; // first day of a new month
                 AddMonth();
@@ -385,18 +384,18 @@ namespace P3Net.Arx
             StockTavernDrinks();
             StockTavernFoods();
             CheckDailybankInterest();
-            if(plyr.forgeDays > 0)
+            if (plyr.forgeDays > 0)
                 plyr.forgeDays--;
         }
 
-        public static void AddHour()
+        public static void AddHour ()
         {
-            if(plyr.hours == 23)
+            if (plyr.hours == 23)
             {
                 plyr.hours = 0; // 12 midnight important for Ferry crossing
                 plyr.hunger += 2;
                 plyr.thirst += 2;
-                if(plyr.alcohol > 0)
+                if (plyr.alcohol > 0)
                     plyr.alcohol--;
                 AddDay();
             } else
@@ -405,7 +404,7 @@ namespace P3Net.Arx
                 // perform hourly actions / checks
                 plyr.hunger += 2;
                 plyr.thirst += 2;
-                if(plyr.alcohol > 0)
+                if (plyr.alcohol > 0)
                     plyr.alcohol--;
             }
             CheckActiveMagic();
@@ -414,9 +413,9 @@ namespace P3Net.Arx
             CheckBackgroundTime();
         }
 
-        public static void AddMinute()
+        public static void AddMinute ()
         {
-            if(plyr.minutes == 59)
+            if (plyr.minutes == 59)
             {
                 plyr.minutes = 0;
                 AddHour();
@@ -428,9 +427,9 @@ namespace P3Net.Arx
             CheckBackgroundTime();
         }
 
-        public static void AddMonth()
+        public static void AddMonth ()
         {
-            if(plyr.months == 12)
+            if (plyr.months == 12)
             {
                 plyr.months = 1; // first month of a new year
                 AddYear();
@@ -441,159 +440,156 @@ namespace P3Net.Arx
             }
         }
 
-        public static void AddYear() => plyr.years++ ;
+        public static void AddYear () => plyr.years++;
 
-        public static void CheckActiveMagic()
+        public static void CheckActiveMagic ()
         {
-            if(plyr.protection1 > 0)
+            if (plyr.protection1 > 0)
                 plyr.protection1--;
-            if(plyr.protection2 > 0)
+            if (plyr.protection2 > 0)
                 plyr.protection2--;
-            if(plyr.invulnerability[0] > 0)
+            if (plyr.invulnerability[0] > 0)
                 plyr.invulnerability[0]--;
-            if(plyr.invulnerability[1] > 0)
+            if (plyr.invulnerability[1] > 0)
                 plyr.invulnerability[1]--;
-            if(plyr.invulnerability[2] > 0)
+            if (plyr.invulnerability[2] > 0)
                 plyr.invulnerability[2]--;
-            if(plyr.invulnerability[3] > 0)
+            if (plyr.invulnerability[3] > 0)
                 plyr.invulnerability[3]--;
-            if(plyr.invulnerability[4] > 0)
+            if (plyr.invulnerability[4] > 0)
                 plyr.invulnerability[4]--;
-            if(plyr.invulnerability[5] > 0)
+            if (plyr.invulnerability[5] > 0)
                 plyr.invulnerability[5]--;
-            if(plyr.invulnerability[6] > 0)
+            if (plyr.invulnerability[6] > 0)
                 plyr.invulnerability[6]--;
-            if(plyr.invulnerability[7] > 0)
+            if (plyr.invulnerability[7] > 0)
                 plyr.invulnerability[7]--;
-            if(plyr.invulnerability[8] > 0)
+            if (plyr.invulnerability[8] > 0)
                 plyr.invulnerability[8]--;
         }
 
-        public static string CheckAlcohol()
+        public static string CheckAlcohol ()
         {
-            string alcoholDesc;
-            alcoholDesc = ""; // alcohol level is 0
-            if((plyr.alcohol > 0) && (plyr.alcohol < plyr.sta))
+            var alcoholDesc = ""; // alcohol level is 0
+            if ((plyr.alcohol > 0) && (plyr.alcohol < plyr.sta))
                 alcoholDesc = "Tipsy";
-            if((plyr.alcohol >= plyr.sta) && (plyr.alcohol < (plyr.sta * 2)))
+            if ((plyr.alcohol >= plyr.sta) && (plyr.alcohol < (plyr.sta * 2)))
                 alcoholDesc = "Drunk";
-            if(plyr.alcohol >= (plyr.sta * 2))
+            if (plyr.alcohol >= (plyr.sta * 2))
                 alcoholDesc = "Very Drunk";
             return alcoholDesc;
         }
 
-        public static void CheckBackgroundTime()
+        public static void CheckBackgroundTime ()
         {
             plyr.timeOfDay = 0;
 
-            if((plyr.hours > 18) || (plyr.hours < 4))
+            if ((plyr.hours > 18) || (plyr.hours < 4))
                 plyr.timeOfDay = 1;
-            if((plyr.hours == 4) && (plyr.minutes >= 0) && (plyr.minutes < 30))
+            if ((plyr.hours == 4) && (plyr.minutes >= 0) && (plyr.minutes < 30))
                 plyr.timeOfDay = 1;
 
-            if((plyr.hours == 4) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 4) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 2;
-            if((plyr.hours == 5) && (plyr.minutes <= 29))
+            if ((plyr.hours == 5) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 3;
-            if((plyr.hours == 5) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 5) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 4;
-            if((plyr.hours == 6) && (plyr.minutes <= 29))
+            if ((plyr.hours == 6) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 5;
-            if((plyr.hours == 6) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 6) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 6;
-            if((plyr.hours == 7) && (plyr.minutes <= 29))
+            if ((plyr.hours == 7) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 7;
 
-            if((plyr.hours == 16) && (plyr.minutes <= 29))
+            if ((plyr.hours == 16) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 7;
-            if((plyr.hours == 16) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 16) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 6;
-            if((plyr.hours == 17) && (plyr.minutes <= 29))
+            if ((plyr.hours == 17) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 5;
-            if((plyr.hours == 17) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 17) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 4;
-            if((plyr.hours == 18) && (plyr.minutes <= 29))
+            if ((plyr.hours == 18) && (plyr.minutes <= 29))
                 plyr.timeOfDay = 3;
-            if((plyr.hours == 18) && (plyr.minutes > 29) && (plyr.minutes <= 59))
+            if ((plyr.hours == 18) && (plyr.minutes > 29) && (plyr.minutes <= 59))
                 plyr.timeOfDay = 2;
         }
 
-        public static string CheckDisease()
+        public static string CheckDisease ()
         {
             var diseaseDesc = "";
-            if((plyr.diseases[0] > 0) || (plyr.diseases[0] > 0) || (plyr.diseases[0] > 0) || (plyr.diseases[0] > 0))
+            if ((plyr.diseases[0] > 0) || (plyr.diseases[0] > 0) || (plyr.diseases[0] > 0) || (plyr.diseases[0] > 0))
                 diseaseDesc = "Diseased!";
             return diseaseDesc;
         }
 
-        public static string CheckEncumbrance()
+        public static string CheckEncumbrance ()
         {
             var weightDesc = "";
-            int weight = ReturnCarriedWeight();
-            int encumbrance = weight - (plyr.str + 224);
-            if((encumbrance >= 0) && (encumbrance < 16))
+            var weight = ReturnCarriedWeight();
+            var encumbrance = weight - (plyr.str + 224);
+            if ((encumbrance >= 0) && (encumbrance < 16))
                 weightDesc = "Burdened";
-            if((encumbrance >= 16) && (encumbrance < 33))
+            if ((encumbrance >= 16) && (encumbrance < 33))
                 weightDesc = "Encumbered";
-            if(encumbrance >= 33)
+            if (encumbrance >= 33)
                 weightDesc = "Immobilized!";
             return weightDesc;
         }
 
-        public static string CheckHunger()
+        public static string CheckHunger ()
         {
-            string hungerDesc;
-            hungerDesc = ""; // alcohol level is 0
-            if((plyr.hunger > 16) && (plyr.hunger < 49))
+            var hungerDesc = ""; // alcohol level is 0
+            if ((plyr.hunger > 16) && (plyr.hunger < 49))
                 hungerDesc = "Hungry";
-            if((plyr.hunger > 48) && (plyr.hunger < 97))
+            if ((plyr.hunger > 48) && (plyr.hunger < 97))
                 hungerDesc = "Famished";
-            if(plyr.hunger > 96)
+            if (plyr.hunger > 96)
                 hungerDesc = "Starving";
             return hungerDesc;
         }
 
-        public static string CheckPoison()
+        public static string CheckPoison ()
         {
             var poisonDesc = "";
-            if((plyr.poison[0] > 0) || (plyr.poison[0] > 0) || (plyr.poison[0] > 0) || (plyr.poison[0] > 0))
+            if ((plyr.poison[0] > 0) || (plyr.poison[0] > 0) || (plyr.poison[0] > 0) || (plyr.poison[0] > 0))
                 poisonDesc = "Poisoned!";
             return poisonDesc;
         }
 
-        public static string CheckThirst()
+        public static string CheckThirst ()
         {
-            string thirstDesc;
-            thirstDesc = ""; // alcohol level is 0
-            if((plyr.thirst > 16) && (plyr.thirst < 33))
+            var thirstDesc = ""; // alcohol level is 0
+            if ((plyr.thirst > 16) && (plyr.thirst < 33))
                 thirstDesc = "Thirsty";
-            if((plyr.thirst > 32) && (plyr.thirst < 57))
+            if ((plyr.thirst > 32) && (plyr.thirst < 57))
                 thirstDesc = "Very Thirsty";
-            if(plyr.thirst > 56)
+            if (plyr.thirst > 56)
                 thirstDesc = "Parched";
             return thirstDesc;
         }
 
-        public static void CreateNewCharacter(int scenario)
+        public static void CreateNewCharacter ( int scenario )
         {
             InitStats();
 
-            switch(scenario)
+            switch (scenario)
             {
                 case Scenarios.City:
-                    plyr.x = 35;
-                    plyr.y = 36;
-                    plyr.scenario = (int)Scenarios.City;
-                    plyr.map = 0;
-                    plyr.facing = (int)Directions.North;
-                    break;
+                plyr.x = 35;
+                plyr.y = 36;
+                plyr.scenario = (int)Scenarios.City;
+                plyr.map = 0;
+                plyr.facing = (int)Directions.North;
+                break;
                 case Scenarios.Dungeon:
-                    plyr.scenario = (int)Scenarios.Dungeon;
-                    plyr.map = 1;
-                    plyr.x = 49;
-                    plyr.y = 3;
-                    plyr.facing = (int)Directions.West;
-                    break;
+                plyr.scenario = (int)Scenarios.Dungeon;
+                plyr.map = 1;
+                plyr.x = 49;
+                plyr.y = 3;
+                plyr.facing = (int)Directions.West;
+                break;
             }
 
             StockSmithyWares();
@@ -601,56 +597,50 @@ namespace P3Net.Arx
             StockTavernFoods();
             StockShopWares();
 
-            if(AR_DEV.CHARACTER_CREATION == OnOff.On)
+            if (AR_DEV.CHARACTER_CREATION == OnOff.On)
             {
                 GetPlayerName();
-                switch(scenario)
+                switch (scenario)
                 {
                     case Scenarios.City:
-                        CityGate();
-                        break;
+                    CityGate();
+                    break;
                     case Scenarios.Dungeon:
-                        DungeonGate();
-                        break;
+                    DungeonGate();
+                    break;
                 }
             }
         }
 
-        public static void IncreaseExperience(int xpIncrease)
+        public static void IncreaseExperience ( int xpIncrease )
         {
-            double levelBottom;
-            double levelTop;
-            double basePower;
-            basePower = 2;
-            if(plyr.level == 0)
-                levelBottom = 200;
-            else
-                levelBottom = 200 * Math.Pow(basePower, plyr.level);
-            levelTop = levelBottom * 2;
+            var basePower = 2.0;
+            var levelBottom = (plyr.level == 0) ? 200.0 : 200 * Math.Pow(basePower, plyr.level);
+            var levelTop = levelBottom * 2;
+
             levelBottom--;
             plyr.xp += xpIncrease;
-            if((plyr.xp > levelBottom) && (plyr.xp < levelTop))
+            if ((plyr.xp > levelBottom) && (plyr.xp < levelTop))
                 IncreaseLevel();
         }
 
-        public static void IncreaseLevel()
+        public static void IncreaseLevel ()
         {
             var statBonuses = new int[7];
-            int statBonus;
             plyr.level++;
-            for(var x = 0; x < 7; ++x)
+            for (var x = 0; x < 7; ++x)
                 statBonuses[x] = 0;
 
             // Increase hit points
-            int hpIncrease = Randn(0, plyr.sta);
+            var hpIncrease = Randn(0, plyr.sta);
             plyr.hp += hpIncrease;
             plyr.maxhp += hpIncrease;
 
             // Increase stats
-            for(var x = 0; x < 7; ++x)
+            for (var x = 0; x < 7; ++x)
             {
-                statBonus = Randn(1, 100); // roll to see if this stat will receive a bonus
-                if(statBonus > 30)
+                var statBonus = Randn(1, 100); // roll to see if this stat will receive a bonus
+                if (statBonus > 30)
                     statBonuses[x] = Randn(0, 3);
             }
 
@@ -664,21 +654,21 @@ namespace P3Net.Arx
             plyr.speed += statBonuses[6];
         }
 
-        public static void InitStats()
+        public static void InitStats ()
         {
-            for(var i = 0; i < 14; i++)
+            for (var i = 0; i < 14; i++)
                 plyr.guildMemberships[i] = 0;
-            for(var i = 0; i <= 11; i++)
+            for (var i = 0; i <= 11; i++)
                 plyr.guildAwards[i] = false;
-            for(var i = 0; i < 32; i++)
+            for (var i = 0; i < 32; i++)
                 plyr.fixedEncounters[i] = false;
-            for(var i = 0; i < 9; i++)
+            for (var i = 0; i < 9; i++)
                 plyr.bankAccountStatuses[i] = 0;
-            for(var i = 0; i < 9; i++)
+            for (var i = 0; i < 9; i++)
                 plyr.bankAccountBalances[i] = 0;
-            for(var i = 0; i < 14; i++)
+            for (var i = 0; i < 14; i++)
                 plyr.tavernFriendships[i] = 2;
-            for(var i = 0; i < 15; i++)
+            for (var i = 0; i < 15; i++)
                 plyr.shopFriendships[i] = 2;
 
             plyr.healerDays[0] = 0;
@@ -767,7 +757,7 @@ namespace P3Net.Arx
             plyr.spellIndex = 0;
 
             // Create starting items and set weapon, armour and clothing slots to initial values
-			// Do not set these values manually - must be set by USE command in game! They hold array references within inventory
+            // Do not set these values manually - must be set by USE command in game! They hold array references within inventory
 
             plyr.buffer_index = 0;
 
@@ -791,15 +781,15 @@ namespace P3Net.Arx
             plyr.smithyFriendships[2] = 2;
             plyr.smithyFriendships[3] = 2;
 
-            for(var i = 0; i <= 35; i++)
+            for (var i = 0; i <= 35; i++)
                 spellBuffer[i].no = 255;
-            for(var i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 plyr.doorDetails[i].direction = 0;
                 plyr.doorDetails[i].x = 0;
                 plyr.doorDetails[i].y = 0;
                 plyr.doorDetails[i].level = 0;
-            } // Initialise door buffer
+            } // Initialize door buffer
             plyr.doorDetailIndex = 0;
 
             plyr.oracleReturnTomorrow = false;
@@ -819,7 +809,7 @@ namespace P3Net.Arx
             plyr.poison[2] = 0;
             plyr.poison[3] = 0;
             plyr.delusion = 0;
-            for(var i = 0; i < 9; i++)
+            for (var i = 0; i < 9; i++)
                 plyr.invulnerability[i] = 0;
             plyr.noticeability = 0;
             plyr.protection1 = 0;
@@ -840,28 +830,28 @@ namespace P3Net.Arx
             plyr.stolenFromVault = 0;
         }
 
-        public static void UpdateDisease()
+        public static void UpdateDisease ()
         {
-            int rabiesStatus = plyr.diseases[0];
-            if(rabiesStatus > 0)
+            var rabiesStatus = plyr.diseases[0];
+            if (rabiesStatus > 0)
             {
                 // 0 - no rabies, 1-14 in incubation, 15 - active and identified
-                if(rabiesStatus < 15)
+                if (rabiesStatus < 15)
                     plyr.diseases[0]++;
                 else
                     plyr.hp -= 5; // temporary penalty.
             }
         }
 
-        public static void UpdatePoison()
+        public static void UpdatePoison ()
         {
-            if(plyr.poison[0] > 0)
+            if (plyr.poison[0] > 0)
                 plyr.hp -= 2;
-            if(plyr.poison[1] > 0)
+            if (plyr.poison[1] > 0)
                 plyr.hp -= 5;
-            if(plyr.poison[2] > 0)
+            if (plyr.poison[2] > 0)
                 plyr.hp -= 7;
-            if(plyr.poison[3] > 0)
+            if (plyr.poison[3] > 0)
                 plyr.hp -= 10;
         }
 

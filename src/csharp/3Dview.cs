@@ -27,28 +27,28 @@ namespace P3Net.Arx
 
         public static void Draw3DBackground ()
         {
-            sf.Sprite Background = new sf.Sprite();
+            var Background = new sf.Sprite();
             Background.setScale(1.0, 1.0);
 
             if (graphicMode == 0) // Atari 8bit original textures and size
             {
-                float scaleX = (float)viewWidth / (float)360;
-                float scaleY = (float)viewHeight / (float)190;
+                var scaleX = viewWidth / 360F;
+                var scaleY = viewHeight / 190F;
                 Background.setScale(scaleX, scaleY);
                 Background.setPosition(viewPortX, viewPortY);
             }
             if (graphicMode == 1) // New textures and original size
             {
-                float scaleX = (float)viewWidth / (float)1024;
-                float scaleY = (float)(viewHeight / 2) / (float)384;
+                var scaleX = viewWidth / 1024F;
+                var scaleY = (viewHeight / 2) / 384F;
                 Background.setScale(scaleX, scaleY);
                 Background.setPosition(viewPortX, viewPortY);
             }
             if (graphicMode == 2) // New textures and large size
             {
                 Background.setPosition(0, 0); // Assumes large 3D view
-                float scaleX = (float)viewWidth / (float)1024;
-                float scaleY = (float)(viewHeight / 2) / (float)384;
+                var scaleX = viewWidth / 1024F;
+                var scaleY = (viewHeight / 2) / 384F;
                 Background.setScale(scaleX, scaleY);
                 Background.setPosition(viewPortX, (viewPortY));
             }
@@ -195,8 +195,8 @@ namespace P3Net.Arx
         public static void CalculateWallPositions ( int c, int d )
         {
             // Calculates the actual positions within OpenGL space to draw the 3 quads that make up a map cell
-            int x = 0;
-            int y = 0;
+            var x = 0;
+            var y = 0;
             switch (plyr.facing)
             {
                 case 2: // north
@@ -222,7 +222,7 @@ namespace P3Net.Arx
 
             if ((x >= 0) && (x < (plyr.mapWidth)) && (y >= 0) && (y < (plyr.mapHeight))) // valid location on map? (64 x 64 in example)
             {
-                int ind = GetMapIndex(x, y);
+                var ind = GetMapIndex(x, y);
                 TransMapIndex(ind);
                 frontwall = plyr.front; // front wall texture number
                 leftwall = plyr.left; // left wall texture number
@@ -233,8 +233,8 @@ namespace P3Net.Arx
                 rightheight = plyr.rightheight; // right wall texture number
 
                 specialwall = plyr.specialwall; // special used for guild sign etc in City
-                float xm = c * 2; // x float value to be added to texture positioning co-ords
-                float zm = d * 2; // z float value to be added to texture positioning co-ords
+                var xm = c * 2F; // x float value to be added to texture positioning co-ords
+                var zm = d * 2F; // z float value to be added to texture positioning co-ords
                 zm = (zm + plyr.z_offset) - 1.0f; //-1.0f;
 
                 // Draw front, left and right walls for current map cell
@@ -265,12 +265,12 @@ namespace P3Net.Arx
             // c and d hold current column and current depth value
 
             // Draw left hand block of quads
-            int leftmostColumn = 0;
-            int rightmostColumn = ((columns - 1) / 2);
+            var leftmostColumn = 0;
+            var rightmostColumn = ((columns - 1) / 2);
 
-            for (int d = 0; d < depth; d++)
+            for (var d = 0; d < depth; d++)
             {
-                for (int c = leftmostColumn; c < rightmostColumn; c++)
+                for (var c = leftmostColumn; c < rightmostColumn; c++)
                     CalculateWallPositions(c, d);
             }
 
@@ -278,24 +278,24 @@ namespace P3Net.Arx
             leftmostColumn = ((columns - 1) / 2) + 1;
             rightmostColumn = columns;
 
-            for (int d = 0; d < depth; d++)
+            for (var d = 0; d < depth; d++)
             {
-                for (int c = rightmostColumn; c > (leftmostColumn - 1); c--) //  int c=leftmostColumn; c<rightmostColumn; c++
+                for (var c = rightmostColumn; c > (leftmostColumn - 1); c--) //  int c=leftmostColumn; c<rightmostColumn; c++
                     CalculateWallPositions(c, d);
             }
 
             // Draw front block of quads
-            int c = ((columns - 1) / 2); // This should be the central column 13 if columns = 25
-            for (int d = 0; d < depth; d++)
+            var c = ((columns - 1) / 2); // This should be the central column 13 if columns = 25
+            for (var d = 0; d < depth; d++)
                 CalculateWallPositions(c, d);
         }
 
         public static void DrawCellWalls ( int c, int d, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
         {
-            int texture_no = 0;
+            var texture_no = 0;
             int wall_type;
-            float depthdistantfar = (-depth * 2) + 1;
-            float depthdistantnear = (-depth * 2) + 3;
+            var depthdistantfar = (-depth * 2) + 1;
+            var depthdistantnear = (-depth * 2) + 3;
 
             // Original graphic style for standard height walls?
             if (graphicMode == 0)
@@ -369,7 +369,7 @@ namespace P3Net.Arx
                 glEnd();
             }
 
-            int midcol = ((columns - 1) / 2);
+            var midcol = ((columns - 1) / 2);
 
             // left wall
             if ((!(leftwall < 1)) && (c <= midcol))
@@ -527,24 +527,22 @@ namespace P3Net.Arx
 
         public static void LoadTextureNames ()
         {
-            string.size_type idx = new string.size_type();
             string filename;
-            for (int i = 0; i < numberOfTextures; i++)
+            for (var i = 0; i < numberOfTextures; i++)
                 textureNames[i] = "";
             if (graphicMode == 0)
                 filename = "data/map/textures.txt";
             else
                 filename = "data/map/texturesUpdated.txt";
-            std::ifstream instream = new std::ifstream();
+            var instream = new ifstream();
             string line;
-            string text;
             instream.open(filename);
 
-            for (int i = 0; i < numberOfTextures; i++)
+            for (var i = 0; i < numberOfTextures; i++)
             {
                 getline(instream, line);
-                idx = line.IndexOf('=');
-                text = line.Substring(idx + 2);
+                var idx = line.IndexOf('=');
+                var text = line.Substring(idx + 2);
                 textureNames[i] = text;
             }
             instream.close();
@@ -556,17 +554,16 @@ namespace P3Net.Arx
             // We could directly use a sf::Image as an OpenGL texture (with its Bind() member function),
             // but here we want more control on it (generate mipmaps, ...) so we create a new one
 
-            sf.Image Image = new sf.Image();
-            string filename;
-            string tempfilename = new string(new char[100]);
+            var Image = new sf.Image();
+            string tempfilename;
             glGenTextures(numberOfTextures, texture[0]); // problem line - don't include in loop. Always 0???
             for (int i = 0; i < numberOfTextures; i++)
             {
-                filename = textureNames[i];
+                var filename = textureNames[i];
                 if (graphicMode == 0)
-                    tempfilename = string.Format("{0}{1}.png", "data/images/textures_original/", filename);
+                    tempfilename = String.Format("{0}{1}.png", "data/images/textures_original/", filename);
                 else
-                    tempfilename = string.Format("{0}{1}.png", "data/images/textures_alternate/", filename);
+                    tempfilename = String.Format("{0}{1}.png", "data/images/textures_alternate/", filename);
                 Image.loadFromFile(tempfilename);
                 glBindTexture(GL_TEXTURE_2D, texture[i]);
                 gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, Image.getSize().x, Image.getSize().y, GL_RGBA, GL_UNSIGNED_BYTE, Image.getPixelsPtr());
@@ -580,7 +577,6 @@ namespace P3Net.Arx
 
         public static void LoadBackgroundNames ()
         {
-            string.size_type idx = new string.size_type();
             string filename;
             for (int i = 0; i < numberOfBackgrounds; i++)
                 backgroundNames[i] = "";
@@ -589,16 +585,15 @@ namespace P3Net.Arx
                 filename = "data/map/backgrounds.txt";
             else
                 filename = "data/map/backgroundsUpdated.txt";
-            std::ifstream instream = new std::ifstream();
+            var instream = new ifstream();
             string line;
-            string text;
             instream.open(filename);
 
             for (int i = 0; i < numberOfBackgrounds; i++)
             {
                 getline(instream, line);
-                idx = line.IndexOf('=');
-                text = line.Substring(idx + 2);
+                var idx = line.IndexOf('=');
+                var text = line.Substring(idx + 2);
                 backgroundNames[i] = text;
                 background[i].loadFromFile("data/images/backgrounds/" + text + ".png");
             }

@@ -17,8 +17,7 @@ namespace P3Net.Arx
         public static void ShopFerry()
         {
             var ferryMenu = 1; // high level menu
-            string str;
-            string key;
+            
             plyr.status = 2; // shopping
 
             SetAutoMapFlag(plyr.map, 28, 19); // But does the map KNOW about the ferry type to colour it in?
@@ -39,7 +38,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if(key == "0")
                     {
@@ -58,7 +57,7 @@ namespace P3Net.Arx
                     var offerText = "";
 
                     var itemQuantity = 0;
-                    int itemRef = SelectItem(3); // select an item in OFFER mode
+                    var itemRef = SelectItem(3); // select an item in OFFER mode
                     if(itemRef == 9999)
                     {
                         ferryMenu = 1;
@@ -79,11 +78,12 @@ namespace P3Net.Arx
                         }
                     }
 
-                    if((itemRef > 999) && (itemRef < 1011))
+                    var offerText = "";
+                    if ((itemRef > 999) && (itemRef < 1011))
                     {
                         itemQuantity = InputItemQuantity(3); // Offer text is 3
-                        // Check that item quantity is valid!
-                        var offerText = "";
+
+                        // Check that item quantity is valid!                        
                         switch(itemRef)
                         {
                             case 1000:

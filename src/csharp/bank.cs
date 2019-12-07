@@ -67,9 +67,8 @@ namespace P3Net.Arx
             if (bankNo == 2)
                 accountRef = 6;
 
-            int bankMenu = 1; // high level menu
-            string str;
-            string key;
+            var bankMenu = 1; // high level menu
+            
             plyr.status = 2; // shopping
 
             LoadShopImage(13);
@@ -106,7 +105,7 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key == "0")
                         bankMenu = 0;
@@ -136,7 +135,7 @@ namespace P3Net.Arx
 
                     CyText(0, "What account would you like to open?");
 
-                    str = "(1) Low Risk Account    ";
+                    var str = "(1) Low Risk Account    ";
                     if (plyr.bankAccountStatuses[accountRef] == 1)
                         str = "(1) Low Risk Account    : Already open";
                     BText(2, 2, str);
@@ -182,6 +181,7 @@ namespace P3Net.Arx
                 {
                     ClearShopDisplay();
 
+                    var str = "";
                     if (accountType == 0)
                         str = "Bank Policy - Low Risk Account";
                     if (accountType == 1)
@@ -199,7 +199,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 5;
                 }
@@ -209,14 +209,14 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CyText(2, "You already have one.");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
 
                 while (bankMenu == 5) // Open an account - Initial deposit
                 {
-                    int coppers = InputValue("Deposit how much (in coppers)?", 13);
+                    var coppers = InputValue("Deposit how much (in coppers)?", 13);
 
                     if (coppers > 0)
                     {
@@ -243,7 +243,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CyText(2, "We are glad to be of service.");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -253,7 +253,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CyText(2, "You have insufficient funds.");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -264,7 +264,7 @@ namespace P3Net.Arx
 
                     CyText(0, "What account would you like to close?");
 
-                    str = "(1) Low Risk Account    ";
+                    var str = "(1) Low Risk Account    ";
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "(1) Low Risk Account    : Already closed";
                     BText(2, 2, str);
@@ -280,7 +280,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         accountType = 0;
@@ -312,7 +312,7 @@ namespace P3Net.Arx
                     CyText(2, "This account is now closed.");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         currentAccount = accountRef + accountType;
@@ -329,14 +329,14 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CyText(2, "Already closed.");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
 
                 while (bankMenu == 11) // apply for job
                 {
-                    int jobNumber = bankJobOpenings[bankNo].jobNumber;
+                    var jobNumber = bankJobOpenings[bankNo].jobNumber;
 
                     ClearShopDisplay();
                     if (jobNumber == 255)
@@ -346,12 +346,12 @@ namespace P3Net.Arx
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        key = GetSingleKey();
+                        var key = GetSingleKey();
                         if (key != "")
                             bankMenu = 1;
                     } else
                     {
-                        str = "We have an opening for a " + bankJobs[jobNumber].name;
+                        var str = "We have an opening for a " + bankJobs[jobNumber].name;
                         CyText(0, str);
                         str = "for " + Itos(bankJobOpenings[bankNo].jobHoursRequired) + " hours at " + Itos(bankJobOpenings[bankNo].jobHourlyIncome) + " coppers per hour.";
                         CyText(1, str);
@@ -362,7 +362,7 @@ namespace P3Net.Arx
                         SetFontColour(215, 215, 215, 255);
                         UpdateDisplay();
 
-                        key = GetSingleKey();
+                        var key = GetSingleKey();
                         if (key == "Y")
                             bankMenu = 12;
                         if (key == "N")
@@ -372,10 +372,10 @@ namespace P3Net.Arx
 
                 while (bankMenu == 12) // Check job stat requirements
                 {
-                    int jobNumber = bankJobOpenings[bankNo].jobNumber;
-                    string statRequirementName = bankJobs[jobNumber].statRequirementName;
-                    int statRequirement = bankJobs[jobNumber].statRequirementValue;
-                    bool jobStatMet = false;
+                    var jobNumber = bankJobOpenings[bankNo].jobNumber;
+                    var statRequirementName = bankJobs[jobNumber].statRequirementName;
+                    var statRequirement = bankJobs[jobNumber].statRequirementValue;
+                    var jobStatMet = false;
 
                     // Check stat requirement met
                     if ((statRequirementName == "Strength") && (statRequirement <= plyr.str))
@@ -396,7 +396,7 @@ namespace P3Net.Arx
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        key = GetSingleKey();
+                        var key = GetSingleKey();
                         if (key == "SPACE")
                             bankMenu = 1;
 
@@ -417,7 +417,7 @@ namespace P3Net.Arx
                         CyText(2, "WORKING");
                         UpdateDisplay();
                         sf.sleep(sf.seconds(1));
-                        for (int i = 0; i < 60; i++) // 60 minutes
+                        for (var i = 0; i < 60; i++) // 60 minutes
                         {
                             // check for diseases
                             // modify fatigue
@@ -433,11 +433,11 @@ namespace P3Net.Arx
 
                     // CHECK FOR INJURY
                     CyText(2, "The job is completed.");
-                    str = "You have earned " + Itos(jobIncome) + " coppers.";
+                    var str = "You have earned " + Itos(jobIncome) + " coppers.";
                     CyText(3, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         plyr.copper += jobIncome;
@@ -451,7 +451,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     BText(2, 0, "Account failures at our bank");
-                    str = "Low Risk Account Failures:    " + Itos(banks[bankNo].accounts[0].failures);
+                    var str = "Low Risk Account Failures:    " + Itos(banks[bankNo].accounts[0].failures);
                     BText(2, 2, str);
                     str = "Medium Risk Account Failures: " + Itos(banks[bankNo].accounts[1].failures);
                     BText(2, 4, str);
@@ -461,7 +461,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -472,7 +472,7 @@ namespace P3Net.Arx
 
                     BText(2, 0, "Account Balances");
 
-                    str = "Low Risk Account:    " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = "Low Risk Account:    " + Itos(plyr.bankAccountBalances[accountRef]);
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "Low Risk Account:    Closed";
                     BText(2, 2, str);
@@ -488,7 +488,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -499,7 +499,7 @@ namespace P3Net.Arx
 
                     CyText(0, "Deposit in which account?");
 
-                    str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "(1) Low Risk Account    : No account";
                     BText(2, 2, str);
@@ -515,7 +515,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         accountType = 0;
@@ -546,14 +546,14 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CyText(2, "You don't have an account of that type.");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
 
                 while (bankMenu == 18) // Deposit - Initial deposit
                 {
-                    int coppers = InputValue("Deposit how much (in coppers)?", 13);
+                    var coppers = InputValue("Deposit how much (in coppers)?", 13);
 
                     if (coppers > 0)
                     {
@@ -581,7 +581,7 @@ namespace P3Net.Arx
 
                     CyText(0, "Withdraw from which account?");
 
-                    str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "(1) Low Risk Account    : No account";
                     BText(2, 2, str);
@@ -597,7 +597,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         accountType = 0;
@@ -625,7 +625,7 @@ namespace P3Net.Arx
 
                 while (bankMenu == 20) // Withdraw - Amount
                 {
-                    int coppersToWithdraw = InputValue("Withdraw how much (in coppers)?", 13);
+                    var coppersToWithdraw = InputValue("Withdraw how much (in coppers)?", 13);
 
                     if (coppersToWithdraw > 0)
                     {
@@ -657,7 +657,7 @@ namespace P3Net.Arx
                     BText(2, 6, "(2) Magnificent jewelry");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         bankMenu = 22;
@@ -683,7 +683,7 @@ namespace P3Net.Arx
                     BText(2, 8, "appraise.");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -694,11 +694,11 @@ namespace P3Net.Arx
 
                     BText(2, 0, "The expert carefully examines");
                     BText(2, 2, "your find and informs you that");
-                    str = "it is worth " + Itos(findValue) + " in gold pieces.";
+                    var str = "it is worth " + Itos(findValue) + " in gold pieces.";
                     BText(2, 4, str);
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         plyr.gold += findValue;
@@ -710,7 +710,7 @@ namespace P3Net.Arx
                 while (bankMenu == 24) // Sell jewel success
                 {
                     plyr.jewels--;
-                    int worthless = Randn(0, 20);
+                    var worthless = Randn(0, 20);
                     if (worthless < 2)
                     {
                         findValue = 0;
@@ -731,7 +731,7 @@ namespace P3Net.Arx
                     BText(2, 4, "it is completely worthless!");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         bankMenu = 1;
                 }
@@ -739,7 +739,7 @@ namespace P3Net.Arx
                 while (bankMenu == 26) // calculate gem value
                 {
                     plyr.gems--;
-                    int worthless = Randn(0, 20);
+                    var  worthless = Randn(0, 20);
                     if (worthless < 2)
                     {
                         findValue = 0;
@@ -756,8 +756,8 @@ namespace P3Net.Arx
 
         public static int GetBankNo ()
         {
-            int bank_no;
-            for (int i = 0; i < 3; i++) // Max number of bank objects
+            int bank_no = -1;
+            for (var  i = 0; i < 3; i++) // Max number of bank objects
             {
                 if (banks[i].location == plyr.location)
                     bank_no = i; // The number of the bank you have entered
@@ -769,14 +769,14 @@ namespace P3Net.Arx
         public static void CheckDailybankJobOpenings ()
         {
             // Run at the start of each new day
-            int jobOpeningProbability = 0;
-            for (int i = 0; i < 3; i++) // 3 banks in total
+            var jobOpeningProbability = 0;
+            for (var i = 0; i < 3; i++) // 3 banks in total
             {
                 jobOpeningProbability = Randn(0, 255);
                 if (jobOpeningProbability <= banks[i].jobProbability)
                 {
                     // Create a new job entry for the day
-                    int newJobNumber = Randn(0, 2);
+                    var newJobNumber = Randn(0, 2);
                     bankJobOpenings[i].jobNumber = newJobNumber;
                     bankJobOpenings[i].jobHoursRequired = Randn(0, 5) + 3;
                     bankJobOpenings[i].jobHourlyIncome = Randn(bankJobs[newJobNumber].minIncome, bankJobs[newJobNumber].maxIncome);
@@ -792,12 +792,10 @@ namespace P3Net.Arx
         {
             // Adds an amount of coppers to plyr in gold, silver and copper coins
 
-            int remainder = 0;
-            int goldFromWithdrawal = 0;
-            int silverFromWithdrawal = 0;
-            int copperFromWithdrawal = 0;
-            remainder = coppersToWithdraw % 100;
-            goldFromWithdrawal = (coppersToWithdraw - remainder) / 100;
+            var silverFromWithdrawal = 0;
+            var copperFromWithdrawal = 0;
+            var remainder = coppersToWithdraw % 100;
+            var goldFromWithdrawal = (coppersToWithdraw - remainder) / 100;
             coppersToWithdraw -= (goldFromWithdrawal * 100);
             if (remainder > 0)
             {
@@ -817,7 +815,7 @@ namespace P3Net.Arx
         {
             // Run at the start of each new day
 
-            for (int i = 0; i < 9; i++) // 9 potential bank accounts
+            for (var i = 0; i < 9; i++) // 9 potential bank accounts
             {
                 if (plyr.bankAccountBalances[i] > 0)
                 {
@@ -869,7 +867,7 @@ namespace P3Net.Arx
                         failProb = banks[2].accounts[2].failProb;
                     }
 
-                    float newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * interest;
+                    var newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * interest;
                     plyr.bankAccountBalances[i] += ((int)newInterest);
                 }
             }
@@ -899,14 +897,6 @@ namespace P3Net.Arx
             new BankJob() { name = "File Clerk", minIncome = 50, maxIncome = 56, statRequirementName = "Intelligence", statRequirementValue = 20, fatigueRate = 0.5625F, minorWoundProbability = 2.29F, majorWoundProbability = 0.05F },
             new BankJob() { name = "Coin Roller", minIncome = 22, maxIncome = 28, statRequirementName = "Alignment", statRequirementValue = 144, fatigueRate = 0.59375F, minorWoundProbability = 2.29F, majorWoundProbability = 0.05F }
         };
-
-        public static string Concat ( int n, string str )
-        {
-            std::ostringstream ss = new std::ostringstream();
-            ss << n;
-            ss << str;
-            return ss.str();
-        }
 
         // extern Player plyr;
         // extern sf::RenderWindow App;

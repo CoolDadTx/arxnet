@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -31,7 +30,7 @@ namespace P3Net.Arx
         public float priceFactor { get; set; }
     }
 
-	public class TavernDrinkItem
+    public class TavernDrinkItem
     {
         public int alcoholAdded { get; set; }
 
@@ -44,7 +43,7 @@ namespace P3Net.Arx
         public int waterFlaskAdded { get; set; }
     }
 
-	public class TavernFoodItem
+    public class TavernFoodItem
     {
         public int basePrice { get; set; }
 
@@ -55,7 +54,7 @@ namespace P3Net.Arx
         public string name { get; set; }
     }
 
-	public class TavernJobOpening
+    public class TavernJobOpening
     {
         public int jobHourlyIncome { get; set; }
 
@@ -64,7 +63,7 @@ namespace P3Net.Arx
         public int jobNumber { get; set; }
     }
 
-	public class TavernJob
+    public class TavernJob
     {
         public float fatigueRate { get; set; }
 
@@ -83,13 +82,13 @@ namespace P3Net.Arx
         public int statRequirementValue { get; set; }
     }
 
-	public partial class GlobalMembers
+    public partial class GlobalMembers
     {
         public static string closingText;
         public static int descriptionPointer = 0;
         public static int drinkChoice;
         public static int drinkCost;
-        public static int drinkNo;        
+        public static int drinkNo;
 
         public static string[] eatDrinkDescriptions = new string[4];
         public static int foodChoice;
@@ -234,8 +233,8 @@ namespace P3Net.Arx
                 majorWoundProbability = 2.20F
             }
         };
-                
-		public static sf.Music tavernMusic = new sf.Music();
+
+        public static sf.Music tavernMusic = new sf.Music();
         public static int tavernNo;
 
         //MLT: Double to float, int to boolean
@@ -397,17 +396,17 @@ namespace P3Net.Arx
             }
         };
 
-        public static void CheckDailyTavernJobOpenings()
+        public static void CheckDailyTavernJobOpenings ()
         {
             // Run at the start of each new day
             var jobOpeningProbability = 0;
-            for(var i = 0; i < 14; i++) // 14 taverns in total
+            for (var i = 0; i < 14; i++) // 14 taverns in total
             {
                 jobOpeningProbability = Randn(0, 255);
-                if(jobOpeningProbability <= Taverns[i].jobProbability)
+                if (jobOpeningProbability <= Taverns[i].jobProbability)
                 {
                     // Create a new job entry for the day
-                    int newJobNumber = Randn(0, 2);
+                    var newJobNumber = Randn(0, 2);
                     tavernJobOpenings[i].jobNumber = newJobNumber;
                     tavernJobOpenings[i].JobHoursRequired = Randn(0, 5) + 3;
                     tavernJobOpenings[i].jobHourlyIncome = Randn(tavernJobs[newJobNumber].minIncome,
@@ -420,49 +419,49 @@ namespace P3Net.Arx
             }
         }
 
-        public static int GetTavernNo()
+        public static int GetTavernNo ()
         {
-            int tavern_no;
-            for(var i = 0; i < 14; i++) // Max number of tavern objects
+            var tavern_no = 0;
+            for (var i = 0; i < 14; i++) // Max number of tavern objects
             {
-                if(Taverns[i].location == plyr.location)
+                if (Taverns[i].location == plyr.location)
                     tavern_no = i; // The number of the tavern you have entered
             }
             return tavern_no;
         }
 
-        public static void ShopTavern()
+        public static void ShopTavern ()
         {
-            int tavernNo = GetTavernNo();
+            var tavernNo = GetTavernNo();
 
             LoadShopImage(10);
 
-            if(tavernNo == 3)
+            if (tavernNo == 3)
             {
                 SetAutoMapFlag(plyr.map, 7, 39);
                 SetAutoMapFlag(plyr.map, 8, 39);
                 SetAutoMapFlag(plyr.map, 9, 39);
                 SetAutoMapFlag(plyr.map, 10, 39);
             }
-            if(tavernNo == 6)
+            if (tavernNo == 6)
             {
                 SetAutoMapFlag(plyr.map, 32, 44);
                 SetAutoMapFlag(plyr.map, 31, 44);
                 SetAutoMapFlag(plyr.map, 33, 44);
                 SetAutoMapFlag(plyr.map, 31, 43);
             }
-            if(tavernNo == 9)
+            if (tavernNo == 9)
             {
                 SetAutoMapFlag(plyr.map, 39, 34);
                 SetAutoMapFlag(plyr.map, 39, 33);
             }
-            if(tavernNo == 12)
+            if (tavernNo == 12)
             {
                 SetAutoMapFlag(plyr.map, 5, 28);
                 SetAutoMapFlag(plyr.map, 6, 28);
             }
 
-            int workingHours;
+            int workingHours = 0;
             int hourlyRate;
             int jobIncome;
             descriptionPointer = 0;
@@ -477,52 +476,50 @@ namespace P3Net.Arx
             var musicPlaying = false;
             var tavernMenu = 1; // high level menu
             var tavernLoc = 0; // bar, table or booth
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
 
-            if((Taverns[tavernNo].closingHour <= plyr.hours) || (Taverns[tavernNo].openingHour > plyr.hours))
+            if ((Taverns[tavernNo].closingHour <= plyr.hours) || (Taverns[tavernNo].openingHour > plyr.hours))
                 tavernMenu = 20;
-            if(Taverns[tavernNo].membershipFee > 0)
+            if (Taverns[tavernNo].membershipFee > 0)
                 tavernMenu = 21;
 
-            while(tavernMenu > 0)
+            while (tavernMenu > 0)
             {
-                while(tavernMenu == 20) // closed
+                while (tavernMenu == 20) // closed
                 {
-                    int openHour = Taverns[tavernNo].openingHour;
-                    int closeHour = Taverns[tavernNo].closingHour;
-                    if((openHour >= 0) && (openHour < 12))
+                    var openHour = Taverns[tavernNo].openingHour;
+                    var closeHour = Taverns[tavernNo].closingHour;
+                    if ((openHour >= 0) && (openHour < 12))
                         openingText = "morning";
-                    if((openHour >= 12) && (openHour < 18))
+                    if ((openHour >= 12) && (openHour < 18))
                         openingText = "afternoon";
-                    if((openHour >= 18) && (openHour <= 23))
+                    if ((openHour >= 18) && (openHour <= 23))
                         openingText = "evening";
-                    if((closeHour >= 0) && (closeHour < 12))
+                    if ((closeHour >= 0) && (closeHour < 12))
                         closingText = "morning";
-                    if((closeHour >= 12) && (closeHour < 18))
+                    if ((closeHour >= 12) && (closeHour < 18))
                         closingText = "afternoon";
-                    if((closeHour >= 18) && (closeHour <= 23))
+                    if ((closeHour >= 18) && (closeHour <= 23))
                         closingText = "evening";
 
                     TavernDisplayUpdate();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    str = $"We are open from {Itos(Taverns[tavernNo].openingHour)}:00 in the {openingText}@to {Itos(Taverns[tavernNo].closingHour)}:00 in the {closingText}.";
+                    var str = $"We are open from {Itos(Taverns[tavernNo].openingHour)}:00 in the {openingText}@to {Itos(Taverns[tavernNo].closingHour)}:00 in the {closingText}.";
                     CyText(4, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                         tavernMenu = 0;
                 }
 
-                while(tavernMenu == 21) // membership fee required
+                while (tavernMenu == 21) // membership fee required
                 {
                     TavernDisplayUpdate();
                     CyText(1, "To enter you must become a member.");
-                    str = $"Dues are {ToCurrency(Taverns[tavernNo].membershipFee)} copper coins.";
-                    CyText(3, str);
+                    CyText(3, $"Dues are {ToCurrency(Taverns[tavernNo].membershipFee)} copper coins.");
                     CyText(5, "( es or  o)");
                     SetFontColour(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
@@ -530,18 +527,18 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "N")
+                    var key = GetSingleKey();
+                    if (key == "N")
                         tavernMenu = 0;
-                    if(key == "Y")
+                    if (key == "Y")
                         tavernMenu = 22;
                 }
 
-                while(tavernMenu == 22) // Attempt to buy a club membership
+                while (tavernMenu == 22) // Attempt to buy a club membership
                 {
                     tavernNo = GetTavernNo();
-                    int membershipCost = Taverns[tavernNo].membershipFee;
-                    if(!CheckCoins(0, 0, membershipCost))
+                    var membershipCost = Taverns[tavernNo].membershipFee;
+                    if (!CheckCoins(0, 0, membershipCost))
                         tavernMenu = 23;
                     else
                     {
@@ -551,21 +548,21 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(tavernMenu == 23) // Insufficient funds for club membership
+                while (tavernMenu == 23) // Insufficient funds for club membership
                 {
                     TavernDisplayUpdate();
                     CyText(3, "I'm sorry... You have not the funds.");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                         tavernMenu = 0;
                 }
 
-                while(tavernMenu == 1) // main menu
+                while (tavernMenu == 1) // main menu
                 {
                     // check whether player requires food and drink based on tavern friendship level
-                    int countedCoppers = (plyr.gold * 100) + (plyr.silver * 10) + plyr.copper;
-                    if((plyr.tavernFriendships[tavernNo] >= 4) &&
+                    var countedCoppers = (plyr.gold * 100) + (plyr.silver * 10) + plyr.copper;
+                    if ((plyr.tavernFriendships[tavernNo] >= 4) &&
                         (plyr.water == 0) &&
                         (countedCoppers == 0) &&
                         (plyr.thirst > 56))
@@ -574,7 +571,7 @@ namespace P3Net.Arx
                         plyr.water = 1;
                         TavernMessage("Friend, you thirst. Let me get you a drink.");
                     }
-                    if((plyr.tavernFriendships[tavernNo] >= 4) &&
+                    if ((plyr.tavernFriendships[tavernNo] >= 4) &&
                         (plyr.food == 0) &&
                         (countedCoppers == 0) &&
                         (plyr.hunger > 96))
@@ -604,60 +601,60 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    if(!musicPlaying)
+                    if (!musicPlaying)
                     {
-                        int Random = Randn(1, 5);
-                        if(plyr.musicStyle == 0)
+                        var Random = Randn(1, 5);
+                        if (plyr.musicStyle == 0)
                         {
-                            if(Random == 1)
+                            if (Random == 1)
                             {
                                 tavernMusic.openFromFile("data/audio/dwarfdance.ogg");
                                 lyricsFilename = "dwarfdance.txt";
                             }
-                            if(Random == 2)
+                            if (Random == 2)
                             {
                                 tavernMusic.openFromFile("data/audio/thoreandan.ogg");
                                 lyricsFilename = "thoreandan.txt";
                             }
-                            if(Random == 3)
+                            if (Random == 3)
                             {
                                 tavernMusic.openFromFile("data/audio/waves.ogg");
                                 lyricsFilename = "waves.txt";
                             }
-                            if(Random == 4)
+                            if (Random == 4)
                             {
                                 tavernMusic.openFromFile("data/audio/moments.ogg");
                                 lyricsFilename = "moments.txt";
                             }
-                            if(Random == 5)
+                            if (Random == 5)
                             {
                                 tavernMusic.openFromFile("data/audio/B/TheNightstalker.ogg");
                                 lyricsFilename = "TheNightstalker.txt";
                             }
                         }
-                        if(plyr.musicStyle == 1)
+                        if (plyr.musicStyle == 1)
                         {
-                            if(Random == 1)
+                            if (Random == 1)
                             {
                                 tavernMusic.openFromFile("data/audio/B/dwarfdance.ogg");
                                 lyricsFilename = "dwarfdance.txt";
                             }
-                            if(Random == 2)
+                            if (Random == 2)
                             {
                                 tavernMusic.openFromFile("data/audio/B/thoreandan.ogg");
                                 lyricsFilename = "thoreandan.txt";
                             }
-                            if(Random == 3)
+                            if (Random == 3)
                             {
                                 tavernMusic.openFromFile("data/audio/B/waves.ogg");
                                 lyricsFilename = "waves.txt";
                             }
-                            if(Random == 4)
+                            if (Random == 4)
                             {
                                 tavernMusic.openFromFile("data/audio/B/LetInTheLight.ogg");
                                 lyricsFilename = "LetInTheLight.txt";
                             }
-                            if(Random == 5)
+                            if (Random == 5)
                             {
                                 tavernMusic.openFromFile("data/audio/B/TheNightstalker.ogg");
                                 lyricsFilename = "TheNightstalker.txt";
@@ -669,30 +666,30 @@ namespace P3Net.Arx
                         musicPlaying = true;
                     }
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "1")
+                    if (key == "1")
                     {
                         tavernMenu = 2;
                         tavernLoc = 1;
                     }
-                    if(key == "2")
+                    if (key == "2")
                     {
                         tavernMenu = 2;
                         tavernLoc = 2;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
                         tavernMenu = 2;
                         tavernLoc = 3;
                     }
-                    if(key == "4")
+                    if (key == "4")
                         tavernMenu = 11;
-                    if(key == "0")
+                    if (key == "0")
                         tavernMenu = 0;
-                    if(key == "down")
+                    if (key == "down")
                         tavernMenu = 0;
-                    if(key == "F1")
+                    if (key == "F1")
                     {
                         tavernMusic.stop();
                         LoadLyrics(lyricsFilename);
@@ -700,20 +697,20 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(tavernMenu == 2) // at bar, table or booth menu
+                while (tavernMenu == 2) // at bar, table or booth menu
                 {
                     TavernDisplayUpdate();
-                    if(tavernLoc == 1)
+                    if (tavernLoc == 1)
                     {
                         BText(7, 0, "You are sitting at the bar.");
                         BText(23, 3, "A few nuts");
                     }
-                    if(tavernLoc == 2)
+                    if (tavernLoc == 2)
                     {
                         BText(7, 0, "You are at your table.");
                         BText(26, 3, "Popcorn");
                     }
-                    if(tavernLoc == 3)
+                    if (tavernLoc == 3)
                     {
                         BText(7, 0, "You are in a private booth.");
                         BText(7, 3, "A smokey torch  A few nuts");
@@ -741,18 +738,18 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "0")
+                    var key = GetSingleKey();
+                    if (key == "0")
                         tavernMenu = 0;
-                    if(key == "1")
+                    if (key == "1")
                         tavernMenu = 3;
-                    if(key == "2")
+                    if (key == "2")
                         tavernMenu = 7;
-                    if(key == "3")
+                    if (key == "3")
                         tavernMenu = 30;
                 }
 
-                while(tavernMenu == 3) // Order a drink
+                while (tavernMenu == 3) // Order a drink
                 {
                     TavernDisplayUpdate();
                     CyText(0, "What would you like? (  to go back)");
@@ -761,33 +758,30 @@ namespace P3Net.Arx
                     SetFontColour(215, 215, 215, 255);
 
                     tavernNo = GetTavernNo();
-                    for(var i = 0; i < 6; i++)
+                    for (var i = 0; i < 6; i++)
                     {
-                        int itemNo = tavernDailyDrinks[tavernNo][i];
+                        var itemNo = tavernDailyDrinks[tavernNo][i];
                         str = $") {tavernDrinks[itemNo].name}";
                         BText(3, (2 + i), str); //was 4
                         BText(1, (2 + i), "                                 coppers");
                     }
                     DisplayCoins();
 
-                    int itemCost;
-                    int x;
-                    for(var i = 0; i < 6; i++) // Max 6 drink items on menu each day
+                    for (var i = 0; i < 6; i++) // Max 6 drink items on menu each day
                     {
-                        string itemCostDesc;
-                        x = 33;
+                        var x = 33;
                         int itemNo = tavernDailyDrinks[tavernNo][i];
 
                         //MLT: Downcast to int
-                        itemCost = (int)(Taverns[tavernNo].priceFactor * tavernDrinks[itemNo].basePrice);
+                        var itemCost = (int)(Taverns[tavernNo].priceFactor * tavernDrinks[itemNo].basePrice);
 
-                        if(itemCost < 10)
+                        if (itemCost < 10)
                             x = 34;
-                        if((itemCost > 9) && (itemCost < 100))
+                        if ((itemCost > 9) && (itemCost < 100))
                             x = 32;
-                        if(itemCost < 1000)
+                        if (itemCost < 1000)
                             x = 30;
-                        itemCostDesc = ToCurrency(itemCost);
+                        var itemCostDesc = ToCurrency(itemCost);
                         BText(x, (i + 2), itemCostDesc);
                     }
 
@@ -802,90 +796,90 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
                         drinkChoice = 0;
                         tavernMenu = 4;
                     }
-                    if(key == "2")
+                    if (key == "2")
                     {
                         drinkChoice = 1;
                         tavernMenu = 4;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
                         drinkChoice = 2;
                         tavernMenu = 4;
                     }
-                    if(key == "4")
+                    if (key == "4")
                     {
                         drinkChoice = 3;
                         tavernMenu = 4;
                     }
-                    if(key == "5")
+                    if (key == "5")
                     {
                         drinkChoice = 4;
                         tavernMenu = 4;
                     }
-                    if(key == "6")
+                    if (key == "6")
                     {
                         drinkChoice = 5;
                         tavernMenu = 4;
                     }
-                    if(key == "ESC")
+                    if (key == "ESC")
                         tavernMenu = 0;
-                    if(key == "0")
+                    if (key == "0")
                         tavernMenu = 2;
                 }
 
-                while(tavernMenu == 4) // Attempt to buy a drink
+                while (tavernMenu == 4) // Attempt to buy a drink
                 {
                     tavernNo = GetTavernNo();
                     drinkNo = tavernDailyDrinks[tavernNo][drinkChoice];
 
                     //MLT: Downcast to int
                     drinkCost = (int)(Taverns[tavernNo].priceFactor * tavernDrinks[drinkNo].basePrice);
-                    if(!CheckCoins(0, 0, drinkCost))
+                    if (!CheckCoins(0, 0, drinkCost))
                         tavernMenu = 5;
                     else
                         tavernMenu = 6;
                 }
 
-                while(tavernMenu == 5) // Insufficient funds
+                while (tavernMenu == 5) // Insufficient funds
                 {
                     TavernDisplayUpdate();
                     CyText(3, "I'm sorry... You have not the funds.");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                         tavernMenu = 3;
                 }
 
-                while(tavernMenu == 6) // Successful purchase
+                while (tavernMenu == 6) // Successful purchase
                 {
                     TavernDisplayUpdate();
                     CyText(3, "Right away!");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                     {
                         tavernMenu = 2;
                         DeductCoins(0, 0, drinkCost);
                         plyr.thirst -= tavernDrinks[drinkNo].thirstRemoved;
-                        if(plyr.thirst < 0)
+                        if (plyr.thirst < 0)
                             plyr.thirst = 0;
                         plyr.alcohol += tavernDrinks[drinkNo].alcoholAdded;
                         plyr.water += tavernDrinks[drinkNo].waterFlaskAdded;
                         eatDrinkDescriptions[descriptionPointer] = tavernDrinks[drinkNo].name;
-                        if(descriptionPointer == 3)
+                        if (descriptionPointer == 3)
                             descriptionPointer = 0;
                         else
                             descriptionPointer++;
                     }
                 }
 
-                while(tavernMenu == 7) // Order food
+                while (tavernMenu == 7) // Order food
                 {
                     TavernDisplayUpdate();
                     CyText(0, "What would you like? (  to go back)");
@@ -894,34 +888,30 @@ namespace P3Net.Arx
                     SetFontColour(215, 215, 215, 255);
 
                     tavernNo = GetTavernNo();
-                    for(var i = 0; i < 6; i++)
+                    for (var i = 0; i < 6; i++)
                     {
-                        int itemNo = tavernDailyFoods[tavernNo][i];
-                        str = $") {tavernFoods[itemNo].name}";
-                        BText(3, (2 + i), str); //was 4
+                        var itemNo = tavernDailyFoods[tavernNo][i];
+                        BText(3, (2 + i), $") {tavernFoods[itemNo].name}");
                         BText(1, (2 + i), "                                 coppers");
                     }
                     DisplayCoins();
 
-                    int itemCost;
-                    int x;
-                    for(var i = 0; i < 6; i++) // Max 6 drink items on menu each day
+                    for (var i = 0; i < 6; i++) // Max 6 drink items on menu each day
                     {
-                        string itemCostDesc;
-                        x = 33;
-                        int itemNo = tavernDailyFoods[tavernNo][i];
+                        var x = 33;
+                        var itemNo = tavernDailyFoods[tavernNo][i];
 
                         //MLT: Downcast to int
-                        itemCost = (int)(Taverns[tavernNo].priceFactor * tavernFoods[itemNo].basePrice);
+                        var itemCost = (int)(Taverns[tavernNo].priceFactor * tavernFoods[itemNo].basePrice);
 
-                        if(itemCost < 10)
+                        if (itemCost < 10)
                             x = 37;
-                        if((itemCost > 9) && (itemCost < 100))
+                        if ((itemCost > 9) && (itemCost < 100))
                             x = 34;
-                        if(itemCost < 1000)
+                        if (itemCost < 1000)
                             x = 30;
-                        itemCostDesc = ToCurrency(itemCost);
-                        BText(x, (i + 2), itemCostDesc);
+
+                        BText(x, (i + 2), ToCurrency(itemCost));
                     }
 
                     SetFontColour(40, 96, 244, 255);
@@ -935,110 +925,106 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
                         foodChoice = 0;
                         tavernMenu = 8;
                     }
-                    if(key == "2")
+                    if (key == "2")
                     {
                         foodChoice = 1;
                         tavernMenu = 8;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
                         foodChoice = 2;
                         tavernMenu = 8;
                     }
-                    if(key == "4")
+                    if (key == "4")
                     {
                         foodChoice = 3;
                         tavernMenu = 8;
                     }
-                    if(key == "5")
+                    if (key == "5")
                     {
                         foodChoice = 4;
                         tavernMenu = 8;
                     }
-                    if(key == "6")
+                    if (key == "6")
                     {
                         foodChoice = 5;
                         tavernMenu = 8;
                     }
-                    
-                    if(key == "ESC")
+
+                    if (key == "ESC")
                         tavernMenu = 0;
-                    if(key == "0")
+                    if (key == "0")
                         tavernMenu = 2;
                 }
 
-                while(tavernMenu == 8) // Attempt to buy food
+                while (tavernMenu == 8) // Attempt to buy food
                 {
                     tavernNo = GetTavernNo();
                     foodNo = tavernDailyFoods[tavernNo][foodChoice];
 
                     //MLT: Downcast to int
                     foodCost = (int)(Taverns[tavernNo].priceFactor * tavernFoods[foodNo].basePrice);
-                    if(!CheckCoins(0, 0, foodCost))
-                        tavernMenu = 9;
-                    else
-                        tavernMenu = 10;
+                    tavernMenu = !CheckCoins(0, 0, foodCost) ? 9 : 10;
                 }
 
-                while(tavernMenu == 9) // Insufficient funds
+                while (tavernMenu == 9) // Insufficient funds
                 {
                     TavernDisplayUpdate();
                     CyText(3, "I'm sorry... You have not the funds.");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                         tavernMenu = 7;
                 }
 
-                while(tavernMenu == 10) // Successful purchase
+                while (tavernMenu == 10) // Successful purchase
                 {
                     TavernDisplayUpdate();
                     CyText(3, "Right away!");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                     {
                         tavernMenu = 2;
                         DeductCoins(0, 0, foodCost);
                         plyr.hunger -= tavernFoods[foodNo].hungerRemoved;
-                        if(plyr.hunger < 0)
+                        if (plyr.hunger < 0)
                             plyr.hunger = 0;
                         plyr.digestion += (tavernFoods[foodNo].hungerRemoved) * 2;
                         plyr.food += tavernFoods[foodNo].foodPacketAdded;
                         eatDrinkDescriptions[descriptionPointer] = tavernFoods[foodNo].name;
-                        if(descriptionPointer == 3)
+                        if (descriptionPointer == 3)
                             descriptionPointer = 0;
                         else
                             descriptionPointer++;
                     }
                 }
 
-                while(tavernMenu == 11) // apply for job
+                while (tavernMenu == 11) // apply for job
                 {
-                    int jobNumber = tavernJobOpenings[tavernNo].jobNumber;
+                    var jobNumber = tavernJobOpenings[tavernNo].jobNumber;
 
                     TavernDisplayUpdate();
-                    if(jobNumber == 255)
+                    if (jobNumber == 255)
                     {
                         BText(7, 0, "I'm sorry but there are no");
                         CyText(1, "job openings at the moment.");
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        key = GetSingleKey();
-                        if(key != "")
+                        var key = GetSingleKey();
+                        if (key != "")
                             tavernMenu = 1;
                     } else
                     {
-                        str = $"We have an opening for a {tavernJobs[jobNumber].name}";
-                        CyText(0, str);
-                        str = $"for {Itos(tavernJobOpenings[tavernNo].JobHoursRequired)} hours at {Itos(tavernJobOpenings[tavernNo].jobHourlyIncome)} coppers per hour.";
+                        CyText(0, $"We have an opening for a {tavernJobs[jobNumber].name}");
+                        var str = $"for {Itos(tavernJobOpenings[tavernNo].JobHoursRequired)} hours at {Itos(tavernJobOpenings[tavernNo].jobHourlyIncome)} coppers per hour.";
                         CyText(1, str);
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
@@ -1047,30 +1033,30 @@ namespace P3Net.Arx
                         SetFontColour(215, 215, 215, 255);
                         UpdateDisplay();
 
-                        key = GetSingleKey();
-                        if(key == "Y")
+                        var key = GetSingleKey();
+                        if (key == "Y")
                             tavernMenu = 12;
-                        if(key == "N")
+                        if (key == "N")
                             tavernMenu = 1;
                     }
                 }
 
-                while(tavernMenu == 12) // Check job stat requirements
+                while (tavernMenu == 12) // Check job stat requirements
                 {
-                    int jobNumber = tavernJobOpenings[tavernNo].jobNumber;
-                    string statRequirementName = tavernJobs[jobNumber].statRequirementName;
-                    int statRequirement = tavernJobs[jobNumber].statRequirementValue;
+                    var jobNumber = tavernJobOpenings[tavernNo].jobNumber;
+                    var statRequirementName = tavernJobs[jobNumber].statRequirementName;
+                    var statRequirement = tavernJobs[jobNumber].statRequirementValue;
                     var jobStatMet = false;
 
                     // Check stat requirement met
-                    if((statRequirementName == "Strength") && (statRequirement <= plyr.str))
+                    if ((statRequirementName == "Strength") && (statRequirement <= plyr.str))
                         jobStatMet = true;
-                    if((statRequirementName == "Charm") && (statRequirement <= plyr.chr))
+                    if ((statRequirementName == "Charm") && (statRequirement <= plyr.chr))
                         jobStatMet = true;
-                    if((statRequirementName == "Skill") && (statRequirement <= plyr.skl))
+                    if ((statRequirementName == "Skill") && (statRequirement <= plyr.skl))
                         jobStatMet = true;
 
-                    if(!jobStatMet)
+                    if (!jobStatMet)
                     {
                         TavernDisplayUpdate();
                         str = $"You will need more {statRequirementName}";
@@ -1079,9 +1065,9 @@ namespace P3Net.Arx
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        key = GetSingleKey();
+                        var key = GetSingleKey();
 
-                        if(key == "SPACE")
+                        if (key == "SPACE")
                             tavernMenu = 1;
                     } else
                     {
@@ -1092,15 +1078,15 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(tavernMenu == 13) // Display working message
+                while (tavernMenu == 13) // Display working message
                 {
-                    while(workingHours > 0)
+                    while (workingHours > 0)
                     {
                         TavernDisplayUpdate();
                         CyText(2, "WORKING");
                         UpdateDisplay();
                         sf.sleep(sf.seconds(1));
-                        for(var i = 0; i < 60; i++) // 60 minutes
+                        for (var i = 0; i < 60; i++) // 60 minutes
                         {
                             //sf::sleep(0.01f);
                             // check for diseases
@@ -1117,12 +1103,11 @@ namespace P3Net.Arx
 
                     // CHECK FOR INJURY
                     CyText(2, "The job is completed.");
-                    str = $"You have earned {Itos(jobIncome)} coppers.";
-                    CyText(3, str);
+                    CyText(3, $"You have earned {Itos(jobIncome)} coppers.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                     {
                         plyr.copper += jobIncome;
                         tavernJobOpenings[tavernNo].jobNumber = 255;
@@ -1130,19 +1115,18 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(tavernMenu == 30) // Buy a round
+                while (tavernMenu == 30) // Buy a round
                 {
                     //MLT: Downcast to int
                     var roundCost = (int)(80 * Taverns[tavernNo].priceFactor);
                     TavernDisplayUpdate();
-                    str = $"A round for the house will cost@@{Itos(roundCost)} coppers.@@@Dost thou still wish to buy? (Y or N)";
-                    CyText(0, str);
+                    CyText(0, $"A round for the house will cost@@{Itos(roundCost)} coppers.@@@Dost thou still wish to buy? (Y or N)");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "Y")
+                    var key = GetSingleKey();
+                    if (key == "Y")
                     {
                         bool affordRound = CheckCoins(0, 0, roundCost);
-                        if(affordRound)
+                        if (affordRound)
                         {
                             DeductCoins(0, 0, roundCost);
                             plyr.tavernFriendships[tavernNo] += 1;
@@ -1154,56 +1138,54 @@ namespace P3Net.Arx
                             tavernMenu = 2;
                         }
                     }
-                    if(key == "N")
+                    if (key == "N")
                         tavernMenu = 2;
                 }
 
-                while(tavernMenu == 31) // Round successfully bought messages
+                while (tavernMenu == 31) // Round successfully bought messages
                 {
-                    int tf = plyr.tavernFriendships[tavernNo];
-                    str = "The patrons go up to the bar.";
-                    if((tf >= 0) && (tf < 3))
+                    var tf = plyr.tavernFriendships[tavernNo];
+                    var str = "The patrons go up to the bar.";
+                    if ((tf >= 0) && (tf < 3))
                         str = "A few people take up your offer.";
-                    if((tf > 3) && (tf < 6))
+                    if ((tf > 3) && (tf < 6))
                         str = "You have won yourself some friends, Adventurer.";
-                    if((tf > 5) && (tf < 7))
+                    if ((tf > 5) && (tf < 7))
                         str = "All the patrons applaud your generosity!";
-                    if(tf > 6)
+                    if (tf > 6)
                         str = $"A toast to our friend, {plyr.name}.";
                     TavernMessage(str);
                     tavernMenu = 2;
                 }
             }
-            if(musicPlaying)
+            if (musicPlaying)
                 tavernMusic.stop();
             LeaveShop();
         }
 
-        public static void StockTavernDrinks()
+        public static void StockTavernDrinks ()
         {
             // Run each hour to randomly pick 10 items for sale at each of the 4 smithies
             // Check for duplicates using smithyWaresCheck array of bools
 
-            // Set bools for duplicate items check to false
-            var itemNo = 0;
-
-            for(var x = 0; x < 14; x++)
+            // Set bools for duplicate items check to false            
+            for (var x = 0; x < 14; x++)
             {
-                for(var y = 0; y < 12; y++)
+                for (var y = 0; y < 12; y++)
                     tavernDrinksCheck[x, y] = false;
             }
 
-            for(var tavernNo = 0; tavernNo < 14; tavernNo++)
+            for (var tavernNo = 0; tavernNo < 14; tavernNo++)
             {
-                for(var waresNo = 0; waresNo < 6; waresNo++)
+                for (var waresNo = 0; waresNo < 6; waresNo++)
                 {
                     // Current code may create duplicate items in each tavern
                     var uniqueItem = false;
-                    while(!uniqueItem)
+                    while (!uniqueItem)
                     {
-                        itemNo = Randn(0, 11); // was 12
+                        var itemNo = Randn(0, 11); // was 12
 
-                        if(!tavernDrinksCheck[tavernNo, itemNo])
+                        if (!tavernDrinksCheck[tavernNo, itemNo])
                         {
                             tavernDailyDrinks[tavernNo][waresNo] = itemNo; // its not a duplicate
                             tavernDrinksCheck[tavernNo, itemNo] = true;
@@ -1212,33 +1194,31 @@ namespace P3Net.Arx
                     }
                 }
             }
-		}
+        }
 
-        public static void StockTavernFoods()
+        public static void StockTavernFoods ()
         {
             // Run each hour to randomly pick 10 items for sale at each of the 4 smithies
             // Check for duplicates using smithyWaresCheck array of bools
 
             // Set bools for duplicate items check to false
-            var itemNo = 0;
-
-            for(var x = 0; x < 14; x++)
+            for (var x = 0; x < 14; x++)
             {
-                for(var y = 0; y < 12; y++)
+                for (var y = 0; y < 12; y++)
                     tavernFoodsCheck[x, y] = false;
             }
 
-            for(var tavernNo = 0; tavernNo < 14; tavernNo++)
+            for (var tavernNo = 0; tavernNo < 14; tavernNo++)
             {
-                for(var waresNo = 0; waresNo < 6; waresNo++)
+                for (var waresNo = 0; waresNo < 6; waresNo++)
                 {
                     // Current code may create duplicate items in each tavern
                     var uniqueItem = false;
-                    while(!uniqueItem)
+                    while (!uniqueItem)
                     {
-                        itemNo = Randn(0, 31); // was 32
+                        var itemNo = Randn(0, 31); // was 32
 
-                        if(!tavernFoodsCheck[tavernNo, itemNo])
+                        if (!tavernFoodsCheck[tavernNo, itemNo])
                         {
                             tavernDailyFoods[tavernNo][waresNo] = itemNo; // its not a duplicate
                             tavernFoodsCheck[tavernNo, itemNo] = true;
@@ -1247,9 +1227,9 @@ namespace P3Net.Arx
                     }
                 }
             }
-		}
+        }
 
-        public static void TavernDisplayUpdate()
+        public static void TavernDisplayUpdate ()
         {
             clock1.restart();
             ClearShopDisplay();
@@ -1257,16 +1237,15 @@ namespace P3Net.Arx
             iCounter++;
         }
 
-        public static void TavernMessage(string txt)
+        public static void TavernMessage ( string txt )
         {
-            var key = "";
-            while(key != "SPACE")
+            do
             {
                 ClearShopDisplay();
                 CText(txt);
                 UpdateDisplay();
-                key = GetSingleKey();
-            }
+                var key = GetSingleKey();
+            } while (key != "SPACE");
         }
 
         //extern Player           plyr;

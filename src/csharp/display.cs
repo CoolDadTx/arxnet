@@ -8,8 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using sf;
 
 namespace P3Net.Arx
@@ -26,7 +24,7 @@ namespace P3Net.Arx
     {
         public static void CreateGameWindow ()
         {
-            string title = "Alternate Reality X " + version;
+            var title = "Alternate Reality X " + version;
 
             if (windowMode == 0)
                 App.create(sf.VideoMode(windowWidth, windowHeight), title, sf.Style.Close);
@@ -34,7 +32,7 @@ namespace P3Net.Arx
                 App.create(sf.VideoMode(windowWidth, windowHeight), title, sf.Style.Fullscreen);
 
             // Print OpenGL settings to game console for information
-            sf.ContextSettings settings = App.getSettings();
+            var settings = App.getSettings();
             Console.Write("Welcome to Alternate Reality X ");
             Console.Write(version);
             Console.Write(" ...");
@@ -70,14 +68,12 @@ namespace P3Net.Arx
 
         public static void SetTileImage ( int tile_no )
         {
-
             int row;
             int column;
-            int tilesPerRow = 8; // number of tiles per row in source image containing all tiles (8 default)
+            var tilesPerRow = 8; // number of tiles per row in source image containing all tiles (8 default)
                                  //int tilesPerColumn = 8; // number of tiles per column in source image (8 default)
 
             //Select 64x128 section of tile sheet for tile
-
             if (tile_no >= tilesPerRow)
             {
                 column = (tile_no % tilesPerRow); // remainder
@@ -88,8 +84,8 @@ namespace P3Net.Arx
                 row = 0; // = row 1 on the actual tile sheet at y=0
             }
 
-            int tileX = (column) * 64; // x loc on tiles image in pixels
-            int tileY = (row) * 128; // y loc on tiles image in pixels
+            var tileX = (column) * 64; // x loc on tiles image in pixels
+            var tileY = (row) * 128; // y loc on tiles image in pixels
 
             encImage.setTextureRect(sf.IntRect(tileX, tileY, 64, 128));
         }
@@ -119,12 +115,7 @@ namespace P3Net.Arx
             }
 
             animDuration--;
-
-            int encWidth;
-            int encHeight;
-            int encX;
-            int encY;
-
+            
             // Alternate and set animation frame as required
             encImage.setTexture(encImageSheet);
 
@@ -133,13 +124,12 @@ namespace P3Net.Arx
 
             //MLT: Downcast to int
             // Calculate new image width and height based on viewport size
-            encWidth = (int)(viewWidth / 4.5);
-            encHeight = (int)(viewHeight / 1.125);
+            var encWidth = (int)(viewWidth / 4.5);
+            var encHeight = (int)(viewHeight / 1.125);
 
             /* SET POSITION OF RESIZED IMAGE ON SCREEN */
-
-            encX = (windowWidth / 2) - 32;
-            encY = (viewPortY + viewHeight) - 130;
+            var encX = (windowWidth / 2) - 32;
+            var encY = (viewPortY + viewHeight) - 130;
 
             if ((xOffset == 0) && (yOffset == 0))
                 encImage.setPosition(encX, encY);
@@ -290,7 +280,7 @@ namespace P3Net.Arx
             if (graphicMode < 2)
             {
                 gluPerspective(45.0f, (GLfloat)viewWidth / (GLfloat)viewHeight, 0.1f, 100.0f);
-                int z = windowHeight - (viewPortY + viewHeight);
+                var z = windowHeight - (viewPortY + viewHeight);
                 glViewport(viewPortX, z, viewWidth, viewHeight);
                 glTranslatef(0.0f, 0.0f, -1.0f); // -2.4f  - move x units into the screen. was 1.0
             } else
@@ -307,7 +297,7 @@ namespace P3Net.Arx
             /* Draws a transparent box with yellow border around the console window whilst exploring and in large 3D view mode */
             if ((plyr.status != 2) && (graphicMode == 2)) // Whilst not shopping
             {
-                sf.RectangleShape rectangle = new sf.RectangleShape();
+                var rectangle = new sf.RectangleShape();
                 rectangle.setSize(sf.Vector2f(670, 182)); // 672, 184
                 rectangle.setOutlineColor(sf.Color.Yellow);
                 rectangle.setFillColor(sf.Color(0, 0, 0, 128));
@@ -328,9 +318,11 @@ namespace P3Net.Arx
         {
             RandomNumbers.Seed(time(null));
             DrawLogo();
-            int tempy = (windowHeight - (180 + 240)) / 2;
-            int z = (240) / 18;
-            int x = 2;
+
+            var tempy = (windowHeight - (180 + 240)) / 2;
+            var z = (240) / 18;
+            var x = 2;
+
             DrawText(x + 3, z, "(1) Create a new City character");
             DrawText(x + 3, z + 1, "(2) Create a new Dungeon character");
             DrawText(x + 3, z + 2, "(3) Resume a character");
@@ -351,7 +343,7 @@ namespace P3Net.Arx
 
         public static void DisplayAcknowledgements ()
         {
-            bool acknowledgements = true;
+            var acknowledgements = true;
 
             while (acknowledgements)
             {
@@ -521,11 +513,11 @@ namespace P3Net.Arx
             gateY = ((windowHeight - 384) / 2) - 78;
             loadingX = 16;
             loadingY = 11;
-            int temp = 0;
-            int spacer = 0; // spacer value between screen elements - adjust here
-            int consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
-            statPanelX = (windowWidth - 640) / 2; // Centre in middle of window width
-            consoleX = (windowWidth - 640) / 2; // Centre in middle of window width
+            var temp = 0;
+            var spacer = 0; // spacer value between screen elements - adjust here
+            var consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
+            statPanelX = (windowWidth - 640) / 2; // Center in middle of window width
+            consoleX = (windowWidth - 640) / 2; // Center in middle of window width
 
             /* Original small 3D view */
             if (graphicMode < 2)
@@ -577,9 +569,8 @@ namespace P3Net.Arx
 
                     if ((plyr.special >= 0xc0) && (plyr.special <= 0xff) && (plyr.scenario == 1)) // 224 - 255 was d2
                     {
-                        string str;
-                        int ind = (plyr.special - 0xc0);
-                        str = roomMessages[ind];
+                        var ind = (plyr.special - 0xc0);
+                        var str = roomMessages[ind];
                         CText(str);
                     } else
                     {
@@ -610,17 +601,17 @@ namespace P3Net.Arx
                             BText(12, 6, "of Xebec's Demise");
                         }
 
-                        string thirstDesc = CheckThirst();
+                        var thirstDesc = CheckThirst();
                         BText(1, 7, thirstDesc);
-                        string hungerDesc = CheckHunger();
+                        var hungerDesc = CheckHunger();
                         BText(1, 8, hungerDesc);
-                        string alcoholDesc = CheckAlcohol();
+                        var alcoholDesc = CheckAlcohol();
                         BText(1, 9, alcoholDesc);
-                        string weightDesc = CheckEncumbrance();
+                        var weightDesc = CheckEncumbrance();
                         BText(30, 7, weightDesc);
-                        string poisonDesc = CheckPoison();
+                        var poisonDesc = CheckPoison();
                         BText(31, 8, poisonDesc);
-                        string diseaseDesc = CheckDisease();
+                        var diseaseDesc = CheckDisease();
                         BText(31, 9, diseaseDesc);
                     }
                 }
@@ -653,7 +644,7 @@ namespace P3Net.Arx
                 if (plyr.infoPanel == 3)
                 {
                     BText(18, 1, "Weapons");
-                    string str = "Primary: Bare hand";
+                    var str = "Primary: Bare hand";
                     if (plyr.priWeapon != 255)
                         str = "Primary: " + itemBuffer[plyr.priWeapon].name;
                     BText(1, 2, str);
@@ -695,7 +686,7 @@ namespace P3Net.Arx
                     CyText(1, "Apparel");
                     if ((plyr.clothing[0] == 255) && (plyr.clothing[1] == 255) && (plyr.clothing[2] == 255) && (plyr.clothing[3] == 255))
                         CyText(3, "Birthday suit");
-                    int y = 3;
+                    var y = 3;
                     if (plyr.clothing[0] != 255)
                     {
                         CyText(y, itemBuffer[plyr.clothing[0]].name);
@@ -718,7 +709,7 @@ namespace P3Net.Arx
                 if (plyr.infoPanel == 5)
                 {
                     CyText(1, "Active Magic");
-                    int y = 3; // starting value for displaying items
+                    var y = 3; // starting value for displaying items
                     if (plyr.protection1 != 0)
                     {
                         CyText(y, "Protection +1");
@@ -779,7 +770,7 @@ namespace P3Net.Arx
                 if (plyr.infoPanel == 6)
                 {
                     CyText(1, "Known Diseases");
-                    int y = 3; // starting value for displaying items
+                    var y = 3; // starting value for displaying items
                     if (plyr.diseases[0] > 14)
                     {
                         CyText(y, "Rabies");
@@ -799,7 +790,7 @@ namespace P3Net.Arx
         {
             if ((graphicMode == 2) && (plyr.status != 5) && (plyr.status != 2)) // not shopping
             {
-                sf.RectangleShape rectangle = new sf.RectangleShape();
+                var rectangle = new sf.RectangleShape();
                 rectangle.setSize(sf.Vector2f(640, 110)); // 640, 110
                 rectangle.setOutlineColor(sf.Color.Yellow);
                 rectangle.setOutlineThickness(1);
@@ -810,8 +801,8 @@ namespace P3Net.Arx
             Banner.setPosition(statPanelX, statPanelY - 1);
             if (plyr.status == 2)
             {
-                int statsX = (windowWidth - 640) / 2;
-                int statsY = ((windowHeight - 144) / 2) - 126; // 144 pixels for picture + 16 space + stats height
+                var statsX = (windowWidth - 640) / 2;
+                var statsY = ((windowHeight - 144) / 2) - 126; // 144 pixels for picture + 16 space + stats height
                 Banner.setPosition(statsX, shopStatsY - 1);
             }
             App.draw(Banner);
@@ -854,8 +845,7 @@ namespace P3Net.Arx
                     DrawText(36, 3, plyr.hp);
                 }
 
-                string str;
-                str = "You are " + descriptions[plyr.location];
+                var str = "You are " + descriptions[plyr.location];
 
                 // Draw status line text
                 CheckForItemsHere();
@@ -878,20 +868,22 @@ namespace P3Net.Arx
 
             if (plyr.diagOn)
             {
-                string zoneDesc = "X:" + Itos(plyr.x) + "  Y:" + Itos(plyr.y) + "  Special:" + Itos(plyr.special) + "  Zone:" + Itos(plyr.zone) + "  Set:" + Itos(plyr.zoneSet);
+                var zoneDesc = "X:" + Itos(plyr.x) + "  Y:" + Itos(plyr.y) + "  Special:" + Itos(plyr.special) + "  Zone:" + Itos(plyr.zone) + "  Set:" + Itos(plyr.zoneSet);
                 DrawText(2, 0, zoneDesc);
                 zoneDesc = "Front:" + Itos(plyr.front) + "  Left:" + Itos(plyr.left) + "  Right:" + Itos(plyr.right) + "  Back:" + Itos(plyr.back);
                 DrawText(2, 1, zoneDesc);
-                string text;
-                std::stringstream @out = new std::stringstream();
+                
+                var @out = new stringstream();
                 @out << "Offset:" << plyr.z_offset;
-                text = @out.str();
+                
+                var text = @out.str();
                 DrawText(2, 5, text);
                 zoneDesc = "Floor:" + Itos(zones[plyr.zoneSet].floor) + "  Ceiling:" + Itos(zones[plyr.zoneSet].ceiling);
                 DrawText(2, 2, zoneDesc);
                 zoneDesc = "Location:" + Itos(plyr.location);
                 DrawText(2, 3, zoneDesc);
-                int e = ReturnCarriedWeight();
+                
+                var e = ReturnCarriedWeight();
                 zoneDesc = "Encumbrance:" + Itos(e);
                 DrawText(2, 4, zoneDesc);
                 zoneDesc = "T: " + Itos(plyr.hours) + ":" + Itos(plyr.minutes);
@@ -905,10 +897,10 @@ namespace P3Net.Arx
             {
                 if ((plyr.status != 2) && (graphicMode == 2)) // if exploring and full screen draw a background
                 {
-                    int x = 16;
-                    int y = (windowHeight - 128) / 2;
+                    var x = 16;
+                    var y = (windowHeight - 128) / 2;
 
-                    sf.RectangleShape rectangle = new sf.RectangleShape();
+                    var rectangle = new sf.RectangleShape();
                     rectangle.setSize(sf.Vector2f(130, 130));
                     rectangle.setOutlineColor(sf.Color.Yellow);
                     rectangle.setFillColor(sf.Color(0, 0, 0, 128));
@@ -928,14 +920,14 @@ namespace P3Net.Arx
 
                 if (graphicMode == 2)
                 {
-                    int x = 16;
-                    int y = (windowHeight - 128) / 2;
+                    var x = 16;
+                    var y = (windowHeight - 128) / 2;
                     compass.setPosition(x, y);
                 } else
                 {
                     /* Normal Small 3D view mode */
-                    int x = (viewPortX - 128) / 2;
-                    int y = viewPortY + ((viewHeight - 128) / 2);
+                    var x = (viewPortX - 128) / 2;
+                    var y = viewPortY + ((viewHeight - 128) / 2);
                     compass.setPosition(x, y);
                 }
                 App.draw(compass);
@@ -1076,12 +1068,10 @@ namespace P3Net.Arx
 
         public static void LoadLogoImage ()
         {
-            int x;
-            int y;
             LogoImage.loadFromFile("data/images/logo640x240.png");
             LogoSprite.setTexture(LogoImage);
-            x = (windowWidth - 640) / 2;
-            y = (windowHeight - (180 + 240)) / 2;
+            var x = (windowWidth - 640) / 2;
+            var y = (windowHeight - (180 + 240)) / 2;
             LogoSprite.setPosition(x, y);
 
         }
@@ -1315,7 +1305,6 @@ namespace P3Net.Arx
         //extern string roomMessages[255];
         //extern string descriptions[255];
 
-        //extern buffer_item itemBuffer[100];
         //extern effectItem effectBuffer[50]; // active time limited effects from spells, scrolls, eyes
 
         //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:

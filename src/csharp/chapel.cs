@@ -19,11 +19,8 @@ namespace P3Net.Arx
         {
             // Module for Dungeon Chapel
 
-            int chapelMenu = 1; // high level menu
-            string str;
-            string key;
+            var chapelMenu = 1; // high level menu
             plyr.status = 2; // shopping
-
 
             LoadShopImage(18);
 
@@ -42,7 +39,7 @@ namespace P3Net.Arx
                     UpdateDisplay();
                     PlayShopMusic(3);
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key == "0")
                         chapelMenu = 0;
@@ -53,15 +50,7 @@ namespace P3Net.Arx
 
             StopShopMusic();
             LeaveShop();
-        }
-
-        public static string Concat ( int n, string str )
-        {
-            std::ostringstream ss = new std::ostringstream();
-            ss << n;
-            ss << str;
-            return ss.str();
-        }
+        }        
 
         // extern Player plyr;
     }

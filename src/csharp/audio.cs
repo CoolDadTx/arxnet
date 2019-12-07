@@ -64,7 +64,7 @@ namespace P3Net.Arx
 
         public static void PlayShopMusic ( int musicNo )
         {
-            if (musicPlaying == false)
+            if (!musicPlaying)
             {
                 if (musicNo == 1)
                     shopMusic.openFromFile("data/audio/trolls.ogg");

@@ -18,8 +18,8 @@ namespace P3Net.Arx
         // Load settings from an arx.ini configuration file		
         public static bool LoadConfig ()
         {
-            std::ifstream instream = new std::ifstream();
-            string filename = "arx.ini";
+            var instream = new ifstream();
+            var filename = "arx.ini";
             instream.open(filename);
             if (instream == null)
             {
@@ -28,17 +28,17 @@ namespace P3Net.Arx
             }
             string junk;
             string line;
-            string text;
-            int iniSettings = 4; // number of settings in the ini file
-            string.size_type idx = new string.size_type();
+            
+            var iniSettings = 4; // number of settings in the ini file
+
             getline(instream, junk); // read first line as blank
 
             for (int a = 0; a < iniSettings; ++a) // number of settings in the ini file
             {
                 getline(instream, line);
 
-                idx = line.IndexOf('=');
-                text = line.Substring(idx + 2);
+                var idx = line.IndexOf('=');
+                var text = line.Substring(idx + 2);
 
                 if (a == 0)
                     windowMode = Convert.ToInt32(text);

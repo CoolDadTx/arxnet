@@ -21,7 +21,7 @@ namespace P3Net.Arx
 		 *
 		 */
 
-    public enum Menus
+    public enum VaultMenus
     {
         MenuLeft,
         MenuDraggedOutside,
@@ -30,7 +30,7 @@ namespace P3Net.Arx
         MenuSearching
     }
 
-	public partial class GlobalMembers
+    public partial class GlobalMembers
     {
         public static string bagDesc = "copper coins";
 
@@ -42,123 +42,119 @@ namespace P3Net.Arx
 
         public static int vmenu;
 
-        public static void AddVaultToMap()
+        public static void AddVaultToMap ()
         {
-            if(plyr.x == 2)
+            if (plyr.x == 2)
             {
                 SetAutoMapFlag(plyr.map, 2, 2);
                 vaultName = "Gram's Gold Exchange vault.";
             }
-            if(plyr.x == 30)
+            if (plyr.x == 30)
             {
                 SetAutoMapFlag(plyr.map, 30, 57);
                 vaultName = "the First City vault.";
             }
         }
 
-        public static void CheckForGuard()
+        public static void CheckForGuard ()
         {
-            int x = Randn(0, 100);
-            if(x < 5)
+            var x = Randn(0, 100);
+            if (x < 5)
             {
-                if(plyr.stolenFromVault == 1)
+                if (plyr.stolenFromVault == 1)
                     plyr.stolenFromVault = 2;
-                vmenu = (int)Menus.MenuDraggedOutside;
+                vmenu = (int)VaultMenus.MenuDraggedOutside;
             }
         }
 
-        public static void DisplayVaultModuleText()
+        public static void DisplayVaultModuleText ()
         {
-            if(vmenu == (int)Menus.MenuMain)
+            if (vmenu == (int)VaultMenus.MenuMain)
             {
-                string str = $"You are in {vaultName}";
-                string str2 = $"You see a bag of {bagDesc}.";
-                CyText(1, str);
-                CyText(3, str2);
+                CyText(1, $"You are in {vaultName}");
+                CyText(3, $"You see a bag of {bagDesc}.");
                 BText(1, 5, "Do you (1) Grab the bag and run,");
                 BText(8, 6, "(2) Search for something else or");
                 BText(8, 7, "(0) Leave?");
-            } else if(vmenu == (int)Menus.MenuGrabABag)
+            } else if (vmenu == (int)VaultMenus.MenuGrabABag)
             {
-                string str = $"@@You grab the bag of {bagDesc}@@and run!";
-                CyText(1, str);
-            } else if(vmenu == (int)Menus.MenuSearching)
+                CyText(1, $"@@You grab the bag of {bagDesc}@@and run!");
+            } else if (vmenu == (int)VaultMenus.MenuSearching)
             {
-                var str = "@@@Searching...@@@(Hit SPACE key to stop searching)";
-                CyText(1, str);
-            } else if(vmenu == (int)Menus.MenuDraggedOutside)
+                CyText(1, "@@@Searching...@@@(Hit SPACE key to stop searching)");
+            } else if (vmenu == (int)VaultMenus.MenuDraggedOutside)
             {
-                if(plyr.stolenFromVault == 0)
+                if (plyr.stolenFromVault == 0)
                     CyText(1, "@@A guard escorts you@@out of the bank's vault.");
                 else
                     CyText(1, "@@A guard drags you outside.");
             }
         }
 
-        public static void GrabBag()
+        public static void GrabBag ()
         {
-            int amount = Randn(0, 10) + 40;
-            if(bagType == 0)
+            var amount = Randn(0, 10) + 40;
+            if (bagType == 0)
                 plyr.copper += amount;
-            if(bagType == 1)
+            if (bagType == 1)
                 plyr.silver += amount;
-            if(bagType == 2)
+            if (bagType == 2)
                 plyr.gold += amount;
-            if(bagType == 3)
+            if (bagType == 3)
                 plyr.gems += amount;
-            if(bagType == 4)
+            if (bagType == 4)
                 plyr.jewels += amount;
 
             // Alignment penalty
             plyr.stolenFromVault = 1; // Determines what happens if discovered by guard
             plyr.alignment = plyr.alignment - 5;
-            if(plyr.alignment < 0)
+            if (plyr.alignment < 0)
                 plyr.alignment = 0;
         }
 
-        public static void ProcessVaultMenuInput()
+        public static void ProcessVaultMenuInput ()
         {
-            string key = ReadKey();
+            var key = ReadKey();
 
-            switch(vmenu)
+            switch (vmenu)
             {
-                case Menus.MenuMain:
-                    if(key == "0")
-                        vmenu = (int)Menus.MenuLeft;
-                    if(key == "1")
-                        vmenu = (int)Menus.MenuGrabABag;
-                    if(key == "2")
-                        vmenu = (int)Menus.MenuSearching;
-                    break;
-                case Menus.MenuGrabABag:
-                    if(key == "SPACE")
-                    {
-                        GrabBag();
-                        vmenu = (int)Menus.MenuLeft;
-                    }
-                    break;
-                case Menus.MenuSearching:
-                    if(key == "SPACE")
-                    {
-                        SetBagType();
-                        vmenu = (int)Menus.MenuMain;
-                    }
-                    break;
-                case Menus.MenuDraggedOutside:
-                    if(key == "SPACE")
-                        vmenu = (int)Menus.MenuLeft;
-                    break;
+                case VaultMenus.MenuMain:
+                if (key == "0")
+                    vmenu = (int)VaultMenus.MenuLeft;
+                if (key == "1")
+                    vmenu = (int)VaultMenus.MenuGrabABag;
+                if (key == "2")
+                    vmenu = (int)VaultMenus.MenuSearching;
+                break;
+                case VaultMenus.MenuGrabABag:
+                if (key == "SPACE")
+                {
+                    GrabBag();
+                    vmenu = (int)VaultMenus.MenuLeft;
+                }
+                break;
+                case VaultMenus.MenuSearching:
+                if (key == "SPACE")
+                {
+                    SetBagType();
+                    vmenu = (int)VaultMenus.MenuMain;
+                }
+                break;
+                case VaultMenus.MenuDraggedOutside:
+                if (key == "SPACE")
+                    vmenu = (int)VaultMenus.MenuLeft;
+                break;
             }
         }
 
-        public static void RunVault()
+        public static void RunVault ()
         {
-            vmenu = (int)Menus.MenuMain;
+            vmenu = (int)VaultMenus.MenuMain;
             AddVaultToMap();
             LoadShopImage(27);
             SetBagType();
 
-            while(vmenu != (int)Menus.MenuLeft)
+            while (vmenu != (int)VaultMenus.MenuLeft)
             {
                 gdt = gmyclock.restart();
 
@@ -168,7 +164,7 @@ namespace P3Net.Arx
                 ProcessVaultMenuInput();
 
                 guardCheckTime += gdt;
-                if(guardCheckTime >= sf.seconds(0.8f)) // was 0.8f
+                if (guardCheckTime >= sf.seconds(0.8f)) // was 0.8f
                 {
                     CheckForGuard();
                     guardCheckTime = sf.Time.Zero;
@@ -176,37 +172,37 @@ namespace P3Net.Arx
             }
         }
 
-        public static void SetBagType()
+        public static void SetBagType ()
         {
             // Copper, Silver, Gold, Gems or Jewels
-            int x = Randn(0, 4);
+            var x = Randn(0, 4);
 
-            switch(x)
+            switch (x)
             {
                 case 0:
-                    bagType = 0;
-                    bagDesc = "copper coins";
-                    break;
+                bagType = 0;
+                bagDesc = "copper coins";
+                break;
                 case 1:
-                    bagType = 1;
-                    bagDesc = "silver coins";
-                    break;
+                bagType = 1;
+                bagDesc = "silver coins";
+                break;
                 case 2:
-                    bagType = 2;
-                    bagDesc = "gold coins";
-                    break;
+                bagType = 2;
+                bagDesc = "gold coins";
+                break;
                 case 3:
-                    bagType = 3;
-                    bagDesc = "gems";
-                    break;
+                bagType = 3;
+                bagDesc = "gems";
+                break;
                 case 4:
-                    bagType = 4;
-                    bagDesc = "jewels";
-                    break;
+                bagType = 4;
+                bagDesc = "jewels";
+                break;
                 default:
-                    bagType = 0;
-                    bagDesc = "copper coins";
-                    break;
+                bagType = 0;
+                bagDesc = "copper coins";
+                break;
             }
         }
     }

@@ -27,13 +27,11 @@ namespace P3Net.Arx
     {
         public static void DungeonGate ()
         {
-            bool gateNotDone = true;
-            string str;
-            string key;
+            var gateNotDone = true;
             plyr.scenario = 1;
             LoadCounterImages();
 
-            for (int i = 0; i < 8; i++) // copy dungeon counter data
+            for (var i = 0; i < 8; i++) // copy dungeon counter data
                 counters[i] = dungeonCounters[i];
 
             InitDungeonGateSounds();
@@ -47,11 +45,11 @@ namespace P3Net.Arx
                 DisplayDungeonGateImage();
                 UpdateDisplay();
 
-                key = GetSingleKey();
+                var key = GetSingleKey();
                 if (key != "")
                     gateNotDone = false;
 
-                int counter = 0;
+                var counter = 0;
                 while (counter < 8) // number of counters should be 8
                 {
                     if (counters[counter].speed == 0)
@@ -85,7 +83,7 @@ namespace P3Net.Arx
             PlayDungeonGateSound2(); // start longer gate sound
 
             // display chosen digits
-            int counter = 0;
+            var counter = 0;
             while (counter < 7) // number of counters should be 8
             {
                 if (counters[counter].y < 90)
@@ -103,12 +101,12 @@ namespace P3Net.Arx
             UpdateDisplay();
 
             // pause
-            for (int i = 0; i < 3; i++) // 1 second
+            for (var i = 0; i < 3; i++) // 1 second
                 sf.sleep(sf.seconds(1.0));
 
             // display "Joined" message
 
-            for (int i = 0; i < 6; i++) // 1 second
+            for (var i = 0; i < 6; i++) // 1 second
             {
                 sf.sleep(sf.seconds(1));
                 ClearDisplay();
@@ -132,13 +130,12 @@ namespace P3Net.Arx
 
         public static void CityGate ()
         {
-            bool gateNotDone = true;
-            string str;
-            string key;
+            var gateNotDone = true;
+            
             plyr.scenario = 0;
 
             LoadCounterImages();
-            for (int i = 0; i < 8; i++) // copy city counter data
+            for (var i = 0; i < 8; i++) // copy city counter data
                 counters[i] = cityCounters[i];
 
             InitCityGateSounds();
@@ -152,11 +149,11 @@ namespace P3Net.Arx
                 DisplayCityGateImage();
                 UpdateDisplay();
 
-                key = GetSingleKey();
+                var key = GetSingleKey();
                 if (key != "")
                     gateNotDone = false;
 
-                int counter = 0;
+                var counter = 0;
                 while (counter < 8) // number of counters should be 8
                 {
 
@@ -191,7 +188,7 @@ namespace P3Net.Arx
             PlayCityGateSound2(); // start longer gate sound
 
             // display chosen digits
-            int counter = 0;
+            var counter = 0;
             while (counter < 7) // number of counters should be 8
             {
                 if (counters[counter].y < 88)
@@ -235,23 +232,21 @@ namespace P3Net.Arx
 
         public static void DisplayCounters ()
         {
-            string digit1;
-            string digit2;
-            digit1 = "0";
-            digit2 = "0";
-            int counter = 0;
+            var digit1 = "0";
+            var digit2 = "0";
+            var counter = 0;
             while (counter < 8) // number of counters should be 8
             {
                 // Draw the first layer number (upper)
                 digit1 = "0";
                 digit2 = "0";
 
-                int counter_x = counters[counter].x;
-                int counter_y = counters[counter].y;
-                ostringstream myStream = new ostringstream();
+                var counter_x = counters[counter].x;
+                var counter_y = counters[counter].y;
+                var myStream = new ostringstream();
                 myStream << counters[counter].value1;
-                string digits = myStream.str();
-                int digits_number = counters[counter].value1;
+                var digits = myStream.str();
+                var digits_number = counters[counter].value1;
                 if (digits_number < 10)
                 {
                     digit1 = "0";
@@ -308,7 +303,7 @@ namespace P3Net.Arx
 
                 digit1 = "0";
                 digit2 = "0";
-                ostringstream myStream2 = new ostringstream();
+                var myStream2 = new ostringstream();
                 myStream2 << counters[counter].value2;
                 digits = myStream2.str();
                 digits_number = counters[counter].value2;
@@ -370,12 +365,10 @@ namespace P3Net.Arx
 
         public static void GetPlayerName ()
         {
-            bool details_confirmed = false;
-            bool player_chosen = false;
-            bool name_completed = false;
+            var details_confirmed = false;
+            var player_chosen = false;
+            var name_completed = false;
             string typed_name;
-            string sex;
-            int name_length;
 
             while (!details_confirmed)
             {
@@ -384,12 +377,11 @@ namespace P3Net.Arx
                 plyr.gender = 0;
                 plyr.name = " ";
                 typed_name = "";
-                string single_key;
                 DrawPlayerDetails(typed_name);
 
                 while (!name_completed)
                 {
-                    single_key = "";
+                    var single_key = "";
                     single_key = GetTextChar();
                     if (single_key == "SPACE")
                         single_key = " ";
@@ -407,7 +399,7 @@ namespace P3Net.Arx
                         name_length = typed_name.Length;
                         if (name_length != 0)
                         {
-                            int name_length = typed_name.Length;
+                            var name_length = typed_name.Length;
                             typed_name = typed_name.Substring(0, (name_length - 1));
                         }
                         single_key = "";
@@ -427,10 +419,10 @@ namespace P3Net.Arx
 
                 DrawPlayerDetails(typed_name);
 
-                sex = " ";
+                var sex = " ";
                 while (plyr.gender == 0)
                 {
-                    single_key = GetSingleKey();
+                    var single_key = GetSingleKey();
                     if (single_key == "M")
                     {
                         plyr.gender = 1;
@@ -446,7 +438,7 @@ namespace P3Net.Arx
                 DrawPlayerDetails(typed_name);
                 while (!player_chosen)
                 {
-                    single_key = GetSingleKey();
+                    var single_key = GetSingleKey();
                     if (single_key == "Y")
                     {
                         details_confirmed = true;
@@ -471,10 +463,9 @@ namespace P3Net.Arx
 
         public static void DrawPlayerDetails ( string typed_name )
         {
-            string str;
             ClearDisplay();
             DrawText(2, 2, "Create a new character");
-            str = "Enter name: " + typed_name + "_";
+            var str = "Enter name: " + typed_name + "_";
             DrawText(2, 5, str);
 
             if (!(plyr.name == " "))

@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -21,7 +20,7 @@ namespace P3Net.Arx
         public int type { get; set; } // 180 - clothing?
     }
 
-	public class Shop
+    public class Shop
     {
         public int closingHour { get; set; }
 
@@ -36,8 +35,8 @@ namespace P3Net.Arx
         public int openingHour { get; set; }
     }
 
-	public partial class GlobalMembers
-    {        
+    public partial class GlobalMembers
+    {
         public static ShopClothingItem[] shopClothingWares =
         {
             new ShopClothingItem()
@@ -205,38 +204,37 @@ namespace P3Net.Arx
                 closingHour = 17
             }
         };
-        
-        // There are 16 possible items that could be in stock but only 12 unique items per day per shop
-		public static bool[,] shopWaresCheck = new bool[15, 16]; // markers used to check for duplicate items created during daily stocking up process
 
-        public static int GetShopNo()
+        // There are 16 possible items that could be in stock but only 12 unique items per day per shop
+        public static bool[,] shopWaresCheck = new bool[15, 16]; // markers used to check for duplicate items created during daily stocking up process
+
+        public static int GetShopNo ()
         {
             var shop_no = 255;
-            for(var i = 0; i < 15; i++) // Max number of smithy objects
+            for (var i = 0; i < 15; i++) // Max number of smithy objects
             {
-                if(Shops[i].location == plyr.location)
+                if (Shops[i].location == plyr.location)
                     shop_no = i; // The number of the shop you have entered
             }
             return shop_no;
         }
 
-        public static void ShopMessage(string txt)
+        public static void ShopMessage ( string txt )
         {
-            var key = "";
-            while(key != "SPACE")
+            do
             {
                 ClearShopDisplay();
                 CText(txt);
                 UpdateDisplay();
-                key = GetSingleKey();
-            }
+                var key = GetSingleKey();
+            } while (key != "SPACE");
         }
 
-        public static void ShopShop()
+        public static void ShopShop ()
         {
-            int shopNo = GetShopNo();
+            var shopNo = GetShopNo();
             // copies wares into local data structure for easier display as list
-            for(var i = 0; i < 12; i++)
+            for (var i = 0; i < 12; i++)
             {
                 shopClothingWares[i].itemRef = shopDailyWares[shopNo][i];
                 int clothingRef = shopDailyWares[shopNo][i];
@@ -244,27 +242,24 @@ namespace P3Net.Arx
             }
 
             var shopMenu = 1; // high level menu
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
 
-            int itemChoice;
-            int itemCost;
+            int itemChoice = 0;
             int itemLowestCost;
-            int shopOffer;
-            int itemNo;
+            int shopOffer = 0;
             var menuStartItem = 0;
             var offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
             var offerRounds = 0;
 
             LoadShopImage(12);
 
-            if((Shops[shopNo].closingHour <= plyr.hours) || (Shops[shopNo].openingHour > plyr.hours))
+            if ((Shops[shopNo].closingHour <= plyr.hours) || (Shops[shopNo].openingHour > plyr.hours))
                 shopMenu = 50;
 
-            while(shopMenu > 0)
+            while (shopMenu > 0)
             {
-                while(shopMenu == 1) // main menu
+                while (shopMenu == 1) // main menu
                 {
                     ClearShopDisplay();
                     BText(13, 0, "Welcome Stranger!");
@@ -276,17 +271,17 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    
-                    if(key == "N")
+                    var key = GetSingleKey();
+
+                    if (key == "N")
                         shopMenu = 2;
-                    if(key == "Y")
+                    if (key == "Y")
                         shopMenu = 3;
-                    if(key == "down")
+                    if (key == "down")
                         shopMenu = 2;
                 }
 
-                while(shopMenu == 2) // Buy a compass?
+                while (shopMenu == 2) // Buy a compass?
                 {
                     ClearShopDisplay();
                     CyText(1, "Well then, How about a compass?");
@@ -298,10 +293,10 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "Y")
+                    var key = GetSingleKey();
+                    if (key == "Y")
                     {
-                        if(CheckCoins(0, 5, 0))
+                        if (CheckCoins(0, 5, 0))
                         {
                             ShopMessage("Right away!");
                             plyr.compasses++;
@@ -314,11 +309,11 @@ namespace P3Net.Arx
                             shopMenu = 0;
                         }
                     }
-                    if(key == "N")
+                    if (key == "N")
                         shopMenu = 0;
                 }
 
-                while(shopMenu == 3)
+                while (shopMenu == 3)
                 {
                     offerStatus = 0;
                     offerRounds = 0;
@@ -331,9 +326,9 @@ namespace P3Net.Arx
                     CyText(0, "                      0          ");
                     SetFontColour(215, 215, 215, 255);
 
-                    for(var i = 0; i < maxMenuItems; i++)
+                    for (var i = 0; i < maxMenuItems; i++)
                     {
-                        int itemNo = menuStartItem + i;
+                        var itemNo = menuStartItem + i;
 
                         str = $"( ) {clothingItems[shopClothingWares[itemNo].itemRef].name}";
 
@@ -341,23 +336,20 @@ namespace P3Net.Arx
                     }
                     DisplayCoins();
 
-                    int itemCost;
-                    int x;
-                    for(var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
+                    for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
-                        string itemCostDesc;
+                        var itemNo = menuStartItem + i;
+                        var itemCost = shopClothingWares[itemNo].price;
 
-                        int itemNo = menuStartItem + i;
-                        itemCost = shopClothingWares[itemNo].price;
-
-                        if(itemCost < 10000)
+                        var x = 0;
+                        if (itemCost < 10000)
                             x = 34;
-                        if(itemCost < 1000)
+                        if (itemCost < 1000)
                             x = 36;
-                        if(itemCost < 100)
+                        if (itemCost < 100)
                             x = 37;
 
-                        itemCostDesc = ToCurrency(itemCost);
+                        var itemCostDesc = ToCurrency(itemCost);
                         BText(x + 2, (i + 2), itemCostDesc);
                     }
 
@@ -368,63 +360,63 @@ namespace P3Net.Arx
                     BText(2, 5, "4");
                     BText(2, 6, "5");
                     BText(2, 7, "6");
-                    if(menuStartItem != 0)
+                    if (menuStartItem != 0)
                         BText(2, 1, "}");
-                    if(menuStartItem != 6)
+                    if (menuStartItem != 6)
                         BText(2, 8, "{");
                     SetFontColour(215, 215, 215, 255);
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
                         itemChoice = 0;
                         shopMenu = 22;
                     }
-                    if(key == "2")
+                    if (key == "2")
                     {
                         itemChoice = 1;
                         shopMenu = 22;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
                         itemChoice = 2;
                         shopMenu = 22;
                     }
-                    if(key == "4")
+                    if (key == "4")
                     {
                         itemChoice = 3;
                         shopMenu = 22;
                     }
-                    if(key == "5")
+                    if (key == "5")
                     {
                         itemChoice = 4;
                         shopMenu = 22;
                     }
-                    if(key == "6")
+                    if (key == "6")
                     {
                         itemChoice = 5;
                         shopMenu = 22;
                     }
-                    if((key == "up") && (menuStartItem > 0))
+                    if ((key == "up") && (menuStartItem > 0))
                         menuStartItem--;
-                    if((key == "down") && (menuStartItem < 6))
+                    if ((key == "down") && (menuStartItem < 6))
                         menuStartItem++;
-                    if(key == "ESC")
+                    if (key == "ESC")
                         shopMenu = 0;
-                    if(key == "0")
+                    if (key == "0")
                         shopMenu = 2;
                 }
 
-                while(shopMenu == 22) // buy item?
+                while (shopMenu == 22) // buy item?
                 {
-                    itemNo = menuStartItem + itemChoice;
-                    itemCost = shopClothingWares[itemNo].price;
+                    var itemNo = menuStartItem + itemChoice;
+                    var itemCost = shopClothingWares[itemNo].price;
 
                     //MLT: Double to float
                     var tempitemcost = (float)shopClothingWares[itemNo].price;
-                    float temp = (tempitemcost / 100) * 75;
+                    var temp = (tempitemcost / 100F) * 75;
 
                     //MLT: Downcast to int
                     itemLowestCost = (int)temp;
@@ -432,25 +424,21 @@ namespace P3Net.Arx
                     shopMenu = 23;
                 }
 
-                while(shopMenu == 23) // buy item?
+                while (shopMenu == 23) // buy item?
                 {
                     ClearShopDisplay();
-                    if(offerStatus == 0)
+                    if (offerStatus == 0)
                     {
-                        str = $"The cost for {clothingItems[shopClothingWares[itemNo].itemRef].name}";
-                        CyText(0, str);
-                        str = $"is {ToCurrency(shopOffer)} coppers. Agreed?";
-                        CyText(1, str);
+                        CyText(0, $"The cost for {clothingItems[shopClothingWares[itemNo].itemRef].name}");
+                        CyText(1, $"is {ToCurrency(shopOffer)} coppers. Agreed?");
                     }
-                    if(offerStatus == 1)
+                    if (offerStatus == 1)
                     {
-                        str = $"I demand at least {ToCurrency(shopOffer)} coppers!";
-                        CyText(1, str);
+                        CyText(1, $"I demand at least {ToCurrency(shopOffer)} coppers!");
                     }
-                    if(offerStatus == 2)
+                    if (offerStatus == 2)
                     {
-                        str = $"Would you consider {ToCurrency(shopOffer)}?";
-                        CyText(1, str);
+                        CyText(1, $"Would you consider {ToCurrency(shopOffer)}?");
                     }
 
                     BText(11, 3, " ) Agree to price");
@@ -467,68 +455,68 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
-                        if(!CheckCoins(0, 0, shopOffer))
+                        if (!CheckCoins(0, 0, shopOffer))
                             shopMenu = 25;
                         else
                             shopMenu = 24;
                     }
-                    if(key == "2")
+                    if (key == "2")
                         shopMenu = 26;
-                    if(key == "3")
+                    if (key == "3")
                         shopMenu = 21;
-                    if(key == "0")
+                    if (key == "0")
                         shopMenu = 1;
                 }
 
-                while(shopMenu == 24) // Agree to buy item and have funds
+                while (shopMenu == 24) // Agree to buy item and have funds
                 {
-                    int itemNo = menuStartItem + itemChoice;
+                    var itemNo = menuStartItem + itemChoice;
                     ClearShopDisplay();
                     CText("Excellent decision");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
 
                     {
                         // Add a weight & inventory limit check prior to taking money
 
                         DeductCoins(0, 0, shopOffer);
-                        int objectNumber = shopClothingWares[itemNo].itemRef; // ref within Weapons array
-                        int itemHandle = CreateClothing(objectNumber); // create a new weapon or armour item(s)
+                        var objectNumber = shopClothingWares[itemNo].itemRef; // ref within Weapons array
+                        var itemHandle = CreateClothing(objectNumber); // create a new weapon or armour item(s)
                         itemBuffer[itemHandle].location = 10; // Add to player inventory - 10
                         shopMenu = 3; // back to purchases
                     }
                 }
 
-                while(shopMenu == 25) // insufficient funds!
+                while (shopMenu == 25) // insufficient funds!
                 {
                     ShopMessage("Thou would be wise to check thy funds@@BEFORE purchasing!");
                     shopMenu = 3; // back to clothing purchases
                 }
 
-                while(shopMenu == 26) // what is your offer
+                while (shopMenu == 26) // what is your offer
                 {
-                    int coppers = InputValue("How many coppers do you offer?", 3);
+                    var coppers = InputValue("How many coppers do you offer?", 3);
 
                     // check offer
-                    if(coppers == 0)
+                    if (coppers == 0)
                         shopMenu = 22;
 
-                    if(coppers >= itemCost)
+                    if (coppers >= itemCost)
                     {
                         shopOffer = coppers; // accepted the players offer
                         offerStatus = 2;
                         shopMenu = 27;
                     }
-                    if((coppers >= itemLowestCost) && (coppers < itemCost))
+                    if ((coppers >= itemLowestCost) && (coppers < itemCost))
                     {
                         offerStatus = 2;
                         offerRounds++;
-                        if(offerRounds > 2)
+                        if (offerRounds > 2)
                         {
                             shopOffer = coppers;
                             shopMenu = 27;
@@ -539,96 +527,94 @@ namespace P3Net.Arx
                             shopMenu = 23;
                         }
                     }
-                    if((coppers < itemLowestCost) && (coppers > 0))
+                    if ((coppers < itemLowestCost) && (coppers > 0))
                     {
                         offerStatus = 1;
                         offerRounds++;
                         shopOffer = itemLowestCost;
-                        if(offerRounds > 1)
-                            shopMenu = 19;
-                        else
-                            shopMenu = 23;
+                        shopMenu = (offerRounds > 1) ? 19 : 23;
                     }
                 }
 
-                while(shopMenu == 27) // Offer accepted (subject to funds check) for clothing
+                while (shopMenu == 27) // Offer accepted (subject to funds check) for clothing
                 {
                     ClearShopDisplay();
                     CText("I'll take it!");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
                     {
-                        if(!CheckCoins(0, 0, shopOffer))
+                        if (!CheckCoins(0, 0, shopOffer))
                             shopMenu = 25;
                         else
                         {
                             plyr.shopFriendships[shopNo]++;
-                            if(plyr.shopFriendships[shopNo] > 4)
+                            if (plyr.shopFriendships[shopNo] > 4)
                                 plyr.shopFriendships[shopNo] = 4;
                             shopMenu = 24;
                         }
                     }
                 }
 
-                while(shopMenu == 50) // closed
+                while (shopMenu == 50) // closed
                 {
-                    string openingText;
-                    string closingText;
-                    int openHour = Shops[shopNo].openingHour;
-                    int closeHour = Shops[shopNo].closingHour;
-                    if((openHour >= 0) && (openHour < 12))
+                    string openingText = "";
+                    string closingText = "";
+                    var openHour = Shops[shopNo].openingHour;
+                    var closeHour = Shops[shopNo].closingHour;
+                    if ((openHour >= 0) && (openHour < 12))
                         openingText = "morning";
-                    if((openHour >= 12) && (openHour < 18))
+                    if ((openHour >= 12) && (openHour < 18))
                         openingText = "afternoon";
-                    if((openHour >= 18) && (openHour <= 23))
+                    if ((openHour >= 18) && (openHour <= 23))
                         openingText = "evening";
-                    if((closeHour >= 0) && (closeHour < 12))
+                    if ((closeHour >= 0) && (closeHour < 12))
                         closingText = "morning";
-                    if((closeHour >= 12) && (closeHour < 18))
+                    if ((closeHour >= 12) && (closeHour < 18))
                         closingText = "afternoon";
-                    if((closeHour >= 18) && (closeHour <= 23))
+                    if ((closeHour >= 18) && (closeHour <= 23))
                         closingText = "evening";
                     ClearShopDisplay();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    str = $"We are open from {Itos(Shops[shopNo].openingHour)}:00 in the {openingText}@to {Itos(Shops[shopNo].closingHour)}:00 in the {closingText}.";
+
+                    var str = $"We are open from {Itos(Shops[shopNo].openingHour)}:00 in the {openingText}@to {Itos(Shops[shopNo].closingHour)}:00 in the {closingText}.";
                     CyText(4, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key == "SPACE")
+                    var key = GetSingleKey();
+                    if (key == "SPACE")
                         shopMenu = 0;
                 }
             }
             LeaveShop();
         }
 
-        public static void StockShopWares()
+        public static void StockShopWares ()
         {
             // Run each day to randomly pick 12 items for sale at each of the 15 shops
             // Check for duplicates using smithyWaresCheck array of bools
 
             // Set bools for duplicate items check to false
-            var itemNo = 0;
-            for(var x = 0; x < 15; x++)
+
+            for (var x = 0; x < 15; x++)
             {
-                for(var y = 0; y < 16; y++)
+                for (var y = 0; y < 16; y++)
                     shopWaresCheck[x, y] = false;
             }
 
-            for(var shopNo = 0; shopNo < 15; shopNo++)
+            for (var shopNo = 0; shopNo < 15; shopNo++)
             {
-                for(var waresNo = 0; waresNo < 12; waresNo++)
+                for (var waresNo = 0; waresNo < 12; waresNo++)
                 {
                     var uniqueItem = false;
-                    while(!uniqueItem)
+                    while (!uniqueItem)
                     {
-                        itemNo = Randn(0, 15); // to exclude damon clothing items
-                        int itemIndex = 12 + itemNo; // to exclude the Damon items
-                        if(itemIndex == 12)
+                        var itemNo = Randn(0, 15); // to exclude damon clothing items
+                        var itemIndex = 12 + itemNo; // to exclude the Damon items
+                        if (itemIndex == 12)
                             itemIndex = 13;
-                        if(!shopWaresCheck[shopNo, itemNo])
+                        if (!shopWaresCheck[shopNo, itemNo])
                         {
                             // problem
 
@@ -642,7 +628,7 @@ namespace P3Net.Arx
             }
 
             // Simple sort of items in cost numeric order
-			// Requires items arranged in the array in ascending price order to work!
+            // Requires items arranged in the array in ascending price order to work!
 
             sort(shopDailyWares[0], shopDailyWares[0] + 12);
             sort(shopDailyWares[1], shopDailyWares[1] + 12);

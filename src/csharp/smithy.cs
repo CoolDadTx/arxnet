@@ -27,7 +27,7 @@ namespace P3Net.Arx
         public int openingHour { get; set; }
     }
 
-	public class SmithyItem
+    public class SmithyItem
     {
         public int basePrice { get; set; }
 
@@ -38,7 +38,7 @@ namespace P3Net.Arx
         public int type { get; set; } // 177 - armour, 178 - weapon
     }
 
-	public partial class GlobalMembers
+    public partial class GlobalMembers
     {
         public static byte[] citySmithyBinary = new byte[citySmithyFileSize];
         public static readonly int citySmithyFileSize = 1691;
@@ -89,10 +89,10 @@ namespace P3Net.Arx
                 closingHour = 15
             }
         };
-        
+
         public static sf.Music smithyMusic = new sf.Music();
         public static int smithyNo;
-        
+
         public static SmithyItem[] smithyWares =
         {
             new SmithyItem()
@@ -148,38 +148,38 @@ namespace P3Net.Arx
         // Take a binary offset within citySmithyBinary and create a new inventory item from the binary data (weapon or armour)
         // Item types:  0x83 - weapon, 0x84 - armour
 
-        public static void CreateCitySmithyInventoryItem(int startByte)
+        public static void CreateCitySmithyInventoryItem ( int startByte )
         {
-            int index;
-            int alignment;
-            int weight;
-            int wAttributes;
-            int melee;
-            int ammo;
-            int blunt;
-            int sharp;
-            int earth;
-            int air;
-            int fire;
-            int water;
-            int power;
-            int magic;
-            int good;
-            int evil;
-            int cold;
-            int minStrength;
-            int minDexterity;
-            int hp;
-            int maxHP;
-            int flags;
-            int parry;
-            int useStrength;
+            int index = 0;
+            int alignment = 0;
+            int weight = 0;
+            int wAttributes = 0;
+            int melee = 0;
+            int ammo = 0;
+            int blunt = 0;
+            int sharp = 0;
+            int earth = 0;
+            int air = 0;
+            int fire = 0;
+            int water = 0;
+            int power = 0;
+            int magic = 0;
+            int good = 0;
+            int evil = 0;
+            int cold = 0;
+            int minStrength = 0;
+            int minDexterity = 0;
+            int hp = 0;
+            int maxHP = 0;
+            int flags = 0;
+            int parry = 0;
+            int useStrength = 0;
 
-            int offset = startByte;
-            int itemType = citySmithyBinary[offset];
-            string itemName = ReadSmithyItemString((offset + 6));
+            var offset = startByte;
+            var itemType = citySmithyBinary[offset];
+            var itemName = ReadSmithyItemString((offset + 6));
 
-            if(itemType == 0x83)
+            if (itemType == 0x83)
             {
                 itemType = 178; // ARX value for weapon
                 index = 0; // No longer required
@@ -189,8 +189,8 @@ namespace P3Net.Arx
 
                 wAttributes = (offset + citySmithyBinary[offset + 1]) - 19; // Working out from the end of the weapon object
 
-                melee = 0xFF; 
-                ammo = 0; 
+                melee = 0xFF;
+                ammo = 0;
                 blunt = citySmithyBinary[wAttributes + 3];
                 sharp = citySmithyBinary[wAttributes + 4];
                 earth = citySmithyBinary[wAttributes + 5];
@@ -202,16 +202,18 @@ namespace P3Net.Arx
                 good = citySmithyBinary[wAttributes + 11];
                 evil = citySmithyBinary[wAttributes + 12];
                 cold = 0; // No cold damage for City items
-                citySmithyBinary[wAttributes + 13];
+
+                //TODO: What should this be for?
+                //citySmithyBinary[wAttributes + 13];
                 minStrength = citySmithyBinary[wAttributes + 13];
                 minDexterity = citySmithyBinary[wAttributes + 14];
-                hp = 44; 
-                maxHP = 44; 
+                hp = 44;
+                maxHP = 44;
                 flags = citySmithyBinary[wAttributes + 17];
                 parry = citySmithyBinary[wAttributes + 18];
             }
 
-            if(itemType == 0x84)
+            if (itemType == 0x84)
             {
                 itemType = 177; // ARX value for armour
                 index = 0; // No longer required
@@ -222,15 +224,15 @@ namespace P3Net.Arx
                 wAttributes = (offset + citySmithyBinary[offset + 1]) - 17; // Working out from the end of the weapon object
 
                 melee = citySmithyBinary[wAttributes + 13]; // Body part
-                if(melee == 1)
+                if (melee == 1)
                     melee = 0;
-                if(melee == 2)
+                if (melee == 2)
                     melee = 1;
-                if(melee == 4)
+                if (melee == 4)
                     melee = 2;
-                if(melee == 8)
+                if (melee == 8)
                     melee = 3;
-                if(melee == 6)
+                if (melee == 6)
                     melee = 1;
 
                 ammo = 0; // Not used
@@ -247,13 +249,13 @@ namespace P3Net.Arx
                 cold = 0;
                 minStrength = 0;
                 minDexterity = 0;
-                hp = 56; 
+                hp = 56;
                 maxHP = 56;
                 flags = 0;
                 parry = 0;
             }
-            
-            int newItemRef = CreateItem(itemType,
+
+            var newItemRef = CreateItem(itemType,
                                         index,
                                         itemName,
                                         hp,
@@ -281,62 +283,58 @@ namespace P3Net.Arx
             itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
         }
 
-        public static int GetSmithyNo()
+        public static int GetSmithyNo ()
         {
-            int smithy_no;
-            for(var i = 0; i < 4; i++) // Max number of smithy objects
+            var smithy_no = 0;
+            for (var i = 0; i < 4; i++) // Max number of smithy objects
             {
-                if(Smithies[i].location == plyr.location)
+                if (Smithies[i].location == plyr.location)
                     smithy_no = i; // The number of the smithy you have entered
             }
             return smithy_no;
-        }        
+        }
 
-        public static void LoadCitySmithyBinary()
+        public static void LoadCitySmithyBinary ()
         {
             // Loads armour and weapons binary data into the "citySmithyBinary" array
-            FileStream fp; // file pointer - used when reading files
-            var tempString = new string(new char[100]); // temporary string
-            tempString = $"{"data/map/"}{"smithyItems.bin"}";
-            fp = fopen(tempString, "rb");
-            if(fp != null)
+            var tempString = $"{"data/map/"}{"smithyItems.bin"}";
+            var fp = fopen(tempString, "rb");
+            if (fp != null)
             {
-                for(var i = 0; i < citySmithyFileSize; i++)
+                for (var i = 0; i < citySmithyFileSize; i++)
                     citySmithyBinary[i] = fgetc(fp);
             }
             fclose(fp);
         }
 
-        public static string ReadSmithyItemString(int stringOffset)
+        public static string ReadSmithyItemString ( int stringOffset )
         {
             var ss = new stringstream();
-            int z = stringOffset; // current location in the binary
-            var c = 0; // current byte
-            var result = "";
+            var z = stringOffset; // current location in the binary
 
-            while(!(citySmithyBinary[z] == 0))
+            while (!(citySmithyBinary[z] == 0))
             {
-                c = citySmithyBinary[z];
-                    ss << (char) c;
+                var c = citySmithyBinary[z];
+                ss << (char)c;
                 z++;
             }
-            result = ss.str();
-            return result;
+
+            return ss.str();
         }
 
-        public static void ShopSmithy()
+        public static void ShopSmithy ()
         {
-            if(plyr.timeOfDay == 1)
+            if (plyr.timeOfDay == 1)
                 LoadShopImage(8);
             else
                 LoadShopImage(9);
 
             var offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
             var offerRounds = 0;
-            int itemLowestCost;
-            int smithyOffer;
+            var itemLowestCost = 0;
+            var smithyOffer = 0;
 
-            if(plyr.timeOfDay == 1)
+            if (plyr.timeOfDay == 1)
                 LoadShopImage(8);
             else
                 LoadShopImage(9);
@@ -344,32 +342,31 @@ namespace P3Net.Arx
             smithyNo = GetSmithyNo();
             var musicPlaying = false;
             var smithyMenu = 1; // high level menu
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
             menuStartItem = 0; // menu starts at item 0
-            if((Smithies[smithyNo].closingHour <= plyr.hours) || (Smithies[smithyNo].openingHour > plyr.hours))
+            if ((Smithies[smithyNo].closingHour <= plyr.hours) || (Smithies[smithyNo].openingHour > plyr.hours))
                 smithyMenu = 5;
 
-            while(smithyMenu > 0)
+            while (smithyMenu > 0)
             {
-                while(smithyMenu == 5) // closed
+                while (smithyMenu == 5) // closed
                 {
                     SmithyDisplayUpdate();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    str = $"We are open from {Itos(Smithies[smithyNo].openingHour)}:00 in the morning@to {Itos(Smithies[smithyNo].closingHour)}:00 in the evening.";
-                    if(Smithies[smithyNo].closingHour == 15)
+                    var str = $"We are open from {Itos(Smithies[smithyNo].openingHour)}:00 in the morning@to {Itos(Smithies[smithyNo].closingHour)}:00 in the evening.";
+                    if (Smithies[smithyNo].closingHour == 15)
                         str = $"We are open from {Itos(Smithies[smithyNo].openingHour)}:00 in the morning@to {Itos(Smithies[smithyNo].closingHour)}:00 in the afternoon.";
                     CyText(4, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if((key != "") && (key != "up"))
+                    var key = GetSingleKey();
+                    if ((key != "") && (key != "up"))
                         smithyMenu = 0;
                 }
 
-                while(smithyMenu == 1) // main menu
+                while (smithyMenu == 1) // main menu
                 {
                     SmithyDisplayUpdate();
                     BText(13, 0, "Welcome Stranger!");
@@ -381,9 +378,9 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    if(!musicPlaying)
+                    if (!musicPlaying)
                     {
-                        if(plyr.musicStyle == 0)
+                        if (plyr.musicStyle == 0)
                             smithyMusic.openFromFile("data/audio/armor.ogg");
                         else
                             smithyMusic.openFromFile("data/audio/B/armor.ogg");
@@ -392,16 +389,16 @@ namespace P3Net.Arx
                         musicPlaying = true;
                     }
 
-                    key = GetSingleKey();
-                    if(key == "Y")
+                    var key = GetSingleKey();
+                    if (key == "Y")
                         smithyMenu = 2;
-                    if(key == "N")
+                    if (key == "N")
                         smithyMenu = 0;
-                    if(key == "down")
+                    if (key == "down")
                         smithyMenu = 0;
                 }
 
-                while(smithyMenu == 2)
+                while (smithyMenu == 2)
                 {
                     offerStatus = 0;
                     offerRounds = 0;
@@ -412,33 +409,29 @@ namespace P3Net.Arx
                     SetFontColour(215, 215, 215, 255);
 
                     smithyNo = GetSmithyNo();
-                    for(var i = 0; i < maxMenuItems; i++)
+                    for (var i = 0; i < maxMenuItems; i++)
                     {
-                        int itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
-                        str = $") {smithyWares[itemNo].name}";
-                        BText(3, (2 + i), str); //was 4
+                        var itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
+                        BText(3, (2 + i), $") {smithyWares[itemNo].name}");
                         BText(1, (2 + i), "                                 coppers");
                     }
                     DisplayCoins();
 
-                    int itemCost;
-                    int x;
-                    for(var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
+                    for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
-                        string itemCostDesc;
-                        x = 28;
-                        int itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
+                        var x = 28;
+                        var itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
 
                         //MLT: Downcast to int
-                        itemCost = (int)(Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice);
-                        
-                        if(itemCost < 1000)
+                        var itemCost = (int)(Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice);
+
+                        if (itemCost < 1000)
                             x = 30;
-                        if(itemCost > 999)
+                        if (itemCost > 999)
                             x = 28;
-                        if(itemCost > 9999)
+                        if (itemCost > 9999)
                             x = 27;
-                        itemCostDesc = ToCurrency(itemCost);
+                        var itemCostDesc = ToCurrency(itemCost);
                         BText(x, (i + 2), itemCostDesc);
                     }
 
@@ -449,64 +442,64 @@ namespace P3Net.Arx
                     BText(2, 5, "4");
                     BText(2, 6, "5");
                     BText(2, 7, "6");
-                    if(menuStartItem != 0)
+                    if (menuStartItem != 0)
                         BText(2, 1, "}");
-                    if(menuStartItem != 4)
+                    if (menuStartItem != 4)
                         BText(2, 8, "{");
                     SetFontColour(215, 215, 215, 255);
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
                         itemChoice = 0;
                         smithyMenu = 20;
                     }
-                    if(key == "2")
+                    if (key == "2")
                     {
                         itemChoice = 1;
                         smithyMenu = 20;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
                         itemChoice = 2;
                         smithyMenu = 20;
                     }
-                    if(key == "4")
+                    if (key == "4")
                     {
                         itemChoice = 3;
                         smithyMenu = 20;
                     }
-                    if(key == "5")
+                    if (key == "5")
                     {
                         itemChoice = 4;
                         smithyMenu = 20;
                     }
-                    if(key == "6")
+                    if (key == "6")
                     {
                         itemChoice = 5;
                         smithyMenu = 20;
                     }
-                    if((key == "up") && (menuStartItem > 0))
+                    if ((key == "up") && (menuStartItem > 0))
                         menuStartItem--;
-                    if((key == "down") && (menuStartItem < 4))
+                    if ((key == "down") && (menuStartItem < 4))
                         menuStartItem++;
-                    if(key == "ESC")
+                    if (key == "ESC")
                         smithyMenu = 0;
-                    if(key == "0")
+                    if (key == "0")
                         smithyMenu = 0;
                 }
 
-                while(smithyMenu == 20) // buy item?
+                while (smithyMenu == 20) // buy item?
                 {
-                    smithyNo = GetSmithyNo();
-                    itemNo = smithyDailyWares[smithyNo][menuStartItem + itemChoice];
+                    var smithyNo = GetSmithyNo();
+                    var itemNo = smithyDailyWares[smithyNo][menuStartItem + itemChoice];
 
                     //MLT: Downcast to int
                     itemCost = (int)(Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice);
-                    float tempitemcost = Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice;
-                    float temp = (tempitemcost / 100) * 75;
+                    var tempitemcost = Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice;
+                    var temp = (tempitemcost / 100) * 75;
 
                     //MLT: Downcast to int
                     itemLowestCost = (int)temp;
@@ -514,25 +507,21 @@ namespace P3Net.Arx
                     smithyMenu = 3;
                 }
 
-                while(smithyMenu == 3) // buy item
+                while (smithyMenu == 3) // buy item
                 {
                     SmithyDisplayUpdate();
-                    if(offerStatus == 0)
+                    if (offerStatus == 0)
                     {
-                        str = $"The cost for {smithyWares[itemNo].name}";
-                        CyText(0, str);
-                        str = $"is {ToCurrency(smithyOffer)} coppers. Agreed?";
-                        CyText(1, str);
+                        CyText(0, $"The cost for {smithyWares[itemNo].name}");
+                        CyText(1, $"is {ToCurrency(smithyOffer)} coppers. Agreed?");
                     }
-                    if(offerStatus == 1)
+                    if (offerStatus == 1)
                     {
-                        str = $"I demand at least {ToCurrency(smithyOffer)} silvers!";
-                        CyText(1, str);
+                        CyText(1, $"I demand at least {ToCurrency(smithyOffer)} silvers!");
                     }
-                    if(offerStatus == 2)
+                    if (offerStatus == 2)
                     {
-                        str = $"Would you consider {ToCurrency(smithyOffer)}?";
-                        CyText(1, str);
+                        CyText(1, $"Would you consider {ToCurrency(smithyOffer)}?");
                     }
 
                     BText(11, 3, " ) Agree to price");
@@ -549,42 +538,42 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "1")
+                    var key = GetSingleKey();
+                    if (key == "1")
                     {
-                        if(!CheckCoins(0, 0, smithyOffer))
+                        if (!CheckCoins(0, 0, smithyOffer))
                             smithyMenu = 5;
                         else
                             smithyMenu = 4;
                     }
 
-                    if(key == "2")
+                    if (key == "2")
                         smithyMenu = 16;
-                    if(key == "3")
+                    if (key == "3")
                         smithyMenu = 2;
-                    if(key == "0")
+                    if (key == "0")
                         smithyMenu = 0;
                 }
 
-                while(smithyMenu == 16) // what is your offer
+                while (smithyMenu == 16) // what is your offer
                 {
-                    int coppers = InputValue("What is your offer? (in coppers)", 9);
+                    var coppers = InputValue("What is your offer? (in coppers)", 9);
 
                     // check offer
-                    if(coppers == 0)
+                    if (coppers == 0)
                         smithyMenu = 2;
 
-                    if(coppers >= itemCost)
+                    if (coppers >= itemCost)
                     {
                         smithyOffer = coppers; // accepted the players offer
                         offerStatus = 2;
                         smithyMenu = 20;
                     }
-                    if((coppers >= itemLowestCost) && (coppers < itemCost))
+                    if ((coppers >= itemLowestCost) && (coppers < itemCost))
                     {
                         offerStatus = 2;
                         offerRounds++;
-                        if(offerRounds > 2)
+                        if (offerRounds > 2)
                         {
                             smithyOffer = coppers;
                             smithyMenu = 20;
@@ -595,87 +584,84 @@ namespace P3Net.Arx
                             smithyMenu = 3;
                         }
                     }
-                    if((coppers < itemLowestCost) && (coppers > 0))
+                    if ((coppers < itemLowestCost) && (coppers > 0))
                     {
                         offerStatus = 1;
                         offerRounds++;
                         smithyOffer = itemLowestCost;
-                        if(offerRounds > 1)
-                            smithyMenu = 19;
-                        else
-                            smithyMenu = 3;
+                        smithyMenu = (offerRounds > 1) ? 19 : 3;
                     }
                 }
 
-                while(smithyMenu == 20) // Offer accepted (subject to funds check)
+                while (smithyMenu == 20) // Offer accepted (subject to funds check)
                 {
                     SmithyDisplayUpdate();
                     CText("Agreed!");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
                     {
-                        if(!CheckCoins(0, 0, smithyOffer))
+                        if (!CheckCoins(0, 0, smithyOffer))
                             smithyMenu = 5;
                         else
                         {
                             plyr.smithyFriendships[smithyNo]++;
-                            if(plyr.smithyFriendships[smithyNo] > 4)
+                            if (plyr.smithyFriendships[smithyNo] > 4)
                                 plyr.smithyFriendships[smithyNo] = 4;
                             smithyMenu = 4;
                         }
                     }
                 }
 
-                while(smithyMenu == 19) // Leave my shop
+                while (smithyMenu == 19) // Leave my shop
                 {
                     SmithyDisplayUpdate();
                     CText("Leave my shoppe and don't return@@until you are ready to make a decent@@offer!");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
                     {
                         plyr.smithyFriendships[smithyNo]--;
-                        if(plyr.smithyFriendships[smithyNo] < 0)
+                        if (plyr.smithyFriendships[smithyNo] < 0)
                             plyr.smithyFriendships[smithyNo] = 0;
                         smithyMenu = 0;
                     } // Thrown out
                 }
 
-                while(smithyMenu == 5) // insufficient funds!
+                while (smithyMenu == 5) // insufficient funds!
                 {
                     SmithyDisplayUpdate();
                     CText("THAT OFFENDS ME DEEPLY!@Why don't you get serious and only@agree to something that you can afford!");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
                         smithyMenu = 2;
                 }
 
-                while(smithyMenu == 4) // Agree to buy item and have funds
+                while (smithyMenu == 4) // Agree to buy item and have funds
                 {
                     SmithyDisplayUpdate();
                     CText("An excellent choice!");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key != "")
+                    if (key != "")
                     {
                         // Add a weight & inventory limit check prior to taking money
                         DeductCoins(0, 0, smithyOffer);
-                        int objectNumber = smithyWares[itemNo].itemRef; // ref within Weapons array
-                        
-                        if((objectNumber > 10) || (objectNumber == 0))
+                        var objectNumber = smithyWares[itemNo].itemRef; // ref within Weapons array
+
+                        if ((objectNumber > 10) || (objectNumber == 0))
                             // Weapon item
                             CreateCitySmithyInventoryItem(objectNumber);
 
                         // Create an armour set
-                        if(objectNumber == 1)
+                        if (objectNumber == 1)
                         {
                             // Padded armor set - buying group of items
                             CreateCitySmithyInventoryItem(0x1CA);
@@ -683,7 +669,7 @@ namespace P3Net.Arx
                             CreateCitySmithyInventoryItem(0x217);
                             CreateCitySmithyInventoryItem(0x23E);
                         }
-                        if(objectNumber == 2)
+                        if (objectNumber == 2)
                         {
                             // Leather armor set - buying group of items
                             CreateCitySmithyInventoryItem(0x263);
@@ -691,7 +677,7 @@ namespace P3Net.Arx
                             CreateCitySmithyInventoryItem(0x2B2);
                             CreateCitySmithyInventoryItem(0x2DA);
                         }
-                        if(objectNumber == 3)
+                        if (objectNumber == 3)
                         {
                             // Studded armor set - buying group of items
                             CreateCitySmithyInventoryItem(0x300);
@@ -699,35 +685,35 @@ namespace P3Net.Arx
                             CreateCitySmithyInventoryItem(0x34F);
                             CreateCitySmithyInventoryItem(0x377);
                         }
-                        if(objectNumber == 4)
+                        if (objectNumber == 4)
                         {
                             // Ring mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x39D);
                             CreateCitySmithyInventoryItem(0x3C1);
                             CreateCitySmithyInventoryItem(0x3E5);
                         }
-                        if(objectNumber == 5)
+                        if (objectNumber == 5)
                         {
                             // Scale mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x40D);
                             CreateCitySmithyInventoryItem(0x432);
                             CreateCitySmithyInventoryItem(0x457);
                         }
-                        if(objectNumber == 6)
+                        if (objectNumber == 6)
                         {
                             // Splint mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x480);
                             CreateCitySmithyInventoryItem(0x4A6);
                             CreateCitySmithyInventoryItem(0x4CC);
                         }
-                        if(objectNumber == 7)
+                        if (objectNumber == 7)
                         {
                             // Chain mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x4F6);
                             CreateCitySmithyInventoryItem(0x51B);
                             CreateCitySmithyInventoryItem(0x540);
                         }
-                        if(objectNumber == 8)
+                        if (objectNumber == 8)
                         {
                             // Banded mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x569);
@@ -735,7 +721,7 @@ namespace P3Net.Arx
                             CreateCitySmithyInventoryItem(0x5B6);
                             CreateCitySmithyInventoryItem(0x5DD);
                         }
-                        if(objectNumber == 9)
+                        if (objectNumber == 9)
                         {
                             // Plate mail set - buying group of items
                             CreateCitySmithyInventoryItem(0x602);
@@ -752,7 +738,7 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static void SmithyDisplayUpdate()
+        public static void SmithyDisplayUpdate ()
         {
             clock1.restart();
             ClearShopDisplay();
@@ -760,7 +746,7 @@ namespace P3Net.Arx
             iCounter++;
         }
 
-        public static void StockSmithyWares()
+        public static void StockSmithyWares ()
         {
             // Run each day to randomly pick 10 items for sale at each of the 4 smithies
             // Check for duplicates using smithyWaresCheck array of bools
@@ -768,23 +754,23 @@ namespace P3Net.Arx
             // Set bools for duplicate items check to false
             var itemNo = 0;
 
-            for(var x = 0; x < 4; x++)
+            for (var x = 0; x < 4; x++)
             {
-                for(var y = 0; y < 23; y++)
+                for (var y = 0; y < 23; y++)
                     smithyWaresCheck[x, y] = false;
             }
 
-            for(var smithyNo = 0; smithyNo < 4; smithyNo++)
+            for (var smithyNo = 0; smithyNo < 4; smithyNo++)
             {
-                for(var waresNo = 0; waresNo < 10; waresNo++)
+                for (var waresNo = 0; waresNo < 10; waresNo++)
                 {
                     // Current code may create duplicate items in each smithy
                     var uniqueItem = false;
-                    while(!uniqueItem)
+                    while (!uniqueItem)
                     {
                         itemNo = Randn(0, 22);
 
-                        if(!smithyWaresCheck[smithyNo, itemNo])
+                        if (!smithyWaresCheck[smithyNo, itemNo])
                         {
                             smithyDailyWares[smithyNo][waresNo] = itemNo; // its not a duplicate
                             smithyWaresCheck[smithyNo, itemNo] = true;

@@ -8,40 +8,25 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {        
-        public static string Concat(int n, string str)
+    {
+        public static int InputValue ()
         {
-            var ss = new std::ostringstream();
-                ss << n;
-                ss << str;
-            return ss.str();
-        }
-
-        public static int InputValue()
-        {
-            var itemQuantity = 0;
-
-            string str;
-            string key;
             var inputText = "";
             var maxNumberSize = 6;
             var enterKeyNotPressed = true;
-            while(enterKeyNotPressed)
+            while (enterKeyNotPressed)
             {
                 ClearShopDisplay();
-                CyText(0,
-                       "Thou mayest have a spot on@the floor for a small donation.@@How many coppers woulds't thou give?");
+                CyText(0, "Thou mayest have a spot on@the floor for a small donation.@@How many coppers woulds't thou give?");
 
-                str = $">{inputText}_";
-                BText(17, 5, str);
+                BText(17, 5, $">{inputText}_");
                 UpdateDisplay();
-                key = GetSingleKey();
-                if((key == "0") ||
+                var key = GetSingleKey();
+                if ((key == "0") ||
                     (key == "1") ||
                     (key == "2") ||
                     (key == "3") ||
@@ -52,39 +37,39 @@ namespace P3Net.Arx
                     (key == "8") ||
                     (key == "9"))
                 {
-                    int numberLength = inputText.Length;
-                    if(numberLength < maxNumberSize)
+                    var numberLength = inputText.Length;
+                    if (numberLength < maxNumberSize)
                         inputText = inputText + key;
                 }
-                if(key == "BACKSPACE")
+                if (key == "BACKSPACE")
                 {
                     int numberLength = inputText.Length;
-                    if(numberLength != 0)
+                    if (numberLength != 0)
                     {
-                        int numberLength = inputText.Length;
                         inputText = inputText.Substring(0, (numberLength - 1));
                     }
                 }
-                if(key == "RETURN")
+                if (key == "RETURN")
                     enterKeyNotPressed = false;
-                if(key == "ESC")
+                if (key == "ESC")
                 {
                     itemQuantity = 0;
                     enterKeyNotPressed = false;
                 }
             }
-            itemQuantity = Convert.ToInt32(inputText);
+
+            //TODO: Does this work if RETURN or ESC is pressed
+            var itemQuantity = Convert.ToInt32(inputText);
 
             return itemQuantity;
         }
 
-        public static void ShopRetreat()
+        public static void ShopRetreat ()
         {
             var retreatMenu = 1; // high level menu
             var hoursSlept = 0; // number of hours slept
             var roomChoice = 0; // spot by door, drafty spot or by fire
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
 
             SetAutoMapFlag(plyr.map, 55, 3);
@@ -94,23 +79,25 @@ namespace P3Net.Arx
 
             LoadShopImage(1);
 
-            while(retreatMenu > 0)
+            while (retreatMenu > 0)
             {
                 var firstVisit = false;
-                if(plyr.retreatFriendship == 5)
+                if (plyr.retreatFriendship == 5)
                     firstVisit = true;
 
                 var coppers = 0;
-                while(retreatMenu == 1) // main menu
+                while (retreatMenu == 1) // main menu
                 {
+                    var str = "";
+
                     ClearShopDisplay();
-                    if(firstVisit)
+                    if (firstVisit)
                         str = "Welcome, Stranger, to our meager hovel.";
                     else
                     {
-                        if(plyr.retreatFriendship > 1)
+                        if (plyr.retreatFriendship > 1)
                             str = "Greetings, Explorer. Welcome back!";
-                        if(plyr.retreatFriendship < 2)
+                        if (plyr.retreatFriendship < 2)
                             str = "Art thou back again?";
                     }
                     CyText(1, str);
@@ -119,21 +106,21 @@ namespace P3Net.Arx
                     BText(15, 6, "(0) Leave");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "1")
+                    if (key == "1")
                         retreatMenu = 2;
-                    if(key == "0")
+                    if (key == "0")
                         retreatMenu = 0;
                 }
 
-                while(retreatMenu == 2) // how many coppers?
+                while (retreatMenu == 2) // how many coppers?
                 {
                     coppers = InputValue();
 
-                    if(coppers > 0)
+                    if (coppers > 0)
                     {
-                        if(CheckCoins(0, 0, coppers))
+                        if (CheckCoins(0, 0, coppers))
                         {
                             DeductCoins(0, 0, coppers);
                             retreatMenu = 4;
@@ -143,55 +130,57 @@ namespace P3Net.Arx
                         }
                     }
 
-                    if(coppers == 0)
+                    if (coppers == 0)
                         retreatMenu = 1;
                 }
 
-                while(retreatMenu == 3) // insufficient funds
+                while (retreatMenu == 3) // insufficient funds
                 {
                     ClearShopDisplay();
                     CyText(2, "Thou has offered more@@than thou hast!");
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key != "")
+                    var key = GetSingleKey();
+                    if (key != "")
                         retreatMenu = 1;
                 }
 
-                while(retreatMenu == 4) // coppers offering message
+                while (retreatMenu == 4) // coppers offering message
                 {
+                    var str = "";
+
                     ClearShopDisplay();
-                    if(coppers < 15)
+                    if (coppers < 15)
                     {
                         str = "That's not enough to@@cover the cost of delousing!@@Take the drafty spot near the door!";
                         roomChoice = 0;
                         plyr.retreatFriendship--;
-                        if(plyr.retreatFriendship < 0)
+                        if (plyr.retreatFriendship < 0)
                             plyr.retreatFriendship = 0;
                     }
-                    if((coppers > 14) && (coppers < 31))
+                    if ((coppers > 14) && (coppers < 31))
                     {
                         str = "Pinching pennies, eh?@@Well, lie down in that corner!";
                         roomChoice = 1;
                     }
-                    if(coppers > 30)
+                    if (coppers > 30)
                     {
                         str = "Thou art generous to a fault!@@Take this place next to the fire!";
                         roomChoice = 2;
                         plyr.retreatFriendship++;
-                        if(plyr.retreatFriendship > 4)
+                        if (plyr.retreatFriendship > 4)
                             plyr.retreatFriendship = 4;
                     }
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key != "")
+                    var key = GetSingleKey();
+                    if (key != "")
                         retreatMenu = 5;
                 }
 
-                while(retreatMenu == 5) // Sleeping
+                while (retreatMenu == 5) // Sleeping
                 {
-                    key = "";
-                    while((key == "") && (hoursSlept < 8))
+                    var key = "";
+                    while ((key == "") && (hoursSlept < 8))
                     {
                         ClearShopDisplay();
                         CyText(3, "Thou sleepest.");
@@ -200,17 +189,17 @@ namespace P3Net.Arx
                         key = GetSingleKey();
 
                         var roomProb = 0;
-                        if(roomChoice == 0)
+                        if (roomChoice == 0)
                             roomProb = 40;
-                        if(roomChoice == 1)
+                        if (roomChoice == 1)
                             roomProb = 60;
-                        if(roomChoice == 2)
+                        if (roomChoice == 2)
                             roomProb = 80;
-                        int actualSleepProb = Randn(0, 100);
-                        if(actualSleepProb <= roomProb)
+                        var actualSleepProb = Randn(0, 100);
+                        if (actualSleepProb <= roomProb)
                         {
                             plyr.hp = plyr.hp + Randn(1, 5);
-                            if(plyr.hp > plyr.maxhp)
+                            if (plyr.hp > plyr.maxhp)
                                 plyr.hp = plyr.maxhp;
                         }
                         AddHour();
@@ -220,65 +209,67 @@ namespace P3Net.Arx
                     retreatMenu = 6;
                 }
 
-                while(retreatMenu == 6) // Dreams troubled...
+                while (retreatMenu == 6) // Dreams troubled...
                 {
+                    var str = "";
+
                     ClearShopDisplay();
-                    if(plyr.alignment < 129)
+                    if (plyr.alignment < 129)
                         str = "Thy sleep is troubled by evil dreams.@@Thou wakest in a cold sweat!";
-                    if(plyr.alignment > 128)
+                    if (plyr.alignment > 128)
                         str = "Thy dreams are warm and bright.@@Thou wakest rested and refreshed.";
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key != "")
+                    var key = GetSingleKey();
+                    if (key != "")
                         retreatMenu = 7;
                 }
 
-                while(retreatMenu == 7) // You slept for...
+                while (retreatMenu == 7) // You slept for...
                 {
-                    string monthDesc;
-                    switch(plyr.months)
+                    string monthDesc = "";
+                    switch (plyr.months)
                     {
                         case 1:
-                            monthDesc = "Rebirth";
-                            break;
+                        monthDesc = "Rebirth";
+                        break;
                         case 2:
-                            monthDesc = "Awakening";
-                            break;
+                        monthDesc = "Awakening";
+                        break;
                         case 3:
-                            monthDesc = "Winds";
-                            break;
+                        monthDesc = "Winds";
+                        break;
                         case 4:
-                            monthDesc = "Rains";
-                            break;
+                        monthDesc = "Rains";
+                        break;
                         case 5:
-                            monthDesc = "Sowings";
-                            break;
+                        monthDesc = "Sowings";
+                        break;
                         case 6:
-                            monthDesc = "First Fruits";
-                            break;
+                        monthDesc = "First Fruits";
+                        break;
                         case 7:
-                            monthDesc = "Harvest";
-                            break;
+                        monthDesc = "Harvest";
+                        break;
                         case 8:
-                            monthDesc = "Final Reaping";
-                            break;
+                        monthDesc = "Final Reaping";
+                        break;
                         case 9:
-                            monthDesc = "The Fall";
-                            break;
+                        monthDesc = "The Fall";
+                        break;
                         case 10:
-                            monthDesc = "Darkness";
-                            break;
+                        monthDesc = "Darkness";
+                        break;
                         case 11:
-                            monthDesc = "Cold Winds";
-                            break;
+                        monthDesc = "Cold Winds";
+                        break;
                         case 12:
-                            monthDesc = "Lights";
-                            break;
+                        monthDesc = "Lights";
+                        break;
                     }
 
                     ClearShopDisplay();
-                    str = $"Thou hast slept for {Itos(hoursSlept)} hours.";
+                    var str = $"Thou hast slept for {Itos(hoursSlept)} hours.";
                     CyText(1, str);
                     str = $"It is day {Itos(plyr.days)}";
                     CyText(3, str);
@@ -287,12 +278,12 @@ namespace P3Net.Arx
                     str = $"year {Itos(plyr.years)} since abduction.";
                     CyText(5, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
-                    if(key != "")
+                    var key = GetSingleKey();
+                    if (key != "")
                         retreatMenu = 0;
                 }
             }
-            if(plyr.retreatFriendship == 5)
+            if (plyr.retreatFriendship == 5)
                 plyr.retreatFriendship = 2;
             LeaveShop();
         }

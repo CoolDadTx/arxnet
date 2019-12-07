@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace P3Net.Arx
-{
+{    
     public class BufferItem
     {
         public int offset { get; set; } // item number in inventory[] OR binary offset???
@@ -26,24 +26,22 @@ namespace P3Net.Arx
         public int level { get; set; }
     }
 
+    // Inventory.cpp
+    //
+    // Handles the binary object block that holds all information for in game items
+    //
+    // Items, Corpses, Curses, Diseases, Spells "carried" by player
+    //
+    // newItemBuffer is used to hold the locations of the items in the itemBlock
+    //
+    // Items are located by a reference number - starting with 0 for the first item in "inventory"
     public partial class GlobalMembers
-    {
-        // Inventory.cpp
-        //
-        // Handles the binary object block that holds all information for in game items
-        //
-        // Items, Corpses, Curses, Diseases, Spells "carried" by player
-        //
-        // newItemBuffer is used to hold the locations of the items in the itemBlock
-        //
-        // Items are located by a reference number - starting with 0 for the first item in "inventory"
-
+    {        
         public static readonly int inventorySize = 4096;
-
 
         public static void ClearInventory ()
         {
-            for (int i = 0; i < inventorySize; i++)
+            for (var i = 0; i < inventorySize; i++)
                 itemBlock[i] = 0;
             newItemOffset = 0;
         }
@@ -56,10 +54,10 @@ namespace P3Net.Arx
             // Adds a new Dungeon item to the inventory stack - not to the player's inventory
             // E.g addNewItem(EBON_BLADE)
 
-            int itemSize = dungeonItems[itemOffset + 1];
-            int idx = newItemOffset;
+            var itemSize = dungeonItems[itemOffset + 1];
+            var idx = newItemOffset;
 
-            for (int i = 0; i < itemSize; i++)
+            for (var i = 0; i < itemSize; i++)
             {
                 itemBlock[idx] = dungeonItems[itemOffset + i];
                 idx++;
@@ -78,10 +76,10 @@ namespace P3Net.Arx
 
         public static string ReadItemName ( int stringOffset )
         {
-            std::stringstream ss = new std::stringstream();
-            int z = stringOffset; // current location in the binary
-            int c = 0; // current byte
-            string result = "";
+            var ss = new stringstream();
+            var z = stringOffset; // current location in the binary
+            var c = 0; // current byte
+            var result = "";
 
             while (!(itemBlock[z] == 0))
             {

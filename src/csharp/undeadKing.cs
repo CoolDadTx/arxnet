@@ -14,10 +14,8 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static void ShopUndeadKing()
+        public static void ShopUndeadKing ()
         {
-            string str;
-            string key;
             plyr.status = 2; // shopping
 
             SetAutoMapFlag(plyr.map, 13, 26);
@@ -28,7 +26,7 @@ namespace P3Net.Arx
             LoadShopImage(24);
 
             ModuleMessage("As you gaze at the wall of the crypt@@the ghostly figure of King Danjor@@appears.  The apparition speaks:");
-            if(plyr.undeadKingVisited)
+            if (plyr.undeadKingVisited)
                 ModuleMessage("I can tell you no more@@than you already know.");
             else
             {
@@ -40,13 +38,13 @@ namespace P3Net.Arx
                 ModuleMessage("us here to quarrel and fight amongst@@ourselves for their amusement. We@@taught others our knowledge and stole");
                 ModuleMessage("the weapons of light from the Keepers.@@A great battle was made; but, in the@@end, we were defeated.");
                 ModuleMessage("Lest our dreams of home and freedom@@die with us on this alien soil,@@The Seven took an oath so strong");
-                ModuleMessage("that it bound them beyond death:@@We shall await one that will have@@the strength to carry on our hope.");
-                string mesText = $"You are that one,@@{plyr.name}.@@Other than the gifts that you have";
-                ModuleMessage(mesText);
+                ModuleMessage("that it bound them beyond death:@@We shall await one that will have@@the strength to carry on our hope.");                
+                ModuleMessage($"You are that one,@@{plyr.name}.@@Other than the gifts that you have");
                 ModuleMessage("received from The Seven, I can only@@offer you a portion of the staff of@@Acrinimiril. The Keepers consider");
                 ModuleMessage("Acrinimiril mad and are not@@aware of his true knowledge.@@Seek this knowledge!");
+
                 // Create the staff piece if it's not already in players inventory
-                if(!CheckForQuestItem(6))
+                if (!CheckForQuestItem(6))
                 {
                     int itemRef = CreateQuestItem(6);
                     itemBuffer[itemRef].location = 10;

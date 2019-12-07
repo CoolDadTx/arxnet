@@ -70,51 +70,44 @@ namespace P3Net.Arx
 
         public static void ArenaNorthernEntrance ()
         {
-            int menu = 1; // high level menu
-            string key;
             plyr.status = 2; // special module
 
-            while (menu > 0)
+            while (true)
             {
-                while (menu == 1) // main menu
+                ClearShopDisplay();
+                CyText(1, "You are at the northern entrance");
+                CyText(3, " to the Arena of Xebec's Demise.");
+                CyText(5, "Dost thou wish to?");
+                BText(9, 7, "  (1) Enter the Arena");
+                BText(9, 8, "  (0) Leave the Arena");
+                UpdateDisplay();
+
+                var key = GetSingleKey();                
+                if (key == "0")
                 {
-                    ClearShopDisplay();
-                    CyText(1, "You are at the northern entrance");
-                    CyText(3, " to the Arena of Xebec's Demise.");
-                    CyText(5, "Dost thou wish to?");
-                    BText(9, 7, "  (1) Enter the Arena");
-                    BText(9, 8, "  (0) Leave the Arena");
-                    UpdateDisplay();
-
-                    key = GetSingleKey();
-                    if (key == "0")
-                    {
-                        plyr.x = 16;
-                        plyr.y = 1;
-                        plyr.z_offset = 1.0F;
-                        plyr.scenario = 0;
-                        plyr.status = 1; // explore
-                        menu = 0;
-                    }
-
-                    if (key == "1")
-                    {
-                        plyr.x = 16;
-                        plyr.y = 3;
-                        plyr.z_offset = 1.0F;
-                        plyr.scenario = 2;
-                        plyr.status = 1; // explore
-                        menu = 0;
-                    }
+                    plyr.x = 16;
+                    plyr.y = 1;
+                    plyr.z_offset = 1.0F;
+                    plyr.scenario = 0;
+                    plyr.status = 1; // explore
+                    break;
                 }
 
-            } // end main while loop
+                if (key == "1")
+                {
+                    plyr.x = 16;
+                    plyr.y = 3;
+                    plyr.z_offset = 1.0F;
+                    plyr.scenario = 2;
+                    plyr.status = 1; // explore
+                    break;
+                }                
+            }
         }
 
         public static void ArenaWesternEntrance ()
-        {
-            string key = "";
-            while (key != "0")
+        {            
+            do
             {
                 ClearShopDisplay();
                 CyText(1, "You are at the western entrance");
@@ -122,8 +115,9 @@ namespace P3Net.Arx
                 CyText(5, "blocks the entrance.");
                 CyText(8, "(0) Leave");
                 UpdateDisplay();
-                key = GetSingleKey();
-            }
+
+                var key = GetSingleKey();
+            } while (key != "0");
             LeaveShop();
         }
     }

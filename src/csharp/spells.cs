@@ -19,7 +19,7 @@ namespace P3Net.Arx
         public int percentage { get; set; }
     }
 
-	public class SpellRecord
+    public class SpellRecord
     {
         public int cost { get; set; }
 
@@ -38,8 +38,8 @@ namespace P3Net.Arx
         public int positiveValue { get; set; }
     }
 
-	public partial class GlobalMembers
-    {        
+    public partial class GlobalMembers
+    {
         public static SpellItem[] spellBuffer = Arrays.InitializeWithDefaultInstances<SpellItem>(35); // learnt spells that can be cast
 
         public static SpellRecord[] spells =
@@ -81,38 +81,38 @@ namespace P3Net.Arx
         { "Vigor", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 }
         };
 
-        public static void AttemptSpell(int spellRef)
+        public static void AttemptSpell ( int spellRef )
         {
             // Attempt to cast the selected spell from "castSpells()"
 
             // spellRef = index within spellBuffer foe selected spell
-            int spellNo = spellBuffer[spellRef].no;
-            int spellPercentage = spellBuffer[spellRef].percentage;
-            string spellDesc = spells[spellBuffer[spellRef].no].name;
-            int spellPoints = Randn(1, 5);
+            var spellNo = spellBuffer[spellRef].no;
+            var spellPercentage = spellBuffer[spellRef].percentage;
+            var spellDesc = spells[spellBuffer[spellRef].no].name;
+            var spellPoints = Randn(1, 5);
 
-            int castProb = Randn(0, 100);
-            if(castProb < spellPercentage)
+            var castProb = Randn(0, 100);
+            if (castProb < spellPercentage)
             {
                 CastSpellMessage(spellDesc);
                 plyr.ringCharges -= spellPoints;
-                if(plyr.ringCharges < 0)
+                if (plyr.ringCharges < 0)
                     plyr.ringCharges = 0;
 
                 // Check for specific spells and their effects
-                if(spellNo == 4)
+                if (spellNo == 4)
                     plyr.food++;
-                if(spellNo == 5)
+                if (spellNo == 5)
                     plyr.keys++;
-                if(spellNo == 13)
+                if (spellNo == 13)
                 {
                     plyr.hp += Randn(1, 10);
-                    if(plyr.hp > plyr.maxhp)
+                    if (plyr.hp > plyr.maxhp)
                         plyr.hp = plyr.maxhp;
                 }
-                if(spellNo == 16)
+                if (spellNo == 16)
                     DisplayLocation();
-                if(spellNo == 8) // Dexterity
+                if (spellNo == 8) // Dexterity
                 {
                     effectBuffer[plyr.effectIndex].effect = 1; // Dexterity
                     effectBuffer[plyr.effectIndex].negativeValue = 0;
@@ -127,35 +127,31 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CastSpellMessage(string spellDesc)
+        public static void CastSpellMessage ( string spellDesc )
         {
-            string str; // for message text
-            string key;
             var keynotpressed = true;
             PlaySpellSound();
-            while(keynotpressed)
+            while (keynotpressed)
             {
-                if(plyr.status == 3)
+                if (plyr.status == 3)
                     DrawEncounterView();
-                if(plyr.status == 1)
+                if (plyr.status == 1)
                     DispMain();
-                str = $"You cast the spell of@@$ {spellDesc} $";
-                CyText(3, str);
+
+                CyText(3, $"You cast the spell of@@$ {spellDesc} $");
                 UpdateDisplay();
-                key = GetSingleKey();
-                if(key != "")
+                var key = GetSingleKey();
+                if (key != "")
                     keynotpressed = false;
             }
         }
 
-        public static void CastSpells()
+        public static void CastSpells ()
         {
             // Based on SelectItem code using "pages" of spells hence reference to "pages > 2" etc
 
-            var itemRef = 9999; // Nothing selected
-            string str;
-            string selectDesc;
-            selectDesc = "CAST";
+            var itemRef = 9999; // Nothing selected           
+            var selectDesc = "CAST";
 
             var menuitem1 = 255; // 255 is used here as nil
             var menuitem2 = 255;
@@ -163,31 +159,28 @@ namespace P3Net.Arx
             var menuitem4 = 255;
             var selectDone = false;
 
-            int no_items = plyr.spellIndex; // Number of spells in players inventory
-            var cur_idx = 0;
-            var pages = 0;
+            var no_items = plyr.spellIndex; // Number of spells in players inventory
             var page = 3;
-            var page_item = 0;
-            pages = 0;
+            var pages = 0;
 
-            int noPages = no_items / 4; // based on 4 oncreen items per page
+            var noPages = no_items / 4; // based on 4 on screen items per page
             pages += noPages;
-            int tempRemainder = no_items % 4;
-            if(tempRemainder != 0)
+            var tempRemainder = no_items % 4;
+            if (tempRemainder != 0)
                 pages++;
 
-            while(!selectDone)
+            while (!selectDone)
             {
-                if(page > 2) // Variable items
+                if (page > 2) // Variable items
                 {
                     var keypressed = false;
-                    while(!keypressed)
+                    while (!keypressed)
                     {
-                        if(plyr.status == 3)
+                        if (plyr.status == 3)
                             DrawEncounterView();
-                        if(plyr.status == 1)
+                        if (plyr.status == 1)
                             DispMain();
-                        if(plyr.status == 0)
+                        if (plyr.status == 0)
                             DispMain();
                         CyText(1, selectDesc);
                         BText(5, 3, "(1)");
@@ -199,85 +192,84 @@ namespace P3Net.Arx
                         BText(2, 8, "     #  F        B        ESC");
                         SetFontColour(215, 215, 215, 255);
 
-                        page_item = 1;
-                        cur_idx = ((page - 3) * 4);
+                        var page_item = 1;
+                        var cur_idx = ((page - 3) * 4);
                         menuitem1 = 9999; // 9999 is used as nil
                         menuitem2 = 9999;
                         menuitem3 = 9999;
                         menuitem4 = 9999;
 
-                        while((cur_idx < plyr.spellIndex) && (page_item < 5))
+                        while ((cur_idx < plyr.spellIndex) && (page_item < 5))
                         {
-                            str = $"{spells[(spellBuffer[cur_idx].no)].name} {Itos(spellBuffer[cur_idx].percentage)}%";
+                            var str = $"{spells[(spellBuffer[cur_idx].no)].name} {Itos(spellBuffer[cur_idx].percentage)}%";
                             BText(9, (page_item + 2), str);
-                            switch(page_item)
+                            switch (page_item)
                             {
                                 case 1:
-                                    menuitem1 = cur_idx;
-                                    break;
+                                menuitem1 = cur_idx;
+                                break;
                                 case 2:
-                                    menuitem2 = cur_idx;
-                                    break;
+                                menuitem2 = cur_idx;
+                                break;
                                 case 3:
-                                    menuitem3 = cur_idx;
-                                    break;
+                                menuitem3 = cur_idx;
+                                break;
                                 case 4:
-                                    menuitem4 = cur_idx;
-                                    break;
+                                menuitem4 = cur_idx;
+                                break;
                             }
                             page_item++;
                             cur_idx++;
                         }
                         UpdateDisplay();
 
-                        string key_value;
-                        key_value = GetSingleKey();
-                        if((key_value == "1") && (menuitem1 != 9999))
+                        var key_value = GetSingleKey();
+                        if ((key_value == "1") && (menuitem1 != 9999))
                         {
                             itemRef = menuitem1;
                             keypressed = true;
                             selectDone = true;
                         }
-                        if((key_value == "2") && (menuitem2 != 9999))
+                        if ((key_value == "2") && (menuitem2 != 9999))
                         {
                             itemRef = menuitem2;
                             keypressed = true;
                             selectDone = true;
                         }
-                        if((key_value == "3") && (menuitem3 != 9999))
+                        if ((key_value == "3") && (menuitem3 != 9999))
                         {
                             itemRef = menuitem3;
                             keypressed = true;
                             selectDone = true;
                         }
-                        if((key_value == "4") && (menuitem4 != 9999))
+                        if ((key_value == "4") && (menuitem4 != 9999))
                         {
                             itemRef = menuitem4;
                             keypressed = true;
                             selectDone = true;
                         }
 
-                        if(key_value == "ESC")
+                        if (key_value == "ESC")
                         {
                             keypressed = true;
                             selectDone = true;
                         }
-                        if((key_value == "B") && (page > 3))
+                        if ((key_value == "B") && (page > 3))
                         {
                             keypressed = true;
                             page--;
                         }
-                        if((key_value == "up") && (page > 3))
+                        if ((key_value == "up") && (page > 3))
                         {
                             keypressed = true;
                             page--;
                         }
-                        if((key_value == "F") && (pages > (page - 2)))
+                        if ((key_value == "F") && (pages > (page - 2)))
                         {
                             keypressed = true;
                             page++;
                         }
-                        if((key_value == "down") && (pages > (page - 2)))
+                        if ((key_value == "down") && (pages > (page - 2)))
                         {
                             keypressed = true;
                             page++;
@@ -286,28 +278,26 @@ namespace P3Net.Arx
                 } // page > 0 loop
             } // while cast not done
 
-            if(itemRef != 9999)
+            if (itemRef != 9999)
                 AttemptSpell(itemRef);
         }
 
-        public static void SpellBackfiredMessage(int spellPoints)
+        public static void SpellBackfiredMessage ( int spellPoints )
         {
-            string str; // for message text
-            string key;
             var keynotpressed = true;
-            while(keynotpressed)
+            while (keynotpressed)
             {
-                if(plyr.status == 3)
+                if (plyr.status == 3)
                     DrawEncounterView();
-                if(plyr.status == 1)
+                if (plyr.status == 1)
                     DispMain();
-                if(plyr.status == 0)
+                if (plyr.status == 0)
                     DispMain();
-                str = $"The spell failed@@and backfired for {Itos(spellPoints)}!";
-                CyText(3, str);
+
+                CyText(3, $"The spell failed@@and backfired for {Itos(spellPoints)}!");
                 UpdateDisplay();
-                key = GetSingleKey();
-                if(key != "")
+                var key = GetSingleKey();
+                if (key != "")
                     keynotpressed = false;
             }
             // update ring charges and hp

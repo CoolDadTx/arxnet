@@ -20,7 +20,7 @@ using System.Linq;
 		 */
 namespace P3Net.Arx
 {
-    public enum Menus
+    public enum DwarvenSmithyMenus
     {
         MenuLeft,
         MenuMain,
@@ -94,14 +94,10 @@ namespace P3Net.Arx
         {
             // Copies Dwarven Smithy items into structure for use in module.cpp
             // The Dwarven Smithy has a fixed, unchanging menu of items for purchase.
-
-            string str;
-            var itemNo = 0;
-
-            for(var waresNo = 0; waresNo < 11; waresNo++)
+            for (var waresNo = 0; waresNo < 11; waresNo++)
             {
                 menuItems[waresNo].menuName = itemNames[waresNo];
-                str = $"{Itos(itemPrices[waresNo])}  ";
+                var str = $"{Itos(itemPrices[waresNo])}  ";
                 str = str.Remove(3, 7).Insert(3, "gems/jewels");
                 menuItems[waresNo].menuPrice = str;
                 menuItems[waresNo].objRef = waresNo;
@@ -110,23 +106,18 @@ namespace P3Net.Arx
 
         public static void CalculateForgeBonus(int additionalGemsOffered)
         {
-            int bonus = additionalGemsOffered / 60;
+            var bonus = additionalGemsOffered / 60;
             if(bonus < 1)
                 bonus = 0;
             plyr.forgeBonus = bonus;
         }
 
-        public static int CalculateGemsAndJewelsTotal()
-        {
-            var total = 0;
-            total = plyr.gems + plyr.jewels;
-            return total;
-        }
+        public static int CalculateGemsAndJewelsTotal() => plyr.gems + plyr.jewels;
 
         public static void CalculateSaleItemValue(int itemRef)
         {
-            int[] damageValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            int[] results = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            var damageValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            var results = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
             damageValues[0] = itemBuffer[itemRef].blunt;
             damageValues[1] = itemBuffer[itemRef].sharp;
@@ -143,15 +134,15 @@ namespace P3Net.Arx
             var damageIndex = 0;
             while(damageIndex < 11)
             {
-                int noDice = (damageValues[damageIndex] & 0xf0) >> 4;
-                int noSides = (damageValues[damageIndex] & 0x0f);
+                var noDice = (damageValues[damageIndex] & 0xf0) >> 4;
+                var noSides = (damageValues[damageIndex] & 0x0f);
                 if(noDice > 0)
                     results[damageIndex] = noDice * noSides;
                 damageIndex++;
             }
 
-            int itemValueA = (((itemBuffer[itemRef].hp) - 1) * 2);
-            int itemValueB = results[0] +
+            var itemValueA = (((itemBuffer[itemRef].hp) - 1) * 2);
+            var itemValueB = results[0] +
                 results[1] +
                 results[2] +
                 results[3] +
@@ -172,8 +163,8 @@ namespace P3Net.Arx
 
             if(smithyChoice < 255)
             {
-                int gemsCost = itemPrices[smithyChoice];
-                int playerGems = CalculateGemsAndJewelsTotal();
+                var gemsCost = itemPrices[smithyChoice];
+                var playerGems = CalculateGemsAndJewelsTotal();
 
                 if(playerGems >= gemsCost)
                 {
@@ -181,18 +172,18 @@ namespace P3Net.Arx
                     dwarvenItemOffset = dwarvenItemOffsets[smithyChoice];
                     CreateDwarvenInventoryItem(dwarvenItemOffset);
 
-                    int test = Randn(0, 4);
+                    var test = Randn(0, 4);
                     if(test < 3)
-                        dmenu = (int)Menus.MenuAnythingElse;
+                        dmenu = (int)DwarvenSmithyMenus.MenuAnythingElse;
                     else
-                        dmenu = (int)Menus.MenuAnythingElse2;
+                        dmenu = (int)DwarvenSmithyMenus.MenuAnythingElse2;
                 } else
                 {
-                    dmenu = (int)Menus.MenuNoFunds;
+                    dmenu = (int)DwarvenSmithyMenus.MenuNoFunds;
                 }
             } else
             {
-                dmenu = (int)Menus.MenuMain;
+                dmenu = (int)DwarvenSmithyMenus.MenuMain;
             } // Option 0 was selected
         }
 
@@ -245,8 +236,8 @@ namespace P3Net.Arx
                     break;
             }
 
-            int itemType = dwarvenBinary[offset];
-            string itemName = plyr.forgeName;
+            var itemType = dwarvenBinary[offset];
+            var itemName = plyr.forgeName;
 
             itemType = 178; // ARX value for weapon
             index = 0; // No longer required
@@ -276,7 +267,7 @@ namespace P3Net.Arx
             flags = 90;
             parry = (dwarvenBinary[wAttributes + 19]) * 2;
 
-            int newItemRef = CreateItem(itemType,
+            var newItemRef = CreateItem(itemType,
                                         index,
                                         itemName,
                                         hp,
@@ -339,9 +330,9 @@ namespace P3Net.Arx
             int parry;
             int useStrength;
 
-            int offset = startByte;
-            int itemType = dwarvenBinary[offset];
-            string itemName = ReadDwarvenNameString((offset + 6));
+            var offset = startByte;
+            var itemType = dwarvenBinary[offset];
+            var itemName = ReadDwarvenNameString((offset + 6));
 
             if(itemType == 3)
             {
@@ -436,7 +427,7 @@ namespace P3Net.Arx
                 parry = 0;
             }
 
-            int newItemRef = CreateItem(itemType,
+            var newItemRef = CreateItem(itemType,
                                         index,
                                         itemName,
                                         hp,
@@ -467,7 +458,7 @@ namespace P3Net.Arx
         public static void DeductGems(int totalGems)
         {
             // Deducts from gems before jewels
-            if(plyr.gems >= totalGems)
+            if (plyr.gems >= totalGems)
                 plyr.gems -= totalGems;
             else
             {
@@ -479,24 +470,24 @@ namespace P3Net.Arx
 
         public static void DisplayDwarvenModuleText()
         {
-            if(dmenu == (int)Menus.MenuMain)
+            if (dmenu == (int)DwarvenSmithyMenus.MenuMain)
             {
-                string dgreetingText = $"Welcome to my forge, {plyr.name}!";
+                var dgreetingText = $"Welcome to my forge, {plyr.name}!";
                 CyText(1, dgreetingText);
                 BText(6, 3, "(1) Examine my wares");
                 BText(6, 4, "(2) Sell weapons or armor");
                 BText(6, 5, "(3) Have a custom weapon made");
                 BText(6, 6, "(0) Leave");
-            } else if(dmenu == (int)Menus.MenuPreOffer)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuPreOffer)
             {
                 CyText(3, "What do you offer to sell?");
-            } else if(dmenu == (int)Menus.MenuSelectOffer)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuSelectOffer)
             {
                 itemRef = SelectItem(3);
                 if(itemRef == 9999)
-                    dmenu = (int)Menus.MenuMain; // No selection made
+                    dmenu = (int)DwarvenSmithyMenus.MenuMain; // No selection made
                 if((itemRef > 999) && (itemRef < 1012))
-                    dmenu = (int)Menus.MenuOfferRefused;
+                    dmenu = (int)DwarvenSmithyMenus.MenuOfferRefused;
                 if(itemRef < 101)
                 {                 
                     int itemType = itemBuffer[itemRef].type;
@@ -504,39 +495,39 @@ namespace P3Net.Arx
                     if((itemType == 177) || (itemType == 178))
                     {
                         CalculateSaleItemValue(itemRef);
-                        dmenu = (int)Menus.MenuSmithyMakesOffer;
+                        dmenu = (int)DwarvenSmithyMenus.MenuSmithyMakesOffer;
                     } else
                     {
-                        dmenu = (int)Menus.MenuOfferRefused;
+                        dmenu = (int)DwarvenSmithyMenus.MenuOfferRefused;
                     }
                 }
-            } else if(dmenu == (int)Menus.MenuOfferRefused)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuOfferRefused)
             {
-                string str = $"@@Sorry, but I'm not interested in your@@{itemDesc}.";
+                var str = $"@@Sorry, but I'm not interested in your@@{itemDesc}.";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuSmithyMakesOffer)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuSmithyMakesOffer)
             {
-                string str = $"@@I will give you {Itos(itemValue)} silvers for@@your {itemDesc}.@@Okay? (Y or N)";
+                var str = $"@@I will give you {Itos(itemValue)} silvers for@@your {itemDesc}.@@Okay? (Y or N)";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuNoFunds)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuNoFunds)
             {
                 var str = "@@That's more than you have.";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuNoHaggle)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuNoHaggle)
             {
                 var str = "Who do you think I am?  Omar?!@@You'll do no haggling with me!";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuAnythingElse)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuAnythingElse)
             {
-                string itemText = itemNames[smithyChoice];
-                string str = $"@I'm sure that the {itemText}@will be to your liking@@@Will there be anything else?@@(Y or N)";
+                var itemText = itemNames[smithyChoice];
+                var str = $"@I'm sure that the {itemText}@will be to your liking@@@Will there be anything else?@@(Y or N)";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuAnythingElse2)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuAnythingElse2)
             {
-                string itemText = itemNames[smithyChoice];
-                string str = $"@Here's the {itemText}@@@@@Will there be anything else?@@(Y or N)";
+                var itemText = itemNames[smithyChoice];
+                var str = $"@Here's the {itemText}@@@@@Will there be anything else?@@(Y or N)";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuCustom)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuCustom)
             {
                 CyText(1, "What type of weapon are you@interested in?");
                 BText(13, 4, "(1) Sword");
@@ -544,25 +535,25 @@ namespace P3Net.Arx
                 BText(13, 6, "(3) Mace");
                 BText(13, 7, "(4) Hammer");
                 BText(13, 8, "(0) Not interested");
-            } else if(dmenu == (int)Menus.MenuCustomOrdered)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuCustomOrdered)
             {
-                string str = $"Return in four days for your {customWeaponDesc}.@@It will be forged by then.";
+                var str = $"Return in four days for your {customWeaponDesc}.@@It will be forged by then.";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuBusyForging)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuBusyForging)
             {
-                string dayText = $"{Itos(plyr.forgeDays)} days";
+                var dayText = $"{Itos(plyr.forgeDays)} days";
                 if(plyr.forgeDays == 1)
                     dayText = "1 day";
 
-                string str = $"Sorry, but I'll be busy for {dayText} yet,@@forging and inscribing your weapon.@@I shall see you then.";
+                var str = $"Sorry, but I'll be busy for {dayText} yet,@@forging and inscribing your weapon.@@I shall see you then.";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuCustomReady)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuCustomReady)
             {
-                string str = $"Welcome {plyr.name}!@@ I have your custom weapon right here!@@It is indeed a mighty weapon!";
+                var str = $"Welcome {plyr.name}!@@ I have your custom weapon right here!@@It is indeed a mighty weapon!";
                 CyText(1, str);
-            } else if(dmenu == (int)Menus.MenuNoNameProvided)
+            } else if(dmenu == (int)DwarvenSmithyMenus.MenuNoNameProvided)
             {
-                string str = $"Very well then, I will simply call@@it the {plyr.forgeName}.";
+                var str = $"Very well then, I will simply call@@it the {plyr.forgeName}.";
                 CyText(1, str);
             }
         }        
@@ -570,10 +561,8 @@ namespace P3Net.Arx
         public static void LoadDwarvenBinary()
         {
             // Loads armour and weapons binary data into the "dwarvenBinary" array
-            FileStream fp; // file pointer - used when reading files
-            var tempString = new string(new char[100]); // temporary string
-            tempString = $"{"data/map/"}{"DwarvenItems.bin"}";
-            fp = fopen(tempString, "rb");
+            var tempString = $"{"data/map/"}{"DwarvenItems.bin"}";
+            var fp = fopen(tempString, "rb");
             if(fp != null)
             {
                 for(var i = 0; i < dwarvenFileSize; i++)
@@ -606,28 +595,30 @@ namespace P3Net.Arx
                 custonWeaponMinimum = 90;
             }
 
-            string str = $"I ask at least {Itos(custonWeaponMinimum)} gems or jewels for a@high-quality custom made {customWeaponDesc}.@How much are you prepared to offer?";
-            int gemsJewelsOffer = InputNumber(str);
+            var str = $"I ask at least {Itos(custonWeaponMinimum)} gems or jewels for a@high-quality custom made {customWeaponDesc}.@How much are you prepared to offer?";
+            var gemsJewelsOffer = InputNumber(str);
 
-            int playerGems = CalculateGemsAndJewelsTotal();
+            var playerGems = CalculateGemsAndJewelsTotal();
             if(gemsJewelsOffer < custonWeaponMinimum)
             {
-                if(gemsJewelsOffer == 0)
-                    dmenu = (int)Menus.MenuMain;
+                if (gemsJewelsOffer == 0)
+                    dmenu = (int)DwarvenSmithyMenus.MenuMain;
                 else
-                    dmenu = (int)Menus.MenuNoHaggle;
+                    dmenu = (int)DwarvenSmithyMenus.MenuNoHaggle;
             } else
             {
-                if(playerGems >= gemsJewelsOffer)
+                if (playerGems >= gemsJewelsOffer)
                 {
                     DeductGems(gemsJewelsOffer);
 
                     plyr.forgeBonus = 0;
-                    int additionalGemsOffered = gemsJewelsOffer - custonWeaponMinimum;
+
+                    var additionalGemsOffered = gemsJewelsOffer - custonWeaponMinimum;
                     CalculateForgeBonus(additionalGemsOffered);
-                    string str = $"@By what name do you wish your mighty@@{customWeaponDesc} to be called?";
+                    
+                    var str = $"@By what name do you wish your mighty@@{customWeaponDesc} to be called?";
                     plyr.forgeName = InputText(str);
-                    if(plyr.forgeName == "")
+                    if (plyr.forgeName == "")
                     {
                         if(customWeaponType == 1)
                             plyr.forgeName = "Dwarven Sword";
@@ -637,79 +628,79 @@ namespace P3Net.Arx
                             plyr.forgeName = "Dwarven Mace";
                         if(customWeaponType == 4)
                             plyr.forgeName = "Dwarven Hammer";
-                        dmenu = (int)Menus.MenuNoNameProvided;
+                        dmenu = (int)DwarvenSmithyMenus.MenuNoNameProvided;
                     } else
                     {
-                        dmenu = (int)Menus.MenuCustomOrdered;
+                        dmenu = (int)DwarvenSmithyMenus.MenuCustomOrdered;
                     }
                     plyr.forgeDays = 4;
                     plyr.forgeType = customWeaponType;
                 } else
                 {
-                    dmenu = (int)Menus.MenuNoFunds;
+                    dmenu = (int)DwarvenSmithyMenus.MenuNoFunds;
                 }
             }
         }
 
         public static void ProcessDwarvenMenuInput()
         {
-            string key = ReadKey();
+            var key = ReadKey();
 
             switch(dmenu)
             {
-                case Menus.MenuMain:
+                case DwarvenSmithyMenus.MenuMain:
                     if(key == "0")
-                        dmenu = (int)Menus.MenuLeft;
+                        dmenu = (int)DwarvenSmithyMenus.MenuLeft;
                     if(key == "1")
-                        dmenu = (int)Menus.MenuChooseSmithyItem;
+                        dmenu = (int)DwarvenSmithyMenus.MenuChooseSmithyItem;
                     if(key == "2")
-                        dmenu = (int)Menus.MenuPreOffer;
+                        dmenu = (int)DwarvenSmithyMenus.MenuPreOffer;
                     if(key == "3")
-                        dmenu = (int)Menus.MenuCustom;
+                        dmenu = (int)DwarvenSmithyMenus.MenuCustom;
                     if(key == "down")
-                        dmenu = (int)Menus.MenuLeft;
+                        dmenu = (int)DwarvenSmithyMenus.MenuLeft;
                     break;
-                case Menus.MenuChooseSmithyItem:
+                case DwarvenSmithyMenus.MenuChooseSmithyItem:
                     ChooseDwarvenSmithyItem();
                     break;
-                case Menus.MenuPreOffer:
+                case DwarvenSmithyMenus.MenuPreOffer:
                     if(key != "")
-                        dmenu = (int)Menus.MenuSelectOffer;
+                        dmenu = (int)DwarvenSmithyMenus.MenuSelectOffer;
                     break;
-                case Menus.MenuOfferRefused:
+                case DwarvenSmithyMenus.MenuOfferRefused:
                     if(key != "")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     break;
-                case Menus.MenuNoFunds:
+                case DwarvenSmithyMenus.MenuNoFunds:
                     if(key != "")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     break;
-                case Menus.MenuSmithyMakesOffer:
+                case DwarvenSmithyMenus.MenuSmithyMakesOffer:
                     if(key == "N")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     if(key == "Y")
                     {
                         ProcessPayment();
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     }
                     if(key == "0")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     break;
-                case Menus.MenuAnythingElse:
+                case DwarvenSmithyMenus.MenuAnythingElse:
                     if(key == "N")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     if(key == "Y")
-                        dmenu = (int)Menus.MenuChooseSmithyItem;
+                        dmenu = (int)DwarvenSmithyMenus.MenuChooseSmithyItem;
                     break;
-                case Menus.MenuAnythingElse2:
+                case DwarvenSmithyMenus.MenuAnythingElse2:
                     if(key == "N")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     if(key == "Y")
-                        dmenu = (int)Menus.MenuChooseSmithyItem;
+                        dmenu = (int)DwarvenSmithyMenus.MenuChooseSmithyItem;
                     break;
-                case Menus.MenuCustom:
+                case DwarvenSmithyMenus.MenuCustom:
                     if(key == "0")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     if(key == "1")
                     {
                         customWeaponType = 1;
@@ -731,28 +722,28 @@ namespace P3Net.Arx
                         MakeCustomWeaponOffer();
                     }
                     break;
-                case Menus.MenuCustomOrdered:
+                case DwarvenSmithyMenus.MenuCustomOrdered:
                     if(key != "")
-                        dmenu = (int)Menus.MenuLeft;
+                        dmenu = (int)DwarvenSmithyMenus.MenuLeft;
                     break;
-                case Menus.MenuBusyForging:
+                case DwarvenSmithyMenus.MenuBusyForging:
                     if(key == "SPACE")
-                        dmenu = (int)Menus.MenuLeft;
+                        dmenu = (int)DwarvenSmithyMenus.MenuLeft;
                     break;
-                case Menus.MenuCustomReady:
+                case DwarvenSmithyMenus.MenuCustomReady:
                     if(key == "SPACE")
                     {
                         CreateCustomWeapon();
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     }
                     break;
-                case Menus.MenuNoHaggle:
+                case DwarvenSmithyMenus.MenuNoHaggle:
                     if(key == "SPACE")
-                        dmenu = (int)Menus.MenuMain;
+                        dmenu = (int)DwarvenSmithyMenus.MenuMain;
                     break;
-                case Menus.MenuNoNameProvided:
+                case DwarvenSmithyMenus.MenuNoNameProvided:
                     if(key == "SPACE")
-                        dmenu = (int)Menus.MenuCustomOrdered;
+                        dmenu = (int)DwarvenSmithyMenus.MenuCustomOrdered;
                     break;
             }
         }
@@ -783,35 +774,33 @@ namespace P3Net.Arx
         public static string ReadDwarvenNameString(int stringOffset)
         {
             var ss = new stringstream();
-            int z = stringOffset; // current location in the binary
-            var c = 0; // current byte
-            var result = "";
+            var z = stringOffset; // current location in the binary
 
-            while(!(dwarvenBinary[z] == 0))
+            while (!(dwarvenBinary[z] == 0))
             {
-                c = dwarvenBinary[z];
-                    ss << (char) c;
+                var c = dwarvenBinary[z];
+                ss << (char) c;
                 z++;
             }
-            result = ss.str();
-            return result;
+            
+            return ss.str();
         }
 
         public static void RunDwarvenSmithy()
         {
-            if(plyr.forgeDays > 0)
-                dmenu = (int)Menus.MenuBusyForging;
+            if (plyr.forgeDays > 0)
+                dmenu = (int)DwarvenSmithyMenus.MenuBusyForging;
             else
-                dmenu = (int)Menus.MenuMain;
+                dmenu = (int)DwarvenSmithyMenus.MenuMain;
             if((plyr.forgeDays == 0) && (plyr.forgeType > 0))
-                dmenu = (int)Menus.MenuCustomReady;
+                dmenu = (int)DwarvenSmithyMenus.MenuCustomReady;
 
             AddDwarvenSmithyToMap();
             LoadShopImage(26);
 
             BuildSmithyMenuOptions();
 
-            while(dmenu != (int)Menus.MenuLeft)
+            while(dmenu != (int)DwarvenSmithyMenus.MenuLeft)
             {
                 ClearShopDisplay();
                 DisplayDwarvenModuleText();

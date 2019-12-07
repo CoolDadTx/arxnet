@@ -15,18 +15,17 @@ namespace P3Net.Arx
     public partial class GlobalMembers
     {
         // Each character save game file is made up of a 28540 element string array.
-		// Each array element can hold a number or text string (e.g. no. of torches carried or an item name)
+        // Each array element can hold a number or text string (e.g. no. of torches carried or an item name)
 
         // NOTES:
-		// job openings not currently part of saved game
+        // job openings not currently part of saved game
 
         public static string[] character = new string[saveGameSize];
         public static string[] saveGameDescriptions = new string[10];
         public static readonly int saveGameSize = 28541;
 
-        public static void DisplayLoadGame()
+        public static void DisplayLoadGame ()
         {
-            string str;
             DrawText(1, 3, "(0)");
             DrawText(1, 5, "(1)");
             DrawText(1, 7, "(2)");
@@ -40,56 +39,55 @@ namespace P3Net.Arx
 
             DrawText(8, 23, "Select 0-9 or ESC to cancel");
 
-            for(var a = 0; a < 10; ++a) // number of save game slots 0 - 9
+            for (var a = 0; a < 10; ++a) // number of save game slots 0 - 9
             {
-                str = saveGameDescriptions[a];
+                var str = saveGameDescriptions[a];
                 DrawText(5, ((a * 2) + 3), str);
             }
         }
 
-        public static void DisplaySaveGame()
+        public static void DisplaySaveGame ()
         {
-            string key;
             plyr.status = 0;
             var savegameMenu = 255; // high level menu
 
-            while(savegameMenu < 256)
+            while (savegameMenu < 256)
             {
-                while(savegameMenu == 255) // main menu
+                while (savegameMenu == 255) // main menu
                 {
                     ClearDisplay();
                     DisplayLoadGame();
                     DrawText(12, 0, "Save a character");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    if(key == "0")
+                    var key = GetSingleKey();
+                    if (key == "0")
                         savegameMenu = 0;
-                    if(key == "1")
+                    if (key == "1")
                         savegameMenu = 1;
-                    if(key == "2")
+                    if (key == "2")
                         savegameMenu = 2;
-                    if(key == "3")
+                    if (key == "3")
                         savegameMenu = 3;
-                    if(key == "4")
+                    if (key == "4")
                         savegameMenu = 4;
-                    if(key == "5")
+                    if (key == "5")
                         savegameMenu = 5;
-                    if(key == "6")
+                    if (key == "6")
                         savegameMenu = 6;
-                    if(key == "7")
+                    if (key == "7")
                         savegameMenu = 7;
-                    if(key == "8")
+                    if (key == "8")
                         savegameMenu = 8;
-                    if(key == "9")
+                    if (key == "9")
                         savegameMenu = 9;
-                    if(key == "ESC")
+                    if (key == "ESC")
                     {
                         savegameMenu = 256;
                         plyr.status = 1;
                     }
                 }
-                while(savegameMenu < 10) // attempt to save a character
+                while (savegameMenu < 10) // attempt to save a character
                 {
                     SaveCharacter(savegameMenu);
                     plyr.status = 1; // for display canvas
@@ -98,26 +96,26 @@ namespace P3Net.Arx
             }
         }
 
-        public static string Ftos(float i)
+        public static string Ftos ( float i )
         {
-            var s = new std::stringstream();
-                s << i;
+            var s = new stringstream();
+            s << i;
             return s.str();
         }
 
-        public static void Initcharacter()
+        public static void Initcharacter ()
         {
-            for(var i = 0; i < saveGameSize; i++)
+            for (var i = 0; i < saveGameSize; i++)
                 character[i] = "<BLANK>";
         }
 
-        public static void InitSaveGameDescriptions()
+        public static void InitSaveGameDescriptions ()
         {
-            var instream = new std::ifstream();
+            var instream = new ifstream();
             instream.open("data/saves/saveGames.txt");
             string text;
 
-            for(var a = 0; a < 10; a++) // number of save game slots 0 - 9
+            for (var a = 0; a < 10; a++) // number of save game slots 0 - 9
             {
                 getline(instream, text);
                 saveGameDescriptions[a] = text;
@@ -125,36 +123,36 @@ namespace P3Net.Arx
             instream.close();
         }
 
-        public static string Itos(int i)
+        public static string Itos ( int i )
         {
-            var s = new std::stringstream();
-                s << i;
+            var s = new stringstream();
+            s << i;
             return s.str();
         }
 
-        public static bool LoadCharacter(int saveSlot)
+        public static bool LoadCharacter ( int saveSlot )
         {
-            var instream = new std::ifstream();
+            var instream = new ifstream();
             string junk;
             string junk2;
             string data;
 
-            string filename = $"data/saves/save{Itos(saveSlot)}.txt";
+            var filename = $"data/saves/save{Itos(saveSlot)}.txt";
             instream.open(filename); // opens the file            
-            if(instream == null)
+            if (instream == null)
             {
-                    cerr << "No save game in this slot" << "\n";
+                cerr << "No save game in this slot" << "\n";
                 return false;
             }
             string text;
 
-            for(var a = 0; a < saveGameSize; ++a)
+            for (var a = 0; a < saveGameSize; ++a)
             {
                 getline(instream, text);
                 character[a] = text;
             }
 
-			instream.close();
+            instream.close();
 
             plyr.status = GameStates.Explore;
 
@@ -248,11 +246,11 @@ namespace P3Net.Arx
             plyr.digestion = Convert.ToInt32(character[84]);
             plyr.alcohol = Convert.ToInt32(character[85]);
 
-            for(var y = 0; y < 12; ++y)
+            for (var y = 0; y < 12; ++y)
                 plyr.guildAwards[y] = Convert.ToInt32(character[86 + y]);
-            for(var y = 0; y < 32; ++y)
+            for (var y = 0; y < 32; ++y)
                 plyr.fixedEncounters[y] = Convert.ToInt32(character[98 + y]);
-            for(var y = 0; y < 14; ++y)
+            for (var y = 0; y < 14; ++y)
                 plyr.guildMemberships[y] = Convert.ToInt32(character[130 + y]);
 
             plyr.ringCharges = Convert.ToInt32(character[144]);
@@ -338,7 +336,7 @@ namespace P3Net.Arx
             plyr.poison[2] = Convert.ToInt32(character[217]);
             plyr.poison[3] = Convert.ToInt32(character[218]);
             plyr.delusion = Convert.ToInt32(character[219]);
-            for(var y = 0; y < 9; ++y)
+            for (var y = 0; y < 9; ++y)
                 plyr.invulnerability[y] = Convert.ToInt32(character[220 + y]);
             plyr.noticeability = Convert.ToInt32(character[229]);
             plyr.protection1 = Convert.ToInt32(character[230]);
@@ -351,7 +349,7 @@ namespace P3Net.Arx
             plyr.stolenFromVault = Convert.ToInt32(character[236]);
 
             var loadGameIndex = 400; // start location for object buffer items
-            for(var z = 0; z < itemBufferSize; ++z)
+            for (var z = 0; z < itemBufferSize; ++z)
             {
                 itemBuffer[z].hp = Convert.ToInt32(character[loadGameIndex]);
                 itemBuffer[z].index = Convert.ToInt32(character[loadGameIndex + 1]);
@@ -389,7 +387,7 @@ namespace P3Net.Arx
 
             // Copy spell buffer
             loadGameIndex = 7400; // start location for spell buffer items (70 bytes)
-            for(var z = 0; z < 35; ++z)
+            for (var z = 0; z < 35; ++z)
             {
                 spellBuffer[z].no = Convert.ToInt32(character[loadGameIndex]);
                 spellBuffer[z].percentage = Convert.ToInt32(character[loadGameIndex + 1]);
@@ -398,7 +396,7 @@ namespace P3Net.Arx
 
             // Copy effect buffer
             loadGameIndex = 7470; // start location for effect buffer items (200 bytes)
-            for(var z = 0; z < 50; ++z)
+            for (var z = 0; z < 50; ++z)
             {
                 effectBuffer[z].effect = Convert.ToInt32(character[loadGameIndex]);
                 effectBuffer[z].negativeValue = Convert.ToInt32(character[loadGameIndex + 1]);
@@ -409,9 +407,9 @@ namespace P3Net.Arx
 
             // Smithy daily wares
             loadGameIndex = 7670;
-            for(var z = 0; z < 4; ++z)
+            for (var z = 0; z < 4; ++z)
             {
-                for(var x = 0; x < 10; ++x)
+                for (var x = 0; x < 10; ++x)
                 {
                     smithyDailyWares[z][x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
@@ -419,9 +417,9 @@ namespace P3Net.Arx
             }
 
             loadGameIndex = 7710;
-            for(var z = 0; z < 14; ++z)
+            for (var z = 0; z < 14; ++z)
             {
-                for(var x = 0; x < 6; ++x)
+                for (var x = 0; x < 6; ++x)
                 {
                     tavernDailyFoods[z][x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
@@ -429,9 +427,9 @@ namespace P3Net.Arx
             }
 
             loadGameIndex = 7794;
-            for(var z = 0; z < 14; ++z)
+            for (var z = 0; z < 14; ++z)
             {
-                for(var x = 0; x < 6; ++x)
+                for (var x = 0; x < 6; ++x)
                 {
                     tavernDailyDrinks[z][x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
@@ -439,9 +437,9 @@ namespace P3Net.Arx
             }
 
             loadGameIndex = 7878;
-            for(var z = 0; z < 15; ++z)
+            for (var z = 0; z < 15; ++z)
             {
-                for(var x = 0; x < 12; ++x)
+                for (var x = 0; x < 12; ++x)
                 {
                     shopDailyWares[z][x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
@@ -452,9 +450,9 @@ namespace P3Net.Arx
 
             // load automap flags
             loadGameIndex = 8058; // start location for object buffer items
-            for(var z = 0; z < 5; ++z)
+            for (var z = 0; z < 5; ++z)
             {
-                for(var x = 0; x < 4096; ++x)
+                for (var x = 0; x < 4096; ++x)
                 {
                     autoMapExplored[z][x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
@@ -465,12 +463,11 @@ namespace P3Net.Arx
 
             //MLT: Double to float
             plyr.z_offset = (float)Convert.ToDouble(character[28539]);
-            string saveGameReleaseNo = character[28540];
 
             return true;
         }
 
-        public static bool SaveCharacter(int saveSlot)
+        public static bool SaveCharacter ( int saveSlot )
         {
             var outdata = new ofstream();
 
@@ -568,11 +565,11 @@ namespace P3Net.Arx
             character[84] = Itos(plyr.digestion);
             character[85] = Itos(plyr.alcohol);
 
-            for(var y = 0; y < 12; ++y)
+            for (var y = 0; y < 12; ++y)
                 character[86 + y] = Itos(plyr.guildAwards[y]);
-            for(var y = 0; y < 32; ++y)
+            for (var y = 0; y < 32; ++y)
                 character[98 + y] = Itos(plyr.fixedEncounters[y]);
-            for(var y = 0; y < 14; ++y)
+            for (var y = 0; y < 14; ++y)
                 character[130 + y] = Itos(plyr.guildMemberships[y]);
 
             character[144] = Itos(plyr.ringCharges);
@@ -658,7 +655,7 @@ namespace P3Net.Arx
             character[218] = Itos(plyr.poison[3]);
             character[219] = Itos(plyr.delusion);
 
-            for(var y = 0; y < 9; ++y)
+            for (var y = 0; y < 9; ++y)
                 character[220 + y] = Itos(plyr.invulnerability[y]);
             character[229] = Itos(plyr.noticeability);
             character[230] = Itos(plyr.protection1);
@@ -675,7 +672,7 @@ namespace P3Net.Arx
             // Copy item buffer
 
             var saveGameIndex = 400; // start location for object buffer items
-            for(var z = 0; z < itemBufferSize; ++z)
+            for (var z = 0; z < itemBufferSize; ++z)
             {
                 character[saveGameIndex] = Itos(itemBuffer[z].hp);
                 character[saveGameIndex + 1] = Itos(itemBuffer[z].index);
@@ -710,19 +707,19 @@ namespace P3Net.Arx
 
                 saveGameIndex = saveGameIndex + 28;
             }
-            
+
             // Copy spell buffer
             saveGameIndex = 7400; // start location for spell buffer items (70 bytes)
-            for(var z = 0; z < 35; ++z)
+            for (var z = 0; z < 35; ++z)
             {
                 character[saveGameIndex] = Itos(spellBuffer[z].no);
                 character[saveGameIndex + 1] = Itos(spellBuffer[z].percentage);
                 saveGameIndex = saveGameIndex + 2;
             }
-            
+
             // Copy effect buffer
             saveGameIndex = 7470; // start location for effect buffer items (200 bytes)
-            for(var z = 0; z < 50; ++z)
+            for (var z = 0; z < 50; ++z)
             {
                 character[saveGameIndex] = Itos(effectBuffer[z].effect);
                 character[saveGameIndex + 1] = Itos(effectBuffer[z].negativeValue);
@@ -730,31 +727,31 @@ namespace P3Net.Arx
                 character[saveGameIndex + 3] = Itos(effectBuffer[z].duration);
                 saveGameIndex = saveGameIndex + 4;
             }
-            
+
             saveGameIndex = 7670; // start location for object buffer items
-            for(var z = 0; z < 4; ++z)
+            for (var z = 0; z < 4; ++z)
             {
-                for(var x = 0; x < 10; ++x)
+                for (var x = 0; x < 10; ++x)
                 {
                     character[saveGameIndex] = Itos(smithyDailyWares[z][x]);
                     saveGameIndex++;
                 }
             }
-            
+
             saveGameIndex = 7710; // start location for object buffer items
-            for(var z = 0; z < 14; ++z)
+            for (var z = 0; z < 14; ++z)
             {
-                for(var x = 0; x < 6; ++x)
+                for (var x = 0; x < 6; ++x)
                 {
                     character[saveGameIndex] = Itos(tavernDailyFoods[z][x]);
                     saveGameIndex++;
                 }
             }
-            
+
             saveGameIndex = 7794; // start location for object buffer items
-            for(var z = 0; z < 14; ++z)
+            for (var z = 0; z < 14; ++z)
             {
-                for(var x = 0; x < 6; ++x)
+                for (var x = 0; x < 6; ++x)
                 {
                     character[saveGameIndex] = Itos(tavernDailyDrinks[z][x]);
                     saveGameIndex++;
@@ -762,9 +759,9 @@ namespace P3Net.Arx
             }
 
             saveGameIndex = 7878; // start location for object buffer items
-            for(var z = 0; z < 15; ++z)
+            for (var z = 0; z < 15; ++z)
             {
-                for(var x = 0; x < 12; ++x)
+                for (var x = 0; x < 12; ++x)
                 {
                     character[saveGameIndex] = Itos(shopDailyWares[z][x]);
                     saveGameIndex++;
@@ -772,10 +769,10 @@ namespace P3Net.Arx
             }
 
             // Currently inn and tavern job openings are not part of saved game
-			saveGameIndex = 8058; // start location for automapexplored
-            for(var z = 0; z < 5; ++z)
+            saveGameIndex = 8058; // start location for automapexplored
+            for (var z = 0; z < 5; ++z)
             {
-                for(var x = 0; x < 4096; ++x)
+                for (var x = 0; x < 4096; ++x)
                 {
                     character[saveGameIndex] = Itos(autoMapExplored[z][x]);
                     saveGameIndex++;
@@ -786,25 +783,25 @@ namespace P3Net.Arx
             character[28539] = Ftos(plyr.z_offset);
             character[28540] = "Release 0.80";
 
-            string filename = $"data/saves/save{Itos(saveSlot)}.txt";
+            var filename = $"data/saves/save{Itos(saveSlot)}.txt";
             outdata.open(filename); // opens the file
-            if(outdata == null)
-                    cerr << "Error: character file could not be saved" << "\n";
+            if (outdata == null)
+                cerr << "Error: character file could not be saved" << "\n";
 
-            for(var y = 0; y < saveGameSize; ++y)
-                    outdata << character[y] << "\n";
- 
+            for (var y = 0; y < saveGameSize; ++y)
+                outdata << character[y] << "\n";
+
             outdata.close();
-            return (1); // Added by me
+            return true;
         }
 
-        public static void UpdateSaveGameDescriptions()
+        public static void UpdateSaveGameDescriptions ()
         {
             var outdata = new ofstream(); // outdata is like cin
             outdata.open("data/saves/saveGames.txt"); // opens the file
 
-            for(var y = 0; y < 10; ++y)
-                    outdata << saveGameDescriptions[y] << "\n";
+            for (var y = 0; y < 10; ++y)
+                outdata << saveGameDescriptions[y] << "\n";
             outdata.close();
         }
     }

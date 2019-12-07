@@ -57,8 +57,6 @@ namespace P3Net.Arx
 
         static void Main ()
         {
-            string key;
-
             if (!LoadConfig())
                 return; // load screen resolution from arx.ini
 
@@ -78,7 +76,7 @@ namespace P3Net.Arx
                 DisplayMainMenu();
                 UpdateDisplay();
 
-                key = GetSingleKey();
+                var key = GetSingleKey();
 
                 if (key == "1")
                 {

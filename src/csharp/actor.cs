@@ -121,37 +121,32 @@ namespace P3Net.Arx
 
     public partial class GlobalMembers
     {
-        public static readonly int noOfEncounters = 84;
-        public static readonly int noOfMonsterWeapons = 250;
-
-        public static readonly int noOfWeapons = 111;
-        public static readonly int monstersFileSize = 45056;
+        public const int noOfEncounters = 84;
+        public const int noOfMonsterWeapons = 250;
+               
+        public const int noOfWeapons = 111;
+        public const int monstersFileSize = 45056;
 
         public static string ReadBinaryString ( int stringOffset )
         {
-            stringstream ss = new stringstream();
-            int z = stringOffset; // current location in the binary
-            int c = 0; // current byte
-                       //string n = "";      // string to store built up string
-            string result = "";
-
+            var ss = new stringstream();
+            var z = stringOffset; // current location in the binary
+            var c = 0; // current byte
+            
             while (!(monstersBinary[z] == 0))
             {
                 c = monstersBinary[z];
                 ss << (char)c;
                 z++;
             }
-            result = ss.str();
-            //cout << "Attack: " << result << " ( offset: " << z << ") - " << currentWeapon << "\n";
-            return result;
+            
+            return ss.str();
         }
 
         public static void LoadEncounters ()
         {
-            std::ifstream instream = new std::ifstream();
-            string junk;
-            string data;
-            string junk2;
+            var instream = new ifstream();
+            
             instream.open("data/map/encounters.txt");
             if (instream == null)
             {
@@ -159,19 +154,18 @@ namespace P3Net.Arx
                 Console.Write("\n");
             }
 
-            for (int i = 0; i < noOfEncounters; ++i) // number of monsters
+            for (var i = 0; i < noOfEncounters; ++i) // number of monsters
             {
                 string junk;
                 string line;
-                string text;
-                int attributes = 48; // number of lines making up each record
-                string.size_type idx = new string.size_type();
+                var attributes = 48; // number of lines making up each record
+
                 getline(instream, junk); // read first line as blank
                 for (int a = 0; a < attributes; ++a) // number of attributes per record
                 {
                     getline(instream, line);
-                    idx = line.IndexOf(':');
-                    text = line.Substring(idx + 1);
+                    var idx = line.IndexOf(':');
+                    var text = line.Substring(idx + 1);
 
                     if (a == 0)
                         Monsters[i].name = text;
@@ -282,10 +276,8 @@ namespace P3Net.Arx
         public static void LoadMonstersBinary ()
         {
             // Loads 42kb of monster binary data into the "monstersBinary" array
-            FileStream fp; // file pointer - used when reading files
-            string tempString = new string(new char[100]); // temporary string
-            tempString = string.Format("{0}{1}", "data/map/", "monsters.bin");
-            fp = fopen(tempString, "rb");
+            var tempString = String.Format("{0}{1}", "data/map/", "monsters.bin");
+            var fp = fopen(tempString, "rb");
             if (fp != null)
             {
                 for (int i = 0; i < monstersFileSize; i++)
@@ -297,7 +289,7 @@ namespace P3Net.Arx
         public static void InitialiseMonsterOffsets ()
         {
             // Temp routine to fill all values with FBI Agent until they are added below
-            for (int i = 0; i < noOfEncounters; i++)
+            for (var i = 0; i < noOfEncounters; i++)
                 monsterOffsets[i] = 0x1D1D; // Novice
 
             monsterOffsets[0] = 0x00; // Devourer
@@ -377,27 +369,26 @@ namespace P3Net.Arx
             // Reads through the binary block and creates entry in Monsters[]
             // Bytes 2, 4, 6, 8 and 10 appear to always have a value of 0xAA
 
-            int idx = 0; // Start byte for each monster
             currentWeapon = 0; // Index for next weapon or attack to be added to monsterWeapons[]
 
-            for (int i = 0; i < noOfEncounters; i++)
+            for (var i = 0; i < noOfEncounters; i++)
             {
-                idx = monsterOffsets[i]; // Sets current monster start address in binary block
+                var idx = monsterOffsets[i]; // Sets current monster start address in binary block
 
                 maxNumberEncountered = monstersBinary[idx];
 
-                int animationNumber = monstersBinary[idx + 0x1D];
+                var animationNumber = monstersBinary[idx + 0x1D];
                 Monsters[i].image = animations[animationNumber].startFrame;
                 Monsters[i].image2 = animations[animationNumber].endFrame;
 
-                int nameTextOffset = idx + monstersBinary[(idx + 1)];
+                var nameTextOffset = idx + monstersBinary[(idx + 1)];
                 ReadMonsterNameText(i, nameTextOffset);
 
                 // Note: idx+3 might be offset for plural name - if one exists
                 if (maxNumberEncountered > 1)
                     ReadMonsterPluralNameText(i, pluralNameOffset);
 
-                int deathTextOffset = idx + 66;
+                var deathTextOffset = idx + 66;
                 ReadMonsterDeathText(i, deathTextOffset);
 
                 Monsters[i].hp = monstersBinary[idx + 0x23];
@@ -466,9 +457,9 @@ namespace P3Net.Arx
 
                 // Weapon / attack reading
 
-                int weapon1 = idx + monstersBinary[idx + 5];
-                int weapon2 = idx + monstersBinary[idx + 7];
-                int weapon3 = idx + monstersBinary[idx + 9];
+                var weapon1 = idx + monstersBinary[idx + 5];
+                var weapon2 = idx + monstersBinary[idx + 7];
+                var weapon3 = idx + monstersBinary[idx + 9];
 
                 if (i == (int)Encounters.Thief)
                 {
@@ -503,10 +494,10 @@ namespace P3Net.Arx
             if (monsterNo == 1)
                 nameOffset = 0x2AA;
 
-            stringstream ss = new stringstream();
-            int z = nameOffset; // current location in the binary
-            int c = 0; // current byte
-            string n = ""; // string to store built up string
+            var ss = new stringstream();
+            var z = nameOffset; // current location in the binary
+            var c = 0; // current byte
+            var n = ""; // string to store built up string
 
             // Loop through until 0 found
             // Some special monster classes have multiple entries here
@@ -528,10 +519,10 @@ namespace P3Net.Arx
             if (monsterNo == 1)
                 pluralNameOffset = 0x2CF;
 
-            stringstream ss = new stringstream();
-            int z = pluralNameOffset; // current location in the binary
-            int c = 0; // current byte
-            string n = ""; // string to store built up string
+            var ss = new stringstream();
+            var z = pluralNameOffset; // current location in the binary
+            var c = 0; // current byte
+            var n = ""; // string to store built up string
 
             // Loop through until 0 found
             // Some special monster classes have multiple entries here
@@ -552,10 +543,10 @@ namespace P3Net.Arx
             if (monsterNo == (int)Encounters.Devourer)
                 deathOffset = 0x42;
 
-            stringstream ss = new stringstream();
-            int z = deathOffset; // current location in the binary
-            int c = 0; // current byte
-            string n = ""; // string to store built up string
+            var ss = new stringstream();
+            var z = deathOffset; // current location in the binary
+            var c = 0; // current byte
+            var n = ""; // string to store built up string
 
             // Loop through until 0 found
             // Some special monster classes have multiple entries here
@@ -574,7 +565,7 @@ namespace P3Net.Arx
 
         public static void CreateMonsterWeapon ( int currentWeapon, int weaponOffset )
         {
-            int weaponNameOffset = weaponOffset + 6;
+            var weaponNameOffset = weaponOffset + 6;
             monsterWeapons[currentWeapon].name = ReadBinaryString(weaponNameOffset);
 
             // byte 2 is object length, byte 3 is unknown
@@ -582,7 +573,7 @@ namespace P3Net.Arx
             monsterWeapons[currentWeapon].alignment = monstersBinary[weaponOffset + 3];
             monsterWeapons[currentWeapon].weight = monstersBinary[weaponOffset + 4];
 
-            int wAttributes = (weaponOffset + monstersBinary[weaponOffset + 1]) - 20; // Working out from the end of the weapon object
+            var wAttributes = (weaponOffset + monstersBinary[weaponOffset + 1]) - 20; // Working out from the end of the weapon object
 
             monsterWeapons[currentWeapon].melee = monstersBinary[wAttributes + 1];
             monsterWeapons[currentWeapon].ammo = monstersBinary[wAttributes + 2];
@@ -606,10 +597,6 @@ namespace P3Net.Arx
 
             int weaponDescription = (monsterWeapons[currentWeapon].flags);
         }
-
-        //extern monster Monsters[noOfEncounters];
-        //extern weapon monsterWeapons[noOfMonsterWeapons];
-        //extern byte monstersBinary[monstersFileSize];
 
         public static MonsterFramePair[] animations =
         {
@@ -667,5 +654,9 @@ namespace P3Net.Arx
         public static int pluralNameOffset;
         public static int maxNumberEncountered;
         public static int currentWeapon;
+
+        //extern monster Monsters[noOfEncounters];
+        //extern weapon monsterWeapons[noOfMonsterWeapons];
+        //extern byte monstersBinary[monstersFileSize];
     }
 }

@@ -13,19 +13,18 @@ using System.Linq;
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {        
-        public static void ShopLift()
+    {
+        public static void ShopLift ()
         {
             var liftMenu = 1; // high level menu
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
 
             LoadShopImage(22);
 
-            while(liftMenu > 0)
+            while (liftMenu > 0)
             {
-                while(liftMenu == 1) // main menu
+                while (liftMenu == 1) // main menu
                 {
                     ClearShopDisplay();
                     CyText(1, "In the elevator you find three buttons.");
@@ -35,11 +34,11 @@ namespace P3Net.Arx
                     BText(11, 7, "(3) The blue button");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "0")
+                    if (key == "0")
                         liftMenu = 0;
-                    if(key == "down")
+                    if (key == "down")
                         liftMenu = 0;
                 }
             }

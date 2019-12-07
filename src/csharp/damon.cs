@@ -8,8 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -33,30 +31,22 @@ namespace P3Net.Arx
 
         public static void Message ( string txt )
         {
-            string key = "";
-            while (key != "SPACE")
+            do
             {
                 ClearShopDisplay();
                 CText(txt);
                 UpdateDisplay();
-                key = GetSingleKey();
-            }
+                var key = GetSingleKey();
+            } while (key != "SPACE");
         }
 
         public static void ShopDamon ()
         {
-            int itemChoice;
-            int itemCost;
-            int itemLowestCost;
-            int damonOffer;
-            int itemNo;
-            int damonMenu = 1; // high level menu
-            string str;
-            string key;
+            var damonMenu = 1; // high level menu
             plyr.status = 2; // shopping
-            int menuStartItem = 0;
-            int offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
-            int offerRounds = 0;
+            var menuStartItem = 0;
+            var offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
+            var offerRounds = 0;
 
             StockDamon(); // Calculate provisions stock level - torches, food packets etc
 
@@ -89,7 +79,7 @@ namespace P3Net.Arx
                     BText(6, 8, "(0) Leave");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "0")
                         damonMenu = 0;
                     if (key == "down")
@@ -116,7 +106,7 @@ namespace P3Net.Arx
                     BText(6, 8, "(0) Buy something else");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "0")
                         damonMenu = 1;
                     if (key == "1")
@@ -192,8 +182,8 @@ namespace P3Net.Arx
                     }
 
                     // check for stock in other items
-                    int provisionCost = 5;
-                    int provisionStock = 0;
+                    var provisionCost = 5;
+                    var provisionStock = 0;
                     if (provisionDescription == "food packets")
                     {
                         provisionCost = 6;
@@ -222,7 +212,7 @@ namespace P3Net.Arx
 
                     // add look up prov cost here
                     provMessage = "How many " + provisionDescription + " do you want@@at " + Itos(provisionCost) + " silvers each?";
-                    string atHandMessage = "I only have " + Itos(provisionStock) + " to hand.";
+                    var atHandMessage = "I only have " + Itos(provisionStock) + " to hand.";
                     quantity = InputNumber(provMessage);
                     if (quantity > provisionStock)
                     {
@@ -264,7 +254,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 32)
                 {
-                    bool fundsAvailable = CheckCoins(0, total, 0);
+                    var fundsAvailable = CheckCoins(0, total, 0);
                     if (!fundsAvailable)
                         Message("Thou would be wise to check thy funds@@BEFORE purchasing!");
                     else
@@ -305,8 +295,7 @@ namespace P3Net.Arx
                 {
                     offerStatus = 0;
                     offerRounds = 0;
-                    int maxMenuItems = 6;
-
+                    var maxMenuItems = 6;
 
                     ClearShopDisplay();
 
@@ -315,32 +304,29 @@ namespace P3Net.Arx
                     CyText(0, "                      0            ");
                     SetFontColour(215, 215, 215, 255);
 
-                    for (int i = 0; i < maxMenuItems; i++)
+                    for (var i = 0; i < maxMenuItems; i++)
                     {
 
-                        int itemNo = menuStartItem + i;
+                        var itemNo = menuStartItem + i;
                         itemNameOffset = (damonClothingWares[itemNo].itemRef) + 6;
                         str = "( ) " + ReadNameString(itemNameOffset);
                         BText(1, (2 + i), str); //was 4
                         BText(1, (2 + i), "                                 silvers");
                     }
                     DisplaySilverCoins();
-
-                    int itemCost;
-                    int x;
-                    for (int i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
+                    
+                    for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
-                        string itemCostDesc;
+                        var itemNo = menuStartItem + i;
+                        var itemCost = damonClothingWares[itemNo].price;
 
-                        int itemNo = menuStartItem + i;
-                        itemCost = damonClothingWares[itemNo].price;
-
+                        int x = 0;
                         if (itemCost < 1000)
                             x = 30;
                         if (itemCost < 100)
                             x = 31;
 
-                        itemCostDesc = ToCurrency(itemCost);
+                        var itemCostDesc = ToCurrency(itemCost);
                         BText(x, (i + 2), itemCostDesc);
                     }
 
@@ -359,7 +345,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         itemChoice = 0;
@@ -401,12 +387,15 @@ namespace P3Net.Arx
 
                 }
 
+                int itemLowestCost = 0;
+                int damonOffer = 0;
+
                 while (damonMenu == 22) // buy item?
                 {
-                    itemNo = menuStartItem + itemChoice;
-                    itemCost = damonClothingWares[itemNo].price;
-                    float tempitemcost = damonClothingWares[itemNo].price;
-                    float temp = (tempitemcost / 100) * 75;
+                    var itemNo = menuStartItem + itemChoice;
+                    var itemCost = damonClothingWares[itemNo].price;
+                    var tempitemcost = damonClothingWares[itemNo].price;
+                    var temp = (tempitemcost / 100F) * 75;
 
                     //MLT: Downcast
                     itemLowestCost = (int)temp;
@@ -417,6 +406,8 @@ namespace P3Net.Arx
 
                 while (damonMenu == 23) // buy item?
                 {
+                    var str = "";
+
                     ClearShopDisplay();
                     if (offerStatus == 0)
                     {
@@ -451,7 +442,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         if (!CheckCoins(0, damonOffer, 0))
@@ -469,11 +460,11 @@ namespace P3Net.Arx
 
                 while (damonMenu == 24) // Agree to buy item and have funds
                 {
-                    int itemNo = menuStartItem + itemChoice;
+                    var itemNo = menuStartItem + itemChoice;
                     ClearShopDisplay();
                     CText("Excellent decision");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key != "")
 
@@ -494,7 +485,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 26) // what is your offer
                 {
-                    int silvers = InputValue("How many silvers do you offer?", 3);
+                    var silvers = InputValue("How many silvers do you offer?", 3);
 
                     // check offer
                     if (silvers == 0)
@@ -508,7 +499,6 @@ namespace P3Net.Arx
                     }
                     if ((silvers >= itemLowestCost) && (silvers < itemCost))
                     {
-
                         offerStatus = 2;
                         offerRounds++;
                         if (offerRounds > 2)
@@ -559,7 +549,7 @@ namespace P3Net.Arx
                 {
                     offerStatus = 0;
                     offerRounds = 0;
-                    int maxMenuItems = 6;
+                    var maxMenuItems = 6;
 
                     ClearShopDisplay();
 
@@ -568,9 +558,9 @@ namespace P3Net.Arx
                     CyText(0, "                      0            ");
                     SetFontColour(215, 215, 215, 255);
 
-                    for (int i = 0; i < maxMenuItems; i++)
+                    for (var i = 0; i < maxMenuItems; i++)
                     {
-                        int itemNo = menuStartItem + i;
+                        var itemNo = menuStartItem + i;
 
                         itemNameOffset = (damonBattleGearWares[itemNo].itemRef) + 6;
                         str = "( ) " + ReadNameString(itemNameOffset);
@@ -579,21 +569,18 @@ namespace P3Net.Arx
                     }
                     DisplaySilverCoins();
 
-                    int itemCost;
-                    int x;
-                    for (int i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
+                    for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
-                        string itemCostDesc;
+                        var itemNo = menuStartItem + i;
+                        var itemCost = damonBattleGearWares[itemNo].price;
 
-                        int itemNo = menuStartItem + i;
-                        itemCost = damonBattleGearWares[itemNo].price;
-
+                        int x = 0;
                         if (itemCost < 1000)
                             x = 30;
                         if (itemCost < 100)
                             x = 31;
 
-                        itemCostDesc = ToCurrency(itemCost);
+                        var itemCostDesc = ToCurrency(itemCost);
                         BText(x, (i + 2), itemCostDesc);
                     }
 
@@ -612,7 +599,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         itemChoice = 0;
@@ -657,8 +644,8 @@ namespace P3Net.Arx
                 {
                     itemNo = menuStartItem + itemChoice;
                     itemCost = damonBattleGearWares[itemNo].price;
-                    float tempitemcost = damonBattleGearWares[itemNo].price;
-                    float temp = (tempitemcost / 100) * 75;
+                    var tempitemcost = damonBattleGearWares[itemNo].price;
+                    var temp = (tempitemcost / 100F) * 75;
 
                     //MLT: Downcast to int
                     itemLowestCost = (int)temp;
@@ -668,6 +655,8 @@ namespace P3Net.Arx
 
                 while (damonMenu == 18) // buy item?
                 {
+                    var str = "";
+
                     ClearShopDisplay();
                     if (offerStatus == 0)
                     {
@@ -703,7 +692,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                     {
                         if (!CheckCoins(0, damonOffer, 0))
@@ -721,7 +710,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 16) // what is your offer
                 {
-                    int silvers = InputValue("How many silvers do you offer?", 3);
+                    var silvers = InputValue("How many silvers do you offer?", 3);
 
                     // check offer
                     if (silvers == 0)
@@ -766,7 +755,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CText("Leave my shoppe and don't return@@until you are ready to make a decent@@offer!");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key != "")
                     {
@@ -782,7 +771,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     CText("I'll take it!");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key != "")
                     {
@@ -801,12 +790,12 @@ namespace P3Net.Arx
 
                 while (damonMenu == 5) // Agree to buy item and have funds
                 {
-                    int itemNo = menuStartItem + itemChoice;
+                    var itemNo = menuStartItem + itemChoice;
                     ClearShopDisplay();
                     CText("It will serve you well!");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key != "")
 
@@ -814,19 +803,19 @@ namespace P3Net.Arx
                         // Add a weight & inventory limit check prior to taking money
 
                         DeductCoins(0, damonOffer, 0);
-                        int objectNumber = damonBattleGearWares[itemNo].itemRef; // ref within Weapons array
+                        var objectNumber = damonBattleGearWares[itemNo].itemRef; // ref within Weapons array
 
                         if (damonBattleGearWares[itemNo].type == 178)
                         {
                             // Weapon item
-                            int weaponOffset = damonBattleGearWares[itemNo].itemRef;
+                            var weaponOffset = damonBattleGearWares[itemNo].itemRef;
                             CreateInventoryItem(weaponOffset);
                         }
 
                         if (damonBattleGearWares[itemNo].type == 177)
                         {
                             // Armour item
-                            int armourOffset = damonBattleGearWares[itemNo].itemRef;
+                            var armourOffset = damonBattleGearWares[itemNo].itemRef;
                             CreateInventoryItem(armourOffset);
                         }
 
@@ -840,7 +829,7 @@ namespace P3Net.Arx
                     CText("Thine eyes are bigger than thy purse!");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
                     if (key != "")
                         damonMenu = 3;
@@ -858,7 +847,7 @@ namespace P3Net.Arx
                     BText(6, 8, "(0) Done");
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "1")
                         damonMenu = 8;
                     if (key == "2")
@@ -871,7 +860,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 8) // gems exchange currency menu
                 {
-                    string str = "I will give you 22 silvers@for each gem, big or small.@@How many would you like to exchange?";
+                    var str = "I will give you 22 silvers@for each gem, big or small.@@How many would you like to exchange?";
                     gemsToSell = InputNumber(str);
 
                     if (gemsToSell == 0)
@@ -884,28 +873,26 @@ namespace P3Net.Arx
 
                 while (damonMenu == 9) // Insufficient gems!
                 {
-                    str = "You have only " + Itos(plyr.gems) + "!";
+                    var str = "You have only " + Itos(plyr.gems) + "!";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         damonMenu = 7;
                 }
 
                 while (damonMenu == 10) // Gems sold!
                 {
-                    int totalSilvers = 22 * gemsToSell;
-                    int goldFromGems = 0;
-                    int silverFromGems = 0;
-                    silverFromGems = totalSilvers % 10;
-                    goldFromGems = (totalSilvers - silverFromGems) / 10;
+                    var totalSilvers = 22 * gemsToSell;
+                    var silverFromGems = totalSilvers % 10;
+                    var goldFromGems = (totalSilvers - silverFromGems) / 10;
 
-                    str = "Here is " + Itos(goldFromGems) + " gold and " + Itos(silverFromGems) + " silver coins.";
+                    var str = "Here is " + Itos(goldFromGems) + " gold and " + Itos(silverFromGems) + " silver coins.";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         plyr.gems -= gemsToSell;
@@ -917,7 +904,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 11) // jewels exchange currency menu
                 {
-                    string str = "I can't tell one jewel from another@so I pay a flat rate of 32 per jewel.@@How many do you wish to sell?";
+                    var str = "I can't tell one jewel from another@so I pay a flat rate of 32 per jewel.@@How many do you wish to sell?";
                     jewelsToSell = InputNumber(str);
                     if (jewelsToSell == 0)
                         damonMenu = 7;
@@ -929,27 +916,25 @@ namespace P3Net.Arx
 
                 while (damonMenu == 12) // Insufficient jewels!
                 {
-                    str = "You have only " + Itos(plyr.jewels) + "!";
+                    var str = "You have only " + Itos(plyr.jewels) + "!";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                         damonMenu = 7;
                 }
 
                 while (damonMenu == 13) // jewels sold!
                 {
-                    int totalSilvers = 32 * jewelsToSell;
-                    int goldFromjewels = 0;
-                    int silverFromjewels = 0;
-                    silverFromjewels = totalSilvers % 10;
-                    goldFromjewels = (totalSilvers - silverFromjewels) / 10;
-                    str = "Here is " + Itos(goldFromjewels) + " gold and " + Itos(silverFromjewels) + " silver coins.";
+                    var totalSilvers = 32 * jewelsToSell;
+                    var silverFromjewels = totalSilvers % 10;
+                    var goldFromjewels = (totalSilvers - silverFromjewels) / 10;
+                    var str = "Here is " + Itos(goldFromjewels) + " gold and " + Itos(silverFromjewels) + " silver coins.";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         plyr.jewels -= jewelsToSell;
@@ -967,7 +952,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "Y")
                     {
                         totalSilver = plyr.silver + (plyr.gold * 10) + ((plyr.copper - (plyr.copper % 10)) / 10);
@@ -979,6 +964,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 15) // exchange silver & copper for gold
                 {
+                    var str = "";
 
                     ClearShopDisplay();
                     if (totalSilver < 11)
@@ -990,7 +976,7 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
                     if (key == "SPACE")
                     {
                         if (totalSilver > 10)
@@ -1010,20 +996,18 @@ namespace P3Net.Arx
 
         public static void StockDamon ()
         {
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
                 damonStock[i] = Randn(1, 5) + 8;
         }
 
         public static void LoadDamonBinary ()
         {
             // Loads armour,weapons and clothing binary data into the "damonBinary" array
-            FileStream fp; // file pointer - used when reading files
-            string tempString = new string(new char[100]); // temporary string
-            tempString = string.Format("{0}{1}", "data/map/", "DamonItems.bin");
-            fp = fopen(tempString, "rb");
+            var tempString = String.Format("{0}{1}", "data/map/", "DamonItems.bin");
+            var fp = fopen(tempString, "rb");
             if (fp != null)
             {
-                for (int i = 0; i < damonFileSize; i++)
+                for (var i = 0; i < damonFileSize; i++)
                     damonBinary[i] = fgetc(fp);
             }
             fclose(fp);
@@ -1060,9 +1044,9 @@ namespace P3Net.Arx
             int parry;
             int useStrength;
 
-            int offset = startByte;
-            int itemType = damonBinary[offset];
-            string itemName = ReadNameString((offset + 6));
+            var offset = startByte;
+            var itemType = damonBinary[offset];
+            var itemName = ReadNameString((offset + 6));
 
             if (itemType == 3)
             {
@@ -1157,25 +1141,23 @@ namespace P3Net.Arx
                 parry = 0;
             }
 
-            int newItemRef = CreateItem(itemType, index, itemName, hp, maxHP, flags, minStrength, minDexterity, useStrength, blunt, sharp, earth, air, fire, water, power, magic, good, evil, cold, weight, alignment, melee, ammo, parry);
+            var newItemRef = CreateItem(itemType, index, itemName, hp, maxHP, flags, minStrength, minDexterity, useStrength, blunt, sharp, earth, air, fire, water, power, magic, good, evil, cold, weight, alignment, melee, ammo, parry);
             itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
         }
 
         public static string ReadNameString ( int stringOffset )
         {
-            stringstream ss = new stringstream();
-            int z = stringOffset; // current location in the binary
-            int c = 0; // current byte
-            string result = "";
+            var ss = new stringstream();
+            var z = stringOffset; // current location in the binary
 
             while (!(damonBinary[z] == 0))
             {
-                c = damonBinary[z];
+                var c = damonBinary[z];
                 ss << (char)c;
                 z++;
             }
-            result = ss.str();
-            return result;
+            
+            return ss.str();
         }
 
         public static byte[] damonBinary = new byte[damonFileSize];
@@ -1187,6 +1169,8 @@ namespace P3Net.Arx
 
         // provision variables
         public static string provisionDescription;
+
+        //TODO: Why are these global?
         public static string provMessage;
         public static int quantity;
         public static int total;
@@ -1223,7 +1207,5 @@ namespace P3Net.Arx
             new DamonClothingItem() { type = 180, price = 62, itemRef = 0x358 },
             new DamonClothingItem() { type = 180, price = 82, itemRef = 0x375 }
         };
-
-        //extern buffer_item itemBuffer[100];
     }
 }

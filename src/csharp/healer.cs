@@ -18,32 +18,30 @@ namespace P3Net.Arx
         public static int clarityPrice = 0;
         public static int diagnosePrice = 0;
         public static int diseasesPrice = 0;
-        
+
         // Base prices
         public static int healPrice = 0;
         public static int poisonsPrice = 0;
 
-        public static int GetHealerNo()
+        public static int GetHealerNo ()
         {
-            int healer_no;
-            if(plyr.location == 74)
+            var healer_no = 0;
+            if (plyr.location == 74)
                 healer_no = 1; // One Way Soothers
-            if(plyr.location == 75)
+            if (plyr.location == 75)
                 healer_no = 2; // Alpha Omega Healers
             return healer_no;
         }
 
-        public static void HealerShopHealWounds()
+        public static void HealerShopHealWounds ()
         {
-            string str = $"Cure how many hits at@@ {Itos(healPrice)} coppers each?";
-            int hpToHealInput = InputValue(str, 14);
-            var keynotpressed = true;
-            int hpToHeal = hpToHealInput * healPrice;
-            if(hpToHealInput > 0)
-            {
-                string key;
+            var str = $"Cure how many hits at@@ {Itos(healPrice)} coppers each?";
+            var hpToHealInput = InputValue(str, 14);
 
-                if(!CheckCoins(0, 0, hpToHeal))
+            var hpToHeal = hpToHealInput * healPrice;
+            if (hpToHealInput > 0)
+            {
+                if (!CheckCoins(0, 0, hpToHeal))
                     // Insufficient funds
                     ModuleMessage("I'm sorry... You have not the funds.");
                 else
@@ -52,7 +50,7 @@ namespace P3Net.Arx
                     ModuleMessage("IT SHALL BE DONE!");
                     DeductCoins(0, 0, hpToHeal);
                     plyr.hp = plyr.hp + hpToHealInput;
-                    if(plyr.hp > plyr.maxhp)
+                    if (plyr.hp > plyr.maxhp)
                         plyr.hp = plyr.maxhp;
                     HealerUpdateLastServiceTime();
                     HealerUpdatePrices();
@@ -60,33 +58,30 @@ namespace P3Net.Arx
             }
         }
 
-        public static void HealerUpdateLastServiceTime()
+        public static void HealerUpdateLastServiceTime ()
         {
-            int healerNo = GetHealerNo();
+            var healerNo = GetHealerNo();
             healerNo--;
             plyr.healerDays[healerNo] = plyr.days;
             plyr.healerHours[healerNo] = plyr.hours;
             plyr.healerMinutes[healerNo] = plyr.minutes;
         }
 
-        public static void HealerUpdatePrices()
+        public static void HealerUpdatePrices ()
         {
-            int days;
-            int hours;
-            int minutes;
-            int healerNo = GetHealerNo();
+            var healerNo = GetHealerNo();
             healerNo--;
-            days = plyr.healerDays[healerNo];
-            hours = plyr.healerHours[healerNo];
-            minutes = plyr.healerMinutes[healerNo];
+            var days = plyr.healerDays[healerNo];
+            var hours = plyr.healerHours[healerNo];
+            var minutes = plyr.healerMinutes[healerNo];
             var n = 1;
-            if(days == plyr.days)
+            if (days == plyr.days)
                 n = 2;
-            if((days == plyr.days) && (hours == plyr.hours))
+            if ((days == plyr.days) && (hours == plyr.hours))
                 n = 4;
-            if((days == plyr.days) && (hours == plyr.hours) && (minutes == plyr.minutes))
+            if ((days == plyr.days) && (hours == plyr.hours) && (minutes == plyr.minutes))
                 n = 8;
-            if((days == 0) && (hours == 0) && (minutes == 0))
+            if ((days == 0) && (hours == 0) && (minutes == 0))
                 n = 1; // First time visitor
 
             healPrice = 10 * n;
@@ -97,18 +92,17 @@ namespace P3Net.Arx
             diagnosePrice = 10 * n;
         }
 
-        public static void ShopHealer()
+        public static void ShopHealer ()
         {
             var healerMenu = 1; // high level menu
-            string str;
-            string key;
+
             plyr.status = 2; // shopping
 
             // Both healers have the same base prices
             HealerUpdatePrices();
 
-            int healerNo = GetHealerNo();
-            if(healerNo == 1) // One Way
+            var healerNo = GetHealerNo();
+            if (healerNo == 1) // One Way
             {
                 SetAutoMapFlag(plyr.map, 28, 34);
                 SetAutoMapFlag(plyr.map, 29, 34);
@@ -120,7 +114,7 @@ namespace P3Net.Arx
                 SetAutoMapFlag(plyr.map, 29, 36);
                 SetAutoMapFlag(plyr.map, 30, 36);
             }
-            if(healerNo == 2) // Alphe Omega
+            if (healerNo == 2) // Alphe Omega
             {
                 // TODO Add automap co-ordinates for 2nd healer!
                 SetAutoMapFlag(plyr.map, 32, 44);
@@ -131,8 +125,8 @@ namespace P3Net.Arx
 
             // determine odd or even hour and if this healer is open
             var oddHour = false;
-            int h = plyr.hours;
-            if((h == 1) ||
+            var h = plyr.hours;
+            if ((h == 1) ||
                 (h == 3) ||
                 (h == 5) ||
                 (h == 7) ||
@@ -146,12 +140,12 @@ namespace P3Net.Arx
                 (h == 23))
                 oddHour = true;
             var healerOpen = false;
-            if((healerNo == 1) && (oddHour))
+            if ((healerNo == 1) && (oddHour))
                 healerOpen = true;
-            if((healerNo == 2) && (!oddHour))
+            if ((healerNo == 2) && (!oddHour))
                 healerOpen = true;
 
-            if(healerOpen)
+            if (healerOpen)
             {
                 LoadShopImage(15);
                 healerMenu = 1;
@@ -161,9 +155,9 @@ namespace P3Net.Arx
                 healerMenu = 2;
             }
 
-            while(healerMenu > 0)
+            while (healerMenu > 0)
             {
-                while(healerMenu == 1) // main menu
+                while (healerMenu == 1) // main menu
                 {
                     ClearShopDisplay();
 
@@ -178,29 +172,29 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
-                    
-                    if(key == "0")
+                    var key = GetSingleKey();
+
+                    if (key == "0")
                         healerMenu = 0;
-                    if(key == "down")
+                    if (key == "down")
                         healerMenu = 0;
-                    if(key == "1")
+                    if (key == "1")
                         HealerShopHealWounds();
-                    if(key == "2")
+                    if (key == "2")
                         healerMenu = 3;
-                    if(key == "3")
+                    if (key == "3")
                         healerMenu = 4;
-                    if(key == "4")
+                    if (key == "4")
                         healerMenu = 5;
                 }
 
-                while(healerMenu == 2) // at bar, table or booth menu
+                while (healerMenu == 2) // at bar, table or booth menu
                 {
                     ModuleMessage("It looks as though the@@Healer is not here.");
                     healerMenu = 0;
                 }
 
-                while(healerMenu == 3) // Cleanse menu
+                while (healerMenu == 3) // Cleanse menu
                 {
                     ClearShopDisplay();
 
@@ -217,13 +211,13 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "0")
+                    if (key == "0")
                         healerMenu = 1;
-                    if(key == "2")
+                    if (key == "2")
                     {
-                        if(!CheckCoins(0, 0, diseasesPrice))
+                        if (!CheckCoins(0, 0, diseasesPrice))
                             ModuleMessage("I'm sorry... You have not the funds.");
                         else
                         {
@@ -239,9 +233,9 @@ namespace P3Net.Arx
                         }
                         healerMenu = 1;
                     }
-                    if(key == "1")
+                    if (key == "1")
                     {
-                        if(!CheckCoins(0, 0, poisonsPrice))
+                        if (!CheckCoins(0, 0, poisonsPrice))
                             ModuleMessage("I'm sorry... You have not the funds.");
                         else
                         {
@@ -257,9 +251,9 @@ namespace P3Net.Arx
                         }
                         healerMenu = 1;
                     }
-                    if(key == "3")
+                    if (key == "3")
                     {
-                        if(!CheckCoins(0, 0, alcoholPrice))
+                        if (!CheckCoins(0, 0, alcoholPrice))
                             ModuleMessage("I'm sorry... You have not the funds.");
                         else
                         {
@@ -273,7 +267,7 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(healerMenu == 4) // Remove delusions
+                while (healerMenu == 4) // Remove delusions
                 {
                     ClearShopDisplay();
 
@@ -283,13 +277,13 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "N")
+                    if (key == "N")
                         healerMenu = 1;
-                    if(key == "Y")
+                    if (key == "Y")
                     {
-                        if(!CheckCoins(0, 0, clarityPrice))
+                        if (!CheckCoins(0, 0, clarityPrice))
                             ModuleMessage("I'm sorry... You have not the funds.");
                         else
                         {
@@ -303,7 +297,7 @@ namespace P3Net.Arx
                     }
                 }
 
-                while(healerMenu == 5) // Diagnose
+                while (healerMenu == 5) // Diagnose
                 {
                     ClearShopDisplay();
 
@@ -313,20 +307,20 @@ namespace P3Net.Arx
                     DisplayCoins();
                     UpdateDisplay();
 
-                    key = GetSingleKey();
+                    var key = GetSingleKey();
 
-                    if(key == "N")
+                    if (key == "N")
                         healerMenu = 1;
-                    if(key == "Y")
+                    if (key == "Y")
                     {
-                        if(!CheckCoins(0, 0, diagnosePrice))
+                        if (!CheckCoins(0, 0, diagnosePrice))
                             ModuleMessage("I'm sorry... You have not the funds.");
                         else
                         {
                             ModuleMessage("IT SHALL BE DONE!");
                             DeductCoins(0, 0, diagnosePrice);
                             // Make diseases visible
-                            if((plyr.diseases[0] > 0) && (plyr.diseases[0] < 15))
+                            if ((plyr.diseases[0] > 0) && (plyr.diseases[0] < 15))
                                 plyr.diseases[0] = 15;
                             HealerUpdateLastServiceTime();
                             HealerUpdatePrices();

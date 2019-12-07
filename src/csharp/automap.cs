@@ -18,16 +18,15 @@ namespace P3Net.Arx
         public static void Automap ()
         {
             plyr.status = 0;
-            bool mapComplete = false;
+            var mapComplete = false;
 
             while (!mapComplete)
             {
-                string single_key;
                 ClearDisplay();
                 DrawFullAutomap();
                 UpdateDisplay();
 
-                single_key = GetSingleKey();
+                var single_key = GetSingleKey();
                 if (single_key == "SPACE")
                     mapComplete = true;
                 if (single_key == "RETURN")
@@ -42,16 +41,15 @@ namespace P3Net.Arx
 
         public static void SetAutoMapFlag ( int mapno, int x, int y )
         {
-            int cellNo = GetMapIndex(x, y);
+            var cellNo = GetMapIndex(x, y);
             autoMapExplored[mapno][cellNo] = true;
         }
 
         public static void ClearAutoMaps ()
         {
-
-            for (int y = 0; y < 5; y++)
+            for (var y = 0; y < 5; y++)
             {
-                for (int x = 0; x < 4096; x++)
+                for (var x = 0; x < 4096; x++)
                     autoMapExplored[y][x] = false;
             }
         }
@@ -84,21 +82,21 @@ namespace P3Net.Arx
                 }
 
                 pixelSize = 16;
-                int automapHeight = 9; // how many map cells displayed including central player cell + 1 for for loop
-                int automapWidth = 9; //was 9
+                var automapHeight = 9; // how many map cells displayed including central player cell + 1 for for loop
+                var automapWidth = 9; //was 9
 
-                int startx = 0; // map cell coords for first x
-                int starty = 0; // map cell coords for first y
-                int currentx = 0;
-                int currenty = 0;
-                int pixelx = 0;
-                int pixely = 0;
+                var startx = 0; // map cell coords for first x
+                var starty = 0; // map cell coords for first y
+                var currentx = 0;
+                var currenty = 0;
+                var pixelx = 0;
+                var pixely = 0;
                 startx = plyr.x - ((automapWidth - 1) / 2);
                 starty = plyr.y - ((automapHeight - 1) / 2);
 
-                for (int y = 0; y < (automapHeight); y++)
+                for (var y = 0; y < (automapHeight); y++)
                 {
-                    for (int x = 0; x < (automapWidth); x++)
+                    for (var x = 0; x < (automapWidth); x++)
                     {
                         // check for valid on map square
                         currentx = startx + x;
@@ -133,16 +131,16 @@ namespace P3Net.Arx
         {
             plyr.drawingBigAutomap = true;
             pixelSize = 16;
-            int automapHeight = 32; // how many map cells displayed including central player cell + 1 for for loop
-            int automapWidth = 32;
-            int cornerX = 0; // top left pixel coordinate for automap 522
-            int cornerY = 0; // top left pixel coordinate for automap
-            int startx = 0; // map cell coords for first x
-            int starty = 0; // map cell coords for first y
-            int currentx = 0;
-            int currenty = 0;
-            int pixelx = 0;
-            int pixely = 0;
+            var automapHeight = 32; // how many map cells displayed including central player cell + 1 for for loop
+            var automapWidth = 32;
+            var cornerX = 0; // top left pixel coordinate for automap 522
+            var cornerY = 0; // top left pixel coordinate for automap
+            var startx = 0; // map cell coords for first x
+            var starty = 0; // map cell coords for first y
+            var currentx = 0;
+            var currenty = 0;
+            var pixelx = 0;
+            var pixely = 0;
             if ((plyr.x < 32) && (plyr.y < 32))
             {
                 startx = 0;
@@ -164,9 +162,9 @@ namespace P3Net.Arx
                 starty = 32;
             }
 
-            for (int y = 0; y < (automapHeight); y++)
+            for (var y = 0; y < (automapHeight); y++)
             {
-                for (int x = 0; x < (automapWidth); x++)
+                for (var x = 0; x < (automapWidth); x++)
                 {
                     // check for valid on map square
                     currentx = startx + x;
@@ -220,8 +218,8 @@ namespace P3Net.Arx
             y++;
             int row;
             int column;
-            int tilesPerRow = 8; // number of tiles per row in font image containing all tiles (16 default)
-            int tileSize = 16; // 16 pixels height and width
+            var tilesPerRow = 8; // number of tiles per row in font image containing all tiles (16 default)
+            var tileSize = 16; // 16 pixels height and width
 
             //Select 16x16 pixel section of tile sheet for cell tile
             if (tileNo >= tilesPerRow)
@@ -234,8 +232,8 @@ namespace P3Net.Arx
                 row = 0; // = row 1 on the actual tile sheet at y=0
             }
 
-            int tileX = (column) * tileSize; // x loc on tiles image in pixels
-            int tileY = ((row) * tileSize); // y loc on tiles image in pixels
+            var tileX = (column) * tileSize; // x loc on tiles image in pixels
+            var tileY = ((row) * tileSize); // y loc on tiles image in pixels
             cellImage.setTextureRect(sf.IntRect(tileX, tileY, tileSize, tileSize));
             cellImage.setPosition(x, y); // simply display at x,y pixel locations
             App.draw(cellImage);
@@ -244,12 +242,12 @@ namespace P3Net.Arx
         // Draw all the images required for a single cell on the automap
         public static void DrawCell ( int x, int y, int pixelx, int pixely )
         {
-            int idx = GetMapIndex(x, y);
-            int north = levelmap[idx].north;
-            int west = levelmap[idx].west;
-            int east = levelmap[idx].east;
-            int south = levelmap[idx].south;
-            int special = levelmap[idx].special;
+            var idx = GetMapIndex(x, y);
+            var north = levelmap[idx].north;
+            var west = levelmap[idx].west;
+            var east = levelmap[idx].east;
+            var south = levelmap[idx].south;
+            var special = levelmap[idx].special;
             int tile;
 
             // Draw cell background colour
