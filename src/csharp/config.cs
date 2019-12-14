@@ -8,8 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace P3Net.Arx
 {
@@ -18,38 +17,30 @@ namespace P3Net.Arx
         // Load settings from an arx.ini configuration file		
         public static bool LoadConfig ()
         {
-            var instream = new ifstream();
-            var filename = "arx.ini";
-            instream.open(filename);
-            if (instream == null)
+            using (var reader = new StreamReader("arx.ini"))
             {
-                cerr << "Error: arx.ini could not be loaded" << "\n";
-                return false;
-            }
-            string junk;
-            string line;
-            
-            var iniSettings = 4; // number of settings in the ini file
+                // read first line as blank
+                reader.ReadLine();
 
-            getline(instream, junk); // read first line as blank
+                var iniSettings = 4; // number of settings in the ini file
 
-            for (int a = 0; a < iniSettings; ++a) // number of settings in the ini file
-            {
-                getline(instream, line);
+                for (var a = 0; a < iniSettings; ++a) // number of settings in the ini file
+                {
+                    var line = reader.ReadLine();
 
-                var idx = line.IndexOf('=');
-                var text = line.Substring(idx + 2);
+                    var idx = line.IndexOf('=');
+                    var text = line.Substring(idx + 2);
 
-                if (a == 0)
-                    windowMode = Convert.ToInt32(text);
-                if (a == 1)
-                    graphicMode = Convert.ToInt32(text);
-                if (a == 2)
-                    windowWidth = Convert.ToInt32(text);
-                if (a == 3)
-                    windowHeight = Convert.ToInt32(text);
-            }
-            instream.close();
+                    if (a == 0)
+                        windowMode = Convert.ToInt32(text);
+                    if (a == 1)
+                        graphicMode = Convert.ToInt32(text);
+                    if (a == 2)
+                        windowWidth = Convert.ToInt32(text);
+                    if (a == 3)
+                        windowHeight = Convert.ToInt32(text);
+                }
+            };
 
             // Minimum window requirement is currently 640 x 480 pixels
             if ((windowWidth < 640) || (windowHeight < 480))

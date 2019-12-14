@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -18,7 +17,7 @@ namespace P3Net.Arx
         {
             var ferryMenu = 1; // high level menu
             
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             SetAutoMapFlag(plyr.map, 28, 19); // But does the map KNOW about the ferry type to colour it in?
 
@@ -56,7 +55,6 @@ namespace P3Net.Arx
                     var offerAccepted = false;
                     var offerText = "";
 
-                    var itemQuantity = 0;
                     var itemRef = SelectItem(3); // select an item in OFFER mode
                     if(itemRef == 9999)
                     {
@@ -67,7 +65,7 @@ namespace P3Net.Arx
                     if(itemRef == 1011) // Copper
                     {
                         offerText = "Copper";
-                        itemQuantity = InputItemQuantity(3);
+                        var itemQuantity = InputItemQuantity(3);
                         // Check that item quantity is valid!
                         if(itemQuantity > plyr.copper)
                             ModuleMessage("You don't have enough.");
@@ -78,10 +76,11 @@ namespace P3Net.Arx
                         }
                     }
 
-                    var offerText = "";
+                    //TODO: Went through this entire process and offerText never used
                     if ((itemRef > 999) && (itemRef < 1011))
                     {
-                        itemQuantity = InputItemQuantity(3); // Offer text is 3
+                        //TODO: Is this not used for a reason?
+                        //itemQuantity = InputItemQuantity(3); // Offer text is 3
 
                         // Check that item quantity is valid!                        
                         switch(itemRef)
@@ -136,8 +135,7 @@ namespace P3Net.Arx
                     } else
                     {
                         // Take the player down river if not midnight or correct offer
-                        string str = $"The mysterious boatman takes@@your {offerText} and proceeds to@@take you down the river in his boat.";
-                        ModuleMessage(str);
+                        ModuleMessage($"The mysterious boatman takes@@your {offerText} and proceeds to@@take you down the river in his boat.");
                         plyr.x = 11;
                         plyr.y = 30;
                     }
@@ -146,7 +144,7 @@ namespace P3Net.Arx
 
                     //MLT: Double to float
                     plyr.z_offset = 1.6F; // position player just outside door
-                    plyr.status = 1; // explore
+                    plyr.status = GameStates.Explore; // explore
                 }
             }
         }

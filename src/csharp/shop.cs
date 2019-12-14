@@ -221,12 +221,13 @@ namespace P3Net.Arx
 
         public static void ShopMessage ( string txt )
         {
+            var key = "";
             do
             {
                 ClearShopDisplay();
                 CText(txt);
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
 
@@ -236,17 +237,18 @@ namespace P3Net.Arx
             // copies wares into local data structure for easier display as list
             for (var i = 0; i < 12; i++)
             {
-                shopClothingWares[i].itemRef = shopDailyWares[shopNo][i];
-                int clothingRef = shopDailyWares[shopNo][i];
+                shopClothingWares[i].itemRef = shopDailyWares[shopNo, i];
+                
+                var clothingRef = shopDailyWares[shopNo, i];
                 shopClothingWares[i].price = clothingItems[clothingRef].quality; // quality used for price just now
             }
 
             var shopMenu = 1; // high level menu
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             int itemChoice = 0;
-            int itemLowestCost;
+            int itemLowestCost = 0;
             int shopOffer = 0;
             var menuStartItem = 0;
             var offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
@@ -559,8 +561,8 @@ namespace P3Net.Arx
 
                 while (shopMenu == 50) // closed
                 {
-                    string openingText = "";
-                    string closingText = "";
+                    var openingText = "";
+                    var closingText = "";
                     var openHour = Shops[shopNo].openingHour;
                     var closeHour = Shops[shopNo].closingHour;
                     if ((openHour >= 0) && (openHour < 12))
@@ -577,9 +579,8 @@ namespace P3Net.Arx
                         closingText = "evening";
                     ClearShopDisplay();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-
-                    var str = $"We are open from {Itos(Shops[shopNo].openingHour)}:00 in the {openingText}@to {Itos(Shops[shopNo].closingHour)}:00 in the {closingText}.";
-                    CyText(4, str);
+                    
+                    CyText(4, $"We are open from {Shops[shopNo].openingHour}:00 in the {openingText}@to {Shops[shopNo].closingHour}:00 in the {closingText}.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
                     var key = GetSingleKey();
@@ -619,7 +620,7 @@ namespace P3Net.Arx
                             // problem
 
                             // problem duplicates
-                            shopDailyWares[shopNo][waresNo] = itemIndex; // its not a duplicate
+                            shopDailyWares[shopNo, waresNo] = itemIndex; // its not a duplicate
                             shopWaresCheck[shopNo, itemNo] = true;
                             uniqueItem = true;
                         }
@@ -628,23 +629,8 @@ namespace P3Net.Arx
             }
 
             // Simple sort of items in cost numeric order
-            // Requires items arranged in the array in ascending price order to work!
-
-            sort(shopDailyWares[0], shopDailyWares[0] + 12);
-            sort(shopDailyWares[1], shopDailyWares[1] + 12);
-            sort(shopDailyWares[2], shopDailyWares[2] + 12);
-            sort(shopDailyWares[3], shopDailyWares[3] + 12);
-            sort(shopDailyWares[4], shopDailyWares[4] + 12);
-            sort(shopDailyWares[5], shopDailyWares[5] + 12);
-            sort(shopDailyWares[6], shopDailyWares[6] + 12);
-            sort(shopDailyWares[7], shopDailyWares[7] + 12);
-            sort(shopDailyWares[8], shopDailyWares[8] + 12);
-            sort(shopDailyWares[9], shopDailyWares[9] + 12);
-            sort(shopDailyWares[10], shopDailyWares[10] + 12);
-            sort(shopDailyWares[11], shopDailyWares[11] + 12);
-            sort(shopDailyWares[12], shopDailyWares[12] + 12);
-            sort(shopDailyWares[13], shopDailyWares[13] + 12);
-            sort(shopDailyWares[14], shopDailyWares[14] + 12);
+            // Requires items arranged in the array in ascending price order to work!                        
+            sort(shopDailyWares);
         }
 
         // extern Player plyr;

@@ -21,21 +21,21 @@ namespace P3Net.Arx
 
     public class SpellRecord
     {
-        public int cost { get; set; }
-
-        public int duration { get; set; }
-
-        public int effect { get; set; }
-
-        public bool[] guilds { get; set; } = new bool[14];
-
         public string name { get; set; }
-
-        public int negativeValue { get; set; }
 
         public int percentage { get; set; }
 
+        public int cost { get; set; }
+
+        public int effect { get; set; }
+
+        public int negativeValue { get; set; }
+
         public int positiveValue { get; set; }
+
+        public int duration { get; set; }
+
+        public bool[] guilds { get; set; } = new bool[14];
     }
 
     public partial class GlobalMembers
@@ -44,41 +44,41 @@ namespace P3Net.Arx
 
         public static SpellRecord[] spells =
         {
-        { "Bewilder", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0 },
-        { "Blinding", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Charisma", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0 },
-        { "Cold Blast", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0 },
-        { "Conjure Food", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0 },
-        { "Conjure Key", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0 },
-        { "Defeat Evil", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 },
-        { "Defeat Good", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 },
-        { "Dexterity", 50, 42, 10, 10, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Fear", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 },
-        { "Fireballs", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0 },
-        { "Fireblade", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1 },
-        { "Fury", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { "Healing", 50, 42, 10, 10, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 },
-        { "Light", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1 },
-        { "Lightning Bolts", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Location", 50, 42, 10, 10, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-        { "Luck", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-        { "Magic Darts", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Night Vision", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0 },
-        { "Paralysis", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0 },
-        { "Prism", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Protect from Evil", 50, 42, 10, 10, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 },
-        { "Protect from Good", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 },
-        { "Protection", 50, 42, 10, 10, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { "Razoredge", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-        { "Repair", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
-        { "Shadowmeld", 50, 42, 10, 10, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Shield", 50, 42, 10, 10, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { "Slay Evil", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-        { "Slay Good", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-        { "Speed", 50, 42, 10, 10, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        { "Strength", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 },
-        { "Super Vision", 50, 42, 10, 10, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0 },
-        { "Vigor", 50, 42, 10, 10, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1 }
+            new SpellRecord() { name = "Bewilder", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] { true, false, false, false, false, false, false, true, false, true, false, false, true, false } },
+            new SpellRecord() { name = "Blinding", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] { false, false, true, false, false, false, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Charisma", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, true, false, true, false, false, false, false, true, false } },
+            new SpellRecord() { name = "Cold Blast", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, true, false, false, true, true, false, false, false, false } },
+            new SpellRecord() { name = "Conjure Food", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, false, false, true, false, false, true, false } },
+            new SpellRecord() { name = "Conjure Key", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, false, false, false, true, false, false, false, true, false } },
+            new SpellRecord() { name = "Defeat Evil", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, false, true, true, false, false, false, false } },
+            new SpellRecord() { name = "Defeat Good", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, true, false, true, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Dexterity", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, true, false, false, false, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Fear", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, true, false, true, false, true, false, false, false, false } },
+            new SpellRecord() { name = "Fireballs", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, true, true, false, false, false, false, false } },
+            new SpellRecord() { name = "Fireblade", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, true, false, false, false, false, false, true } },
+            new SpellRecord() { name = "Fury", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, false, false, false, false, false, false, true } },
+            new SpellRecord() { name = "Healing", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, true, true, true, true, true, true, true, true, true, true, true, false, true } },
+            new SpellRecord() { name = "Light", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, false, false, false, true, true, false, false, false, true } },
+            new SpellRecord() { name = "Lightning Bolts", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, true, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Location", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, true, true, true, true, true, true, true, true, true, true, true, true, false } },
+            new SpellRecord() { name = "Luck", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, false, false, false, false, false, false, false, true, false } },
+            new SpellRecord() { name = "Magic Darts", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, true, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Night Vision", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, true, false, true, false, false, false, false, true, false } },
+            new SpellRecord() { name = "Paralysis", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, false, false, true, false, false, false, false, true, false } },
+            new SpellRecord() { name = "Prism", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, false, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Protect from Evil", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, true, false, false, false, false, false, true, true, false, false, false, false } },
+            new SpellRecord() { name = "Protect from Good", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, true, false, true, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Protection", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, true, false, false, true, false, false, false, false, false, false, false, true } },
+            new SpellRecord() { name = "Razoredge", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, false, false, false, false, false, true, true } },
+            new SpellRecord() { name = "Repair", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, false, false, false, false, false, false, false, true, true } },
+            new SpellRecord() { name = "Shadowmeld", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, false, false, false, true, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Shield", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, true, true, true, true, true, true, true, true, true, true, true, true, true } },
+            new SpellRecord() { name = "Slay Evil", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, false, false, true, false, false, false, false } },
+            new SpellRecord() { name = "Slay Good", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, true, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Speed", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, true, false, false, false, false, false, false, false, false, false, false, false } },
+            new SpellRecord() { name = "Strength", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {false, false, false, false, false, false, false, true, true, false, false, false, false, true } },
+            new SpellRecord() { name = "Super Vision",percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] {true, false, true, false, false, false, false, true, false, true, false, false, true, false } },
+            new SpellRecord() { name = "Vigor", percentage = 50, cost = 42, effect = 10, negativeValue = 10, positiveValue = 0, duration = 1, guilds = new [] { false, false, false, false, false, false, false, true, true, false, false, false, false, true } }
         };
 
         public static void AttemptSpell ( int spellRef )
@@ -133,9 +133,9 @@ namespace P3Net.Arx
             PlaySpellSound();
             while (keynotpressed)
             {
-                if (plyr.status == 3)
+                if (plyr.status == GameStates.Encounter)
                     DrawEncounterView();
-                if (plyr.status == 1)
+                if (plyr.status == GameStates.Explore)
                     DispMain();
 
                 CyText(3, $"You cast the spell of@@$ {spellDesc} $");
@@ -176,12 +176,13 @@ namespace P3Net.Arx
                     var keypressed = false;
                     while (!keypressed)
                     {
-                        if (plyr.status == 3)
-                            DrawEncounterView();
-                        if (plyr.status == 1)
-                            DispMain();
-                        if (plyr.status == 0)
-                            DispMain();
+                        switch (plyr.status)
+                        {
+                            case GameStates.Encounter: DrawEncounterView(); break;
+                            case GameStates.Explore:
+                            case (GameStates)0: DispMain(); break;
+                        };
+                        
                         CyText(1, selectDesc);
                         BText(5, 3, "(1)");
                         BText(5, 4, "(2)");
@@ -287,13 +288,13 @@ namespace P3Net.Arx
             var keynotpressed = true;
             while (keynotpressed)
             {
-                if (plyr.status == 3)
-                    DrawEncounterView();
-                if (plyr.status == 1)
-                    DispMain();
-                if (plyr.status == 0)
-                    DispMain();
-
+                switch (plyr.status)
+                {
+                    case GameStates.Encounter: DrawEncounterView(); break;
+                    case GameStates.Explore:
+                    case (GameStates)0: DispMain(); break;
+                };
+                
                 CyText(3, $"The spell failed@@and backfired for {Itos(spellPoints)}!");
                 UpdateDisplay();
                 var key = GetSingleKey();

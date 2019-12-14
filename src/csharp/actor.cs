@@ -9,7 +9,9 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace P3Net.Arx
 {
@@ -18,7 +20,7 @@ namespace P3Net.Arx
         public int startFrame { get; set; }
         public int endFrame { get; set; }
     }
-
+    
     public class Monster
     {
         public int type { get; set; }
@@ -85,6 +87,9 @@ namespace P3Net.Arx
         public int c4 { get; set; }
         public int c5 { get; set; }
         public int c6 { get; set; }
+
+        //TODO: Separate the monster definition from the current encounter so we don't have to copy this data each time
+        public Monster CopyFrom ( Monster source ) => MemberwiseClone() as Monster;
     }
 
     public class Weapon
@@ -125,165 +130,140 @@ namespace P3Net.Arx
         public const int noOfMonsterWeapons = 250;
                
         public const int noOfWeapons = 111;
-        public const int monstersFileSize = 45056;
-
-        public static string ReadBinaryString ( int stringOffset )
-        {
-            var ss = new stringstream();
-            var z = stringOffset; // current location in the binary
-            var c = 0; // current byte
-            
-            while (!(monstersBinary[z] == 0))
-            {
-                c = monstersBinary[z];
-                ss << (char)c;
-                z++;
-            }
-            
-            return ss.str();
-        }
+        public const int monstersFileSize = 45056;        
 
         public static void LoadEncounters ()
         {
-            var instream = new ifstream();
-            
-            instream.open("data/map/encounters.txt");
-            if (instream == null)
-            {
-                Console.Write("Error: Encounters file could not be loaded");
-                Console.Write("\n");
-            }
-
-            for (var i = 0; i < noOfEncounters; ++i) // number of monsters
-            {
-                string junk;
-                string line;
-                var attributes = 48; // number of lines making up each record
-
-                getline(instream, junk); // read first line as blank
-                for (int a = 0; a < attributes; ++a) // number of attributes per record
+            //TODO: Read as structural data
+            using (var reader = new StreamReader("data/map/encounters.txt"))
+            {                 
+                for (var i = 0; i < noOfEncounters; ++i) // number of monsters
                 {
-                    getline(instream, line);
-                    var idx = line.IndexOf(':');
-                    var text = line.Substring(idx + 1);
+                    var attributes = 48; // number of lines making up each record
+                    
+                    // read first line as blank
+                    reader.ReadLine();
+                    
+                    for (var a = 0; a < attributes; ++a) // number of attributes per record
+                    {
+                        var line = reader.ReadLine();                        
+                        var idx = line.IndexOf(':');
+                        var text = line.Substring(idx + 1);
 
-                    if (a == 0)
-                        Monsters[i].name = text;
-                    if (a == 1)
-                        Monsters[i].pluName = text;
-                    if (a == 2)
-                        Monsters[i].armorText = text;
-                    if (a == 3)
-                        Monsters[i].hp = Convert.ToInt32(text);
-                    if (a == 4)
-                        Monsters[i].alignment = Convert.ToInt32(text);
-                    if (a == 5)
-                        Monsters[i].image = Convert.ToInt32(text);
+                        if (a == 0)
+                            Monsters[i].name = text;
+                        if (a == 1)
+                            Monsters[i].pluName = text;
+                        if (a == 2)
+                            Monsters[i].armorText = text;
+                        if (a == 3)
+                            Monsters[i].hp = Convert.ToInt32(text);
+                        if (a == 4)
+                            Monsters[i].alignment = Convert.ToInt32(text);
+                        if (a == 5)
+                            Monsters[i].image = Convert.ToInt32(text);
+                        if (a == 6)
+                            Monsters[i].sta = Convert.ToInt32(text);
+                        if (a == 7)
+                            Monsters[i].cha = Convert.ToInt32(text);
+                        if (a == 8)
+                            Monsters[i].str = Convert.ToInt32(text);
+                        if (a == 9)
+                            Monsters[i].inte = Convert.ToInt32(text);
+                        if (a == 10)
+                            Monsters[i].wis = Convert.ToInt32(text);
+                        if (a == 11)
+                            Monsters[i].skl = Convert.ToInt32(text);
+                        if (a == 12)
+                            Monsters[i].spd = Convert.ToInt32(text);
 
-                    if (a == 6)
-                        Monsters[i].sta = Convert.ToInt32(text);
-                    if (a == 7)
-                        Monsters[i].cha = Convert.ToInt32(text);
-                    if (a == 8)
-                        Monsters[i].str = Convert.ToInt32(text);
-                    if (a == 9)
-                        Monsters[i].inte = Convert.ToInt32(text);
-                    if (a == 10)
-                        Monsters[i].wis = Convert.ToInt32(text);
-                    if (a == 11)
-                        Monsters[i].skl = Convert.ToInt32(text);
-                    if (a == 12)
-                        Monsters[i].spd = Convert.ToInt32(text);
+                        if (a == 13)
+                            Monsters[i].tFood = Convert.ToInt32(text);
+                        if (a == 14)
+                            Monsters[i].tWater = Convert.ToInt32(text);
+                        if (a == 15)
+                            Monsters[i].tTorches = Convert.ToInt32(text);
+                        if (a == 16)
+                            Monsters[i].tTimepieces = Convert.ToInt32(text);
+                        if (a == 17)
+                            Monsters[i].tCompasses = Convert.ToInt32(text);
+                        if (a == 18)
+                            Monsters[i].tKeys = Convert.ToInt32(text);
+                        if (a == 19)
+                            Monsters[i].tCrystals = Convert.ToInt32(text);
+                        if (a == 20)
+                            Monsters[i].tGems = Convert.ToInt32(text);
+                        if (a == 21)
+                            Monsters[i].tJewels = Convert.ToInt32(text);
+                        if (a == 22)
+                            Monsters[i].tGold = Convert.ToInt32(text);
+                        if (a == 23)
+                            Monsters[i].tSilver = Convert.ToInt32(text);
+                        if (a == 24)
+                            Monsters[i].tCopper = Convert.ToInt32(text);
 
-                    if (a == 13)
-                        Monsters[i].tFood = Convert.ToInt32(text);
-                    if (a == 14)
-                        Monsters[i].tWater = Convert.ToInt32(text);
-                    if (a == 15)
-                        Monsters[i].tTorches = Convert.ToInt32(text);
-                    if (a == 16)
-                        Monsters[i].tTimepieces = Convert.ToInt32(text);
-                    if (a == 17)
-                        Monsters[i].tCompasses = Convert.ToInt32(text);
-                    if (a == 18)
-                        Monsters[i].tKeys = Convert.ToInt32(text);
-                    if (a == 19)
-                        Monsters[i].tCrystals = Convert.ToInt32(text);
-                    if (a == 20)
-                        Monsters[i].tGems = Convert.ToInt32(text);
-                    if (a == 21)
-                        Monsters[i].tJewels = Convert.ToInt32(text);
-                    if (a == 22)
-                        Monsters[i].tGold = Convert.ToInt32(text);
-                    if (a == 23)
-                        Monsters[i].tSilver = Convert.ToInt32(text);
-                    if (a == 24)
-                        Monsters[i].tCopper = Convert.ToInt32(text);
+                        if (a == 25)
+                            Monsters[i].aBlunt = Hex2Dec(text);
+                        if (a == 26)
+                            Monsters[i].aSharp = Hex2Dec(text);
+                        if (a == 27)
+                            Monsters[i].aEarth = Hex2Dec(text);
+                        if (a == 28)
+                            Monsters[i].aAir = Hex2Dec(text);
+                        if (a == 29)
+                            Monsters[i].aFire = Hex2Dec(text);
+                        if (a == 30)
+                            Monsters[i].aWater = Hex2Dec(text);
+                        if (a == 31)
+                            Monsters[i].aPower = Hex2Dec(text);
+                        if (a == 32)
+                            Monsters[i].aMagic = Hex2Dec(text);
+                        if (a == 33)
+                            Monsters[i].aGood = Hex2Dec(text);
+                        if (a == 34)
+                            Monsters[i].aEvil = Hex2Dec(text);
+                        if (a == 35)
+                            Monsters[i].aCold = Hex2Dec(text);
 
-                    if (a == 25)
-                        Monsters[i].aBlunt = Hex2Dec(text);
-                    if (a == 26)
-                        Monsters[i].aSharp = Hex2Dec(text);
-                    if (a == 27)
-                        Monsters[i].aEarth = Hex2Dec(text);
-                    if (a == 28)
-                        Monsters[i].aAir = Hex2Dec(text);
-                    if (a == 29)
-                        Monsters[i].aFire = Hex2Dec(text);
-                    if (a == 30)
-                        Monsters[i].aWater = Hex2Dec(text);
-                    if (a == 31)
-                        Monsters[i].aPower = Hex2Dec(text);
-                    if (a == 32)
-                        Monsters[i].aMagic = Hex2Dec(text);
-                    if (a == 33)
-                        Monsters[i].aGood = Hex2Dec(text);
-                    if (a == 34)
-                        Monsters[i].aEvil = Hex2Dec(text);
-                    if (a == 35)
-                        Monsters[i].aCold = Hex2Dec(text);
+                        if (a == 36)
+                            Monsters[i].w1 = Convert.ToInt32(text);
+                        if (a == 37)
+                            Monsters[i].w2 = Convert.ToInt32(text);
+                        if (a == 38)
+                            Monsters[i].w3 = Convert.ToInt32(text);
+                        if (a == 39)
+                            Monsters[i].w4 = Convert.ToInt32(text);
+                        if (a == 40)
+                            Monsters[i].w5 = Convert.ToInt32(text);
+                        if (a == 41)
+                            Monsters[i].w6 = Convert.ToInt32(text);
 
-                    if (a == 36)
-                        Monsters[i].w1 = Convert.ToInt32(text);
-                    if (a == 37)
-                        Monsters[i].w2 = Convert.ToInt32(text);
-                    if (a == 38)
-                        Monsters[i].w3 = Convert.ToInt32(text);
-                    if (a == 39)
-                        Monsters[i].w4 = Convert.ToInt32(text);
-                    if (a == 40)
-                        Monsters[i].w5 = Convert.ToInt32(text);
-                    if (a == 41)
-                        Monsters[i].w6 = Convert.ToInt32(text);
+                        if (a == 42)
+                            Monsters[i].c1 = Convert.ToInt32(text);
+                        if (a == 43)
+                            Monsters[i].c2 = Convert.ToInt32(text);
+                        if (a == 44)
+                            Monsters[i].c3 = Convert.ToInt32(text);
+                        if (a == 45)
+                            Monsters[i].c4 = Convert.ToInt32(text);
+                        if (a == 46)
+                            Monsters[i].c5 = Convert.ToInt32(text);
+                        if (a == 47)
+                            Monsters[i].c6 = Convert.ToInt32(text);
 
-                    if (a == 42)
-                        Monsters[i].c1 = Convert.ToInt32(text);
-                    if (a == 43)
-                        Monsters[i].c2 = Convert.ToInt32(text);
-                    if (a == 44)
-                        Monsters[i].c3 = Convert.ToInt32(text);
-                    if (a == 45)
-                        Monsters[i].c4 = Convert.ToInt32(text);
-                    if (a == 46)
-                        Monsters[i].c5 = Convert.ToInt32(text);
-                    if (a == 47)
-                        Monsters[i].c6 = Convert.ToInt32(text);
-
+                    }
                 }
-            }
-            instream.close();
+            };
         }
         public static void LoadMonstersBinary ()
         {
+            //TODO: Read as structured data
+
             // Loads 42kb of monster binary data into the "monstersBinary" array
-            var tempString = String.Format("{0}{1}", "data/map/", "monsters.bin");
-            var fp = fopen(tempString, "rb");
-            if (fp != null)
-            {
-                for (int i = 0; i < monstersFileSize; i++)
-                    monstersBinary[i] = fgetc(fp);
-            }
-            fclose(fp);
+            var data = File.ReadAllBytes("data/map/monsters.bin");
+
+            //TODO: Ignoring the upper limit on monster array right now
+            monstersBinary = data;
         }
 
         public static void InitialiseMonsterOffsets ()
@@ -463,8 +443,6 @@ namespace P3Net.Arx
 
                 if (i == (int)Encounters.Thief)
                 {
-                    weapon1 = 0x32F; // Skean
-                    weapon1 = 0x32F;
                     weapon1 = 0x32F;
                 }
 
@@ -493,24 +471,14 @@ namespace P3Net.Arx
             // Special Case - "thief" class has value 0
             if (monsterNo == 1)
                 nameOffset = 0x2AA;
+                        
+            var name = ReadBinaryString(monstersBinary, nameOffset);
 
-            var ss = new stringstream();
-            var z = nameOffset; // current location in the binary
-            var c = 0; // current byte
-            var n = ""; // string to store built up string
-
-            // Loop through until 0 found
             // Some special monster classes have multiple entries here
-
-            while (!(monstersBinary[z] == 0))
-            {
-                c = monstersBinary[z];
-                ss << (char)c;
-                z++;
-            }
             if (maxNumberEncountered > 1)
-                pluralNameOffset = z + 1;
-            Monsters[monsterNo].name = ss.str();
+                pluralNameOffset = name.Length + 1;
+
+            Monsters[monsterNo].name = name;
         }
 
         public static void ReadMonsterPluralNameText ( int monsterNo, int pluralNameOffset )
@@ -519,54 +487,30 @@ namespace P3Net.Arx
             if (monsterNo == 1)
                 pluralNameOffset = 0x2CF;
 
-            var ss = new stringstream();
-            var z = pluralNameOffset; // current location in the binary
-            var c = 0; // current byte
-            var n = ""; // string to store built up string
-
             // Loop through until 0 found
             // Some special monster classes have multiple entries here
-
-            while (!(monstersBinary[z] == 0))
-            {
-                c = monstersBinary[z];
-                ss << (char)c;
-                z++;
-            }
-            Monsters[monsterNo].pluName = ss.str();
+            Monsters[monsterNo].pluName = ReadBinaryString(monstersBinary, pluralNameOffset);
         }
 
         public static void ReadMonsterDeathText ( int monsterNo, int deathOffset )
         {
             // Change variable name
-
             if (monsterNo == (int)Encounters.Devourer)
                 deathOffset = 0x42;
 
-            var ss = new stringstream();
-            var z = deathOffset; // current location in the binary
-            var c = 0; // current byte
-            var n = ""; // string to store built up string
+            var name = ReadBinaryString(monstersBinary, deathOffset, 0xAE);
 
-            // Loop through until 0 found
+            //Convert 0xA5 to 0x40
+            name = name.Replace(Char.ConvertFromUtf32(0xA5), Char.ConvertFromUtf32(0x40));
+
             // Some special monster classes have multiple entries here
-
-            while (!(monstersBinary[z] == 0xAE))
-            {
-                c = monstersBinary[z];
-                if (c == 0xA5)
-                    c = 0x40;
-                if (!(c == 0x0D))
-                    ss << (char)c;
-                z++;
-            }
-            Monsters[monsterNo].armorText = ss.str();
+            Monsters[monsterNo].armorText = name;
         }
 
         public static void CreateMonsterWeapon ( int currentWeapon, int weaponOffset )
         {
             var weaponNameOffset = weaponOffset + 6;
-            monsterWeapons[currentWeapon].name = ReadBinaryString(weaponNameOffset);
+            monsterWeapons[currentWeapon].name = ReadBinaryString(monstersBinary, weaponNameOffset);
 
             // byte 2 is object length, byte 3 is unknown
             monsterWeapons[currentWeapon].type = monstersBinary[weaponOffset + 0];
@@ -593,9 +537,7 @@ namespace P3Net.Arx
             monsterWeapons[currentWeapon].hp = monstersBinary[wAttributes + 16];
             monsterWeapons[currentWeapon].maxHP = monstersBinary[wAttributes + 17];
             monsterWeapons[currentWeapon].flags = monstersBinary[wAttributes + 18];
-            monsterWeapons[currentWeapon].parry = monstersBinary[wAttributes + 19];
-
-            int weaponDescription = (monsterWeapons[currentWeapon].flags);
+            monsterWeapons[currentWeapon].parry = monstersBinary[wAttributes + 19];            
         }
 
         public static MonsterFramePair[] animations =

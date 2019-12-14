@@ -8,8 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -56,9 +54,9 @@ namespace P3Net.Arx
     {
         public static void ShopBank ()
         {
-            int workingHours;
+            int workingHours = 0;
             int hourlyRate;
-            int jobIncome;
+            int jobIncome = 0;
             bankNo = GetBankNo();
             if (bankNo == 0)
                 accountRef = 0;
@@ -69,7 +67,7 @@ namespace P3Net.Arx
 
             var bankMenu = 1; // high level menu
             
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             LoadShopImage(13);
 
@@ -416,7 +414,7 @@ namespace P3Net.Arx
                         ClearShopDisplay();
                         CyText(2, "WORKING");
                         UpdateDisplay();
-                        sf.sleep(sf.seconds(1));
+                        Sleep(TimeSpan.FromSeconds(1));
                         for (var i = 0; i < 60; i++) // 60 minutes
                         {
                             // check for diseases
@@ -819,55 +817,16 @@ namespace P3Net.Arx
             {
                 if (plyr.bankAccountBalances[i] > 0)
                 {
-                    float interest;
-                    float failProb;
-                    if (i == 0)
-                    {
-                        interest = banks[0].accounts[0].interest;
-                        failProb = banks[0].accounts[0].failProb;
-                    }
-                    if (i == 1)
-                    {
-                        interest = banks[0].accounts[1].interest;
-                        failProb = banks[0].accounts[1].failProb;
-                    }
-                    if (i == 2)
-                    {
-                        interest = banks[0].accounts[2].interest;
-                        failProb = banks[0].accounts[2].failProb;
-                    }
-                    if (i == 3)
-                    {
-                        interest = banks[1].accounts[0].interest;
-                        failProb = banks[1].accounts[0].failProb;
-                    }
-                    if (i == 4)
-                    {
-                        interest = banks[1].accounts[1].interest;
-                        failProb = banks[1].accounts[1].failProb;
-                    }
-                    if (i == 5)
-                    {
-                        interest = banks[1].accounts[2].interest;
-                        failProb = banks[1].accounts[2].failProb;
-                    }
-                    if (i == 6)
-                    {
-                        interest = banks[2].accounts[0].interest;
-                        failProb = banks[2].accounts[0].failProb;
-                    }
-                    if (i == 7)
-                    {
-                        interest = banks[2].accounts[1].interest;
-                        failProb = banks[2].accounts[1].failProb;
-                    }
-                    if (i == 8)
-                    {
-                        interest = banks[2].accounts[2].interest;
-                        failProb = banks[2].accounts[2].failProb;
-                    }
+                    //TODO: Verify math
+                    //0-2 = 0, 3-5 = 1, 6-8 = 2
+                    var bankNo = i / 3;
 
-                    var newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * interest;
+                    //0, 3, 6 = 0; 1, 4, 7 = 1; 2, 5, 8 = 2
+                    var accountNo = i % 3;
+
+                    var account = banks[bankNo].accounts[accountNo];
+
+                    var newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * account.interest;
                     plyr.bankAccountBalances[i] += ((int)newInterest);
                 }
             }
@@ -880,12 +839,50 @@ namespace P3Net.Arx
         public static int findValue;
 
         //MLT: Fix double to float conversion
-        //	name						accounts									loc		op	cl	job		gem		jewel
         public static Bank[] banks =
         {
-            { "First City Bank", 0.5F, 0.3F, 1, 0, 0.9F, 0.9F, 1, 0, 2.6F, 3.0F, 1, 0, 37, 0, 23, 51, 0, 0 },
-            { "Granite Bank", 0.5F, 0.2F, 1, 0, 1.0F, 1.0F, 1, 0, 2.7F, 3.1F, 1, 0, 38, 11, 2, 51, 3000, 1 },
-            { "Gram's Gold Exchange", 0.6F, 0.1F, 1, 0, 1.3F, 1.0F, 1, 0, 3.2F, 3.3F, 1, 0, 39, 0, 23, 46, 0, 0 }
+            new Bank() {
+                name = "First City Bank", 
+                accounts = new [] {
+                            new Account() { interest = 0.5F, failProb = 0.3F, minBalance = 1, failures = 0 },
+                            new Account() { interest = 0.9F, failProb = 0.9F, minBalance = 1, failures = 0 },
+                            new Account() { interest = 2.6F, failProb = 3.0F, minBalance = 1, failures = 0 } 
+                            }, 
+                location = 37, 
+                openingHour = 0, 
+                closingHour = 23,
+                jobProbability = 51, 
+                gemCost = 0, 
+                jewelCost = 0 
+            },
+            new Bank() { 
+                name = "Granite Bank", 
+                accounts = new [] {
+                    new Account() { interest = 0.5F, failProb = 0.2F, minBalance = 1, failures = 0 },
+                    new Account() { interest = 1.0F, failProb = 1.0F, minBalance = 1, failures = 0 },
+                    new Account() { interest = 2.7F, failProb = 3.1F, minBalance = 1, failures = 0 }
+                    }, 
+                location = 38, 
+                openingHour = 11, 
+                closingHour = 2, 
+                jobProbability = 51, 
+                gemCost = 3000, 
+                jewelCost = 1 
+            },
+            new Bank() { 
+                name = "Gram's Gold Exchange", 
+                accounts = new [] {
+                    new Account() { interest = 0.6F, failProb = 0.1F, minBalance = 1, failures = 0 },
+                    new Account() { interest = 1.3F, failProb = 1.0F, minBalance = 1, failures = 0 },
+                    new Account() { interest = 3.2F, failProb = 3.3F, minBalance = 1, failures = 0 }
+                   },
+                location = 39, 
+                openingHour = 0, 
+                closingHour = 23, 
+                jobProbability = 46, 
+                gemCost = 0, 
+                jewelCost = 0 
+            }
         };
 
         public static BankJobOpening[] bankJobOpenings = Arrays.InitializeWithDefaultInstances<BankJobOpening>(3);

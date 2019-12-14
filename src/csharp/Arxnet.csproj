@@ -5,5 +5,8 @@
 	 <RootNamespace>P3Net.Arx</RootNamespace>
      <AssemblyName>Arxnet</AssemblyName>
 	 <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-  </PropertyGroup>  
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SFML.Net" Version="2.5.0" />
+  </ItemGroup>  
 </Project>

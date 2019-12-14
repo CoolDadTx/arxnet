@@ -8,7 +8,10 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using sf;
+using SFML;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
 
 namespace P3Net.Arx
 {
@@ -26,13 +29,12 @@ namespace P3Net.Arx
         {
             var title = "Alternate Reality X " + version;
 
-            if (windowMode == 0)
-                App.create(sf.VideoMode(windowWidth, windowHeight), title, sf.Style.Close);
-            else
-                App.create(sf.VideoMode(windowWidth, windowHeight), title, sf.Style.Fullscreen);
+            var styles = windowMode == 0 ? Styles.Close : Styles.Fullscreen;
 
+            App = new RenderWindow(new VideoMode((uint)windowWidth, (uint)windowHeight), title, styles);
+            
             // Print OpenGL settings to game console for information
-            var settings = App.getSettings();
+            var settings = App.Settings;
             Console.Write("Welcome to Alternate Reality X ");
             Console.Write(version);
             Console.Write(" ...");
@@ -40,18 +42,18 @@ namespace P3Net.Arx
             Console.Write("\n");
             Console.Write("OpenGL Settings:\n\n");
             Console.Write("Depth bits:           ");
-            Console.Write(settings.depthBits);
+            Console.Write(settings.DepthBits);
             Console.Write("\n");
             Console.Write("Stencil bits:         ");
-            Console.Write(settings.stencilBits);
+            Console.Write(settings.StencilBits);
             Console.Write("\n");
             Console.Write("Anti-aliasing level:  ");
-            Console.Write(settings.antialiasingLevel);
+            Console.Write(settings.AntialiasingLevel);
             Console.Write("\n");
             Console.Write("OpenGL Version:       ");
-            Console.Write(settings.majorVersion);
+            Console.Write(settings.MajorVersion);
             Console.Write(".");
-            Console.Write(settings.minorVersion);
+            Console.Write(settings.MinorVersion);
             Console.Write("\n");
             Console.Write("\n");
             Console.Write("Window Size:          ");
@@ -63,7 +65,7 @@ namespace P3Net.Arx
             Console.Write("\n");
 
             // Limit the framerate to 60 frames per second (this step is optional)
-            App.setFramerateLimit(60);
+            App.SetFramerateLimit(60);
         }
 
         public static void SetTileImage ( int tile_no )
@@ -87,7 +89,7 @@ namespace P3Net.Arx
             var tileX = (column) * 64; // x loc on tiles image in pixels
             var tileY = (row) * 128; // y loc on tiles image in pixels
 
-            encImage.setTextureRect(sf.IntRect(tileX, tileY, 64, 128));
+            encImage.TextureRect = new IntRect(tileX, tileY, 64, 128);
         }
 
         // drawAtariAnimation - draws single frame and updates counter
@@ -117,30 +119,30 @@ namespace P3Net.Arx
             animDuration--;
             
             // Alternate and set animation frame as required
-            encImage.setTexture(encImageSheet);
+            encImage.Texture = encImageSheet;
 
             // Original Atari 8bit image at original size
             SetTileImage(animImage);
 
             //MLT: Downcast to int
             // Calculate new image width and height based on viewport size
-            var encWidth = (int)(viewWidth / 4.5);
-            var encHeight = (int)(viewHeight / 1.125);
+            //var encWidth = (int)(viewWidth / 4.5);
+            //var encHeight = (int)(viewHeight / 1.125);
 
             /* SET POSITION OF RESIZED IMAGE ON SCREEN */
             var encX = (windowWidth / 2) - 32;
             var encY = (viewPortY + viewHeight) - 130;
 
             if ((xOffset == 0) && (yOffset == 0))
-                encImage.setPosition(encX, encY);
+                encImage.Position = new Vector2f(encX, encY);
             else
-                encImage.setPosition((viewPortX - 32 + (xOffset)), (viewPortY + (yOffset * 2)));
+                encImage.Position = new Vector2f(viewPortX - 32 + (xOffset), viewPortY + (yOffset * 2));
 
             // DRAW DISPLAY AND FINAL ENCOUNTER IMAGE
             DispMain();
 
             if (graphicMode == (int)DisplayOptions.AtariSmall)
-                App.draw(encImage);
+                App.Draw(encImage);
         }
 
         public static void LoadResources ()
@@ -152,19 +154,19 @@ namespace P3Net.Arx
 
             LoadCounterImages();
 
-            compassN.loadFromFile("data/images/compass_n.png");
-            compassS.loadFromFile("data/images/compass_s.png");
-            compassW.loadFromFile("data/images/compass_w.png");
-            compassE.loadFromFile("data/images/compass_e.png");
+            compassN = new Texture("data/images/compass_n.png");
+            compassS = new Texture("data/images/compass_s.png");
+            compassW = new Texture("data/images/compass_w.png");
+            compassE = new Texture("data/images/compass_e.png");
 
             // Create a sprite for the stat banner
-            BannerImageCity.loadFromFile("data/images/cityBanner.png");
-            Banner.setTexture(BannerImageCity);
-            BannerImageStrip.loadFromFile("data/images/cityBannerStatusLine.png");
-            BannerStrip.setTexture(BannerImageStrip);
+            BannerImageCity = new Texture("data/images/cityBanner.png");
+            Banner.Texture = BannerImageCity;
+            BannerImageStrip = new Texture("data/images/cityBannerStatusLine.png");
+            BannerStrip.Texture = BannerImageStrip;
 
             // Load Atari 8 bit encounter images sheet
-            encImageSheet.loadFromFile("data/images/encounters/encounters.png"); // Atari 8bit
+            encImageSheet = new Texture("data/images/encounters/encounters.png"); // Atari 8bit
         }
 
         public static void DisplayQuitMenu ()
@@ -213,48 +215,48 @@ namespace P3Net.Arx
 
         public static void DisplayDungeonGateImage ()
         {
-            dungeonGate.setTexture(imgDungeonGate);
-            dungeonGate.setPosition(gateX, gateY + 64);
-            App.draw(dungeonGate);
+            dungeonGate.Texture = imgDungeonGate;
+            dungeonGate.Position = new Vector2f(gateX, gateY + 64);
+            App.Draw(dungeonGate);
         }
 
         public static void DisplayCityGateImage ()
         {
-            cityGate.setTexture(imgCityGate);
-            cityGate.setPosition(gateX, gateY + 78);
-            App.draw(cityGate);
+            cityGate.Texture = imgCityGate;
+            cityGate.Position = new Vector2f(gateX, gateY + 78);
+            App.Draw(cityGate);
         }
 
         public static void LoadCounterImages ()
         {
             // Dungeon gate counters
-            img0.loadFromFile("data/images/0.png");
-            img1.loadFromFile("data/images/1.png");
-            img2.loadFromFile("data/images/2.png");
-            img3.loadFromFile("data/images/3.png");
-            img4.loadFromFile("data/images/4.png");
-            img5.loadFromFile("data/images/5.png");
-            img6.loadFromFile("data/images/6.png");
-            img7.loadFromFile("data/images/7.png");
-            img8.loadFromFile("data/images/8.png");
-            img9.loadFromFile("data/images/9.png");
+            img0 = new Texture("data/images/0.png");
+            img1 = new Texture("data/images/1.png");
+            img2 = new Texture("data/images/2.png");
+            img3 = new Texture("data/images/3.png");
+            img4 = new Texture("data/images/4.png");
+            img5 = new Texture("data/images/5.png");
+            img6 = new Texture("data/images/6.png");
+            img7 = new Texture("data/images/7.png");
+            img8 = new Texture("data/images/8.png");
+            img9 = new Texture("data/images/9.png");
 
             //City gate counters
-            imgc0.loadFromFile("data/images/c0.png");
-            imgc1.loadFromFile("data/images/c1.png");
-            imgc2.loadFromFile("data/images/c2.png");
-            imgc3.loadFromFile("data/images/c3.png");
-            imgc4.loadFromFile("data/images/c4.png");
-            imgc5.loadFromFile("data/images/c5.png");
-            imgc6.loadFromFile("data/images/c6.png");
-            imgc7.loadFromFile("data/images/c7.png");
-            imgc8.loadFromFile("data/images/c8.png");
-            imgc9.loadFromFile("data/images/c9.png");
+            imgc0 = new Texture("data/images/c0.png");
+            imgc1 = new Texture("data/images/c1.png");
+            imgc2 = new Texture("data/images/c2.png");
+            imgc3 = new Texture("data/images/c3.png");
+            imgc4 = new Texture("data/images/c4.png");
+            imgc5 = new Texture("data/images/c5.png");
+            imgc6 = new Texture("data/images/c6.png");
+            imgc7 = new Texture("data/images/c7.png");
+            imgc8 = new Texture("data/images/c8.png");
+            imgc9 = new Texture("data/images/c9.png");
 
-            imgDungeonGate.loadFromFile("data/images/locations2/gate3.png");
-            imgDungeonGate.setSmooth(false);
-            imgCityGate.loadFromFile("data/images/cityGate.png");
-            imgCityGate.setSmooth(false);
+            imgDungeonGate = new Texture("data/images/locations2/gate3.png");
+            imgDungeonGate.Smooth = false;
+            imgCityGate = new Texture("data/images/cityGate.png");
+            imgCityGate.Smooth = false;
         }
 
         public static void DispInit ()
@@ -295,15 +297,16 @@ namespace P3Net.Arx
         public static void DrawConsoleBackground ()
         {
             /* Draws a transparent box with yellow border around the console window whilst exploring and in large 3D view mode */
-            if ((plyr.status != 2) && (graphicMode == 2)) // Whilst not shopping
+            if ((plyr.status != GameStates.Module) && (graphicMode == 2)) // Whilst not shopping
             {
-                var rectangle = new sf.RectangleShape();
-                rectangle.setSize(sf.Vector2f(670, 182)); // 672, 184
-                rectangle.setOutlineColor(sf.Color.Yellow);
-                rectangle.setFillColor(sf.Color(0, 0, 0, 128));
-                rectangle.setOutlineThickness(1);
-                rectangle.setPosition(consoleX - 16, consoleY); // Offset to give a 16 pixel border to text
-                App.draw(rectangle);
+                var rectangle = new RectangleShape() {
+                                    Size = new Vector2f(670, 182),
+                                    OutlineColor = Color.Yellow,
+                                    FillColor = new Color(0, 0, 0, 128),
+                                    OutlineThickness = 1,
+                                    Position = new Vector2f(consoleX - 16, consoleY) // Offset to give a 16 pixel border to text
+                                };
+                App.Draw(rectangle);
             }
         }
 
@@ -315,11 +318,10 @@ namespace P3Net.Arx
         }
 
         public static void DisplayMainMenu ()
-        {
-            RandomNumbers.Seed(time(null));
+        {            
             DrawLogo();
 
-            var tempy = (windowHeight - (180 + 240)) / 2;
+            //var tempy = (windowHeight - (180 + 240)) / 2;
             var z = (240) / 18;
             var x = 2;
 
@@ -331,7 +333,7 @@ namespace P3Net.Arx
             DrawText(x + 3, z + 7, "(7) Modify font:");
             DrawText(x + 3, z + 9, "(0) Leave the game");
 
-            if (plyr.musicStyle == 0)
+            if (!plyr.musicStyle)
                 DrawText(x + 21, z + 6, "Atari 8bit");
             else
                 DrawText(x + 21, z + 6, "Alternate");
@@ -431,13 +433,13 @@ namespace P3Net.Arx
         public static void ClearDisplay ()
         {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            App.pushGLStates();
+            App.PushGLStates();
         }
 
         public static void UpdateDisplay ()
         {
-            App.popGLStates();
-            App.display();
+            App.PopGLStates();
+            App.Display();
         }
 
         public static void DispMain ()
@@ -449,61 +451,34 @@ namespace P3Net.Arx
             DrawStatsPanel();
             DrawCompass();
             DrawAutomap();
-            if ((graphicMode == (int)DisplayOptions.AlternateLarge) && (plyr.status != 3))
+            if ((graphicMode == (int)DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Encounter))
                 DrawConsoleBackground();
         }
 
         public static void DrawImage ( string imagename, int x, int y )
         {
             // Counter images for Dungeon gate character creation
-            if (plyr.scenario == 1)
+            Texture texture;
+            var useC = plyr.scenario != Scenarios.Dungeon;
+            switch (imagename)
             {
-                if (imagename == "0")
-                    counterImage.setTexture(img0);
-                if (imagename == "1")
-                    counterImage.setTexture(img1);
-                if (imagename == "2")
-                    counterImage.setTexture(img2);
-                if (imagename == "3")
-                    counterImage.setTexture(img3);
-                if (imagename == "4")
-                    counterImage.setTexture(img4);
-                if (imagename == "5")
-                    counterImage.setTexture(img5);
-                if (imagename == "6")
-                    counterImage.setTexture(img6);
-                if (imagename == "7")
-                    counterImage.setTexture(img7);
-                if (imagename == "8")
-                    counterImage.setTexture(img8);
-                if (imagename == "9")
-                    counterImage.setTexture(img9);
-            } else
-            {
-                if (imagename == "0")
-                    counterImage.setTexture(imgc0);
-                if (imagename == "1")
-                    counterImage.setTexture(imgc1);
-                if (imagename == "2")
-                    counterImage.setTexture(imgc2);
-                if (imagename == "3")
-                    counterImage.setTexture(imgc3);
-                if (imagename == "4")
-                    counterImage.setTexture(imgc4);
-                if (imagename == "5")
-                    counterImage.setTexture(imgc5);
-                if (imagename == "6")
-                    counterImage.setTexture(imgc6);
-                if (imagename == "7")
-                    counterImage.setTexture(imgc7);
-                if (imagename == "8")
-                    counterImage.setTexture(imgc8);
-                if (imagename == "9")
-                    counterImage.setTexture(imgc9);
-            }
+                case "0": texture = useC ? imgc0 : img0; break;
+                case "1": texture = useC ? imgc1 : img1; break;
+                case "2": texture = useC ? imgc2 : img2; break;
+                case "3": texture = useC ? imgc3 : img3; break;
+                case "4": texture = useC ? imgc4 : img4; break;
+                case "5": texture = useC ? imgc5 : img5; break;
+                case "6": texture = useC ? imgc6 : img6; break;
+                case "7": texture = useC ? imgc7 : img7; break;
+                case "8": texture = useC ? imgc8 : img8; break;
+                case "9": texture = useC ? imgc9 : img9; break;
 
-            counterImage.setPosition(gateX + x, gateY + y);
-            App.draw(counterImage);
+                default: throw new InvalidOperationException("Unknown image");
+            };
+
+            counterImage.Texture = texture;
+            counterImage.Position = new Vector2f(gateX + x, gateY + y);
+            App.Draw(counterImage);
         }
 
         public static void SetScreenValues ()
@@ -513,7 +488,7 @@ namespace P3Net.Arx
             gateY = ((windowHeight - 384) / 2) - 78;
             loadingX = 16;
             loadingY = 11;
-            var temp = 0;
+
             var spacer = 0; // spacer value between screen elements - adjust here
             var consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
             statPanelX = (windowWidth - 640) / 2; // Center in middle of window width
@@ -525,7 +500,7 @@ namespace P3Net.Arx
                 viewWidth = 288;
                 viewHeight = 144;
                 viewPortX = (windowWidth - viewWidth) / 2;
-                temp = 110 + spacer + viewHeight + spacer + consoleHeight;
+                var temp = 110 + spacer + viewHeight + spacer + consoleHeight;
                 statPanelY = (windowHeight - temp) / 2;
                 viewPortY = statPanelY + 110 + spacer;
                 consoleY = viewPortY + viewHeight + 4;
@@ -547,11 +522,13 @@ namespace P3Net.Arx
             }
 
             /* Shop positions are the same regardless of small / large 3D view choice */
-            temp = 110 + spacer + 144 + 16 + consoleHeight;
-            shopStatsY = ((windowHeight - temp) / 2);
-            shopStatsY = statPanelY;
-            shopPictureY = shopStatsY + 110 + spacer;
-            shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
+            {
+                var temp = 110 + spacer + 144 + 16 + consoleHeight;
+                shopStatsY = ((windowHeight - temp) / 2);
+                shopStatsY = statPanelY;
+                shopPictureY = shopStatsY + 110 + spacer;
+                shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
+            };
 
             /* Misc assignments for positioning */
 
@@ -562,12 +539,12 @@ namespace P3Net.Arx
 
         public static void DrawInfoPanels ()
         {
-            if (plyr.status != 3)
+            if (plyr.status != GameStates.Encounter)
             {
                 if (plyr.infoPanel == 1)
                 {
 
-                    if ((plyr.special >= 0xc0) && (plyr.special <= 0xff) && (plyr.scenario == 1)) // 224 - 255 was d2
+                    if ((plyr.special >= 0xc0) && (plyr.special <= 0xff) && (plyr.scenario == Scenarios.Dungeon)) // 224 - 255 was d2
                     {
                         var ind = (plyr.special - 0xc0);
                         var str = roomMessages[ind];
@@ -583,7 +560,7 @@ namespace P3Net.Arx
                             BText(11, 5, "You are in the city");
                             BText(12, 6, "of Xebec's Demise");
                         }
-                        if (plyr.scenario == 1)
+                        if (plyr.scenario == Scenarios.Dungeon)
                         {
                             if (plyr.map == 1)
                                 BText(12, 5, "You are on level 1");
@@ -595,24 +572,18 @@ namespace P3Net.Arx
                                 BText(12, 5, "You are on level 4");
                             BText(14, 6, "of the Dungeon");
                         }
-                        if (plyr.scenario == 2)
+                        if (plyr.scenario == Scenarios.Arena)
                         {
                             BText(11, 5, "You are in the Arena");
                             BText(12, 6, "of Xebec's Demise");
                         }
 
-                        var thirstDesc = CheckThirst();
-                        BText(1, 7, thirstDesc);
-                        var hungerDesc = CheckHunger();
-                        BText(1, 8, hungerDesc);
-                        var alcoholDesc = CheckAlcohol();
-                        BText(1, 9, alcoholDesc);
-                        var weightDesc = CheckEncumbrance();
-                        BText(30, 7, weightDesc);
-                        var poisonDesc = CheckPoison();
-                        BText(31, 8, poisonDesc);
-                        var diseaseDesc = CheckDisease();
-                        BText(31, 9, diseaseDesc);
+                        BText(1, 7, CheckThirst());
+                        BText(1, 8, CheckHunger());
+                        BText(1, 9, CheckAlcohol());
+                        BText(30, 7, CheckEncumbrance());
+                        BText(31, 8, CheckPoison());
+                        BText(31, 9, CheckDisease());
                     }
                 }
 
@@ -675,8 +646,7 @@ namespace P3Net.Arx
                     str = "None";
                     if (plyr.legsArmour != 255)
                     {
-                        str = str = itemBuffer[plyr.legsArmour].name;
-                        ;
+                        str = itemBuffer[plyr.legsArmour].name;
                     }
                     BText(7, 9, str);
                 }
@@ -788,31 +758,33 @@ namespace P3Net.Arx
 
         public static void DrawStatsPanel ()
         {
-            if ((graphicMode == 2) && (plyr.status != 5) && (plyr.status != 2)) // not shopping
+            //TODO: What is state 5?
+            if ((graphicMode == 2) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
             {
-                var rectangle = new sf.RectangleShape();
-                rectangle.setSize(sf.Vector2f(640, 110)); // 640, 110
-                rectangle.setOutlineColor(sf.Color.Yellow);
-                rectangle.setOutlineThickness(1);
-                rectangle.setPosition(statPanelX, statPanelY - 1);
-                App.draw(rectangle);
+                var rectangle = new RectangleShape() {
+                        Size = new Vector2f(640, 110), // 640, 110
+                        OutlineColor = Color.Yellow,
+                        OutlineThickness = 1,
+                        Position = new Vector2f(statPanelX, statPanelY - 1)
+                    };
+                App.Draw(rectangle);
             }
 
-            Banner.setPosition(statPanelX, statPanelY - 1);
-            if (plyr.status == 2)
+            Banner.Position = new Vector2f(statPanelX, statPanelY - 1);
+            if (plyr.status == GameStates.Module)
             {
                 var statsX = (windowWidth - 640) / 2;
-                var statsY = ((windowHeight - 144) / 2) - 126; // 144 pixels for picture + 16 space + stats height
-                Banner.setPosition(statsX, shopStatsY - 1);
+                //var statsY = ((windowHeight - 144) / 2) - 126; // 144 pixels for picture + 16 space + stats height
+                Banner.Position = new Vector2f(statsX, shopStatsY - 1);
             }
-            App.draw(Banner);
-            if ((plyr.status == 1) || (plyr.status == 3))
+            App.Draw(Banner);
+            if ((plyr.status == GameStates.Explore) || (plyr.status == GameStates.Encounter))
             {
-                BannerStrip.setPosition(statPanelX, (statPanelY + 89));
-                App.draw(BannerStrip);
+                BannerStrip.Position = new Vector2f(statPanelX, (statPanelY + 89));
+                App.Draw(BannerStrip);
             }
             if (plyr.status != GameStates.Module)
-                App.draw(BannerStrip);
+                App.Draw(BannerStrip);
             if (!plyr.diagOn)
             {
                 SetFontColour(162, 114, 64, 255);
@@ -852,7 +824,7 @@ namespace P3Net.Arx
 
                 SetFontColour(102, 149, 40, 255);
 
-                if ((plyr.status_text != " ") && (plyr.status != 3) && (plyr.alive))
+                if ((plyr.status_text != " ") && (plyr.status != GameStates.Encounter) && plyr.alive)
                     DrawText(2, 5, plyr.status_text);
 
                 SetFontColour(102, 149, 40, 255);
@@ -868,26 +840,16 @@ namespace P3Net.Arx
 
             if (plyr.diagOn)
             {
-                var zoneDesc = "X:" + Itos(plyr.x) + "  Y:" + Itos(plyr.y) + "  Special:" + Itos(plyr.special) + "  Zone:" + Itos(plyr.zone) + "  Set:" + Itos(plyr.zoneSet);
-                DrawText(2, 0, zoneDesc);
-                zoneDesc = "Front:" + Itos(plyr.front) + "  Left:" + Itos(plyr.left) + "  Right:" + Itos(plyr.right) + "  Back:" + Itos(plyr.back);
-                DrawText(2, 1, zoneDesc);
-                
-                var @out = new stringstream();
-                @out << "Offset:" << plyr.z_offset;
-                
-                var text = @out.str();
-                DrawText(2, 5, text);
-                zoneDesc = "Floor:" + Itos(zones[plyr.zoneSet].floor) + "  Ceiling:" + Itos(zones[plyr.zoneSet].ceiling);
-                DrawText(2, 2, zoneDesc);
-                zoneDesc = "Location:" + Itos(plyr.location);
-                DrawText(2, 3, zoneDesc);
+                DrawText(2, 0, $"X:{plyr.x} Y:{plyr.y} Special:{plyr.special}  Zone:{plyr.zone} Set:{plyr.zoneSet}");
+                DrawText(2, 1, $"Front:{plyr.front}  Left:{plyr.left} Right:{plyr.right}  Back:{plyr.back}");
+                                                
+                DrawText(2, 5, $"Offset: {plyr.z_offset}");
+                DrawText(2, 2, $"Floor:{zones[plyr.zoneSet].floor}  Ceiling:{zones[plyr.zoneSet].ceiling}");
+                DrawText(2, 3, $"Location:{plyr.location}");
                 
                 var e = ReturnCarriedWeight();
-                zoneDesc = "Encumbrance:" + Itos(e);
-                DrawText(2, 4, zoneDesc);
-                zoneDesc = "T: " + Itos(plyr.hours) + ":" + Itos(plyr.minutes);
-                DrawText(30, 4, zoneDesc);
+                DrawText(2, 4, $"Encumbrance:{e}");
+                DrawText(30, 4, $"T: {plyr.hours}:{plyr.minutes}");
             }
         }
 
@@ -895,192 +857,116 @@ namespace P3Net.Arx
         {
             if (plyr.compasses > 0)
             {
-                if ((plyr.status != 2) && (graphicMode == 2)) // if exploring and full screen draw a background
+                if ((plyr.status != GameStates.Module) && (graphicMode == 2)) // if exploring and full screen draw a background
                 {
                     var x = 16;
                     var y = (windowHeight - 128) / 2;
 
-                    var rectangle = new sf.RectangleShape();
-                    rectangle.setSize(sf.Vector2f(130, 130));
-                    rectangle.setOutlineColor(sf.Color.Yellow);
-                    rectangle.setFillColor(sf.Color(0, 0, 0, 128));
-                    rectangle.setOutlineThickness(1);
-                    rectangle.setPosition(x, y); // Offset to give a 16 pixel border to text
-                    App.draw(rectangle);
+                    var rectangle = new RectangleShape() {
+                                        Size = new Vector2f(130, 130),
+                                        OutlineColor = Color.Yellow,
+                                        FillColor = new Color(0, 0, 0, 128),
+                                        OutlineThickness = 1,
+                                        Position = new Vector2f(x, y) // Offset to give a 16 pixel border to text
+                                    };
+                    App.Draw(rectangle);
                 }
+                
+                Texture texture;
+                switch (plyr.facing)
+                {
+                    case Directions.West: texture = compassW; break;
+                    case Directions.North: texture = compassN; break;
+                    case Directions.East: texture = compassE; break;
+                    case Directions.South: texture = compassS; break;
 
-                if (plyr.facing == 1)
-                    compass.setTexture(compassW);
-                if (plyr.facing == 2)
-                    compass.setTexture(compassN);
-                if (plyr.facing == 3)
-                    compass.setTexture(compassE);
-                if (plyr.facing == 4)
-                    compass.setTexture(compassS);
+                    default: throw new InvalidOperationException("Unknown player facing");
+                };
+
+                compass.Texture = texture;
 
                 if (graphicMode == 2)
                 {
                     var x = 16;
                     var y = (windowHeight - 128) / 2;
-                    compass.setPosition(x, y);
+                    compass.Position = new Vector2f(x, y);
                 } else
                 {
                     /* Normal Small 3D view mode */
                     var x = (viewPortX - 128) / 2;
                     var y = viewPortY + ((viewHeight - 128) / 2);
-                    compass.setPosition(x, y);
+                    compass.Position = new Vector2f(x, y);
                 }
-                App.draw(compass);
+                App.Draw(compass);
             }
         }
 
         public static void ClearShopDisplay ()
         {
-            App.clear();
-            App.pushGLStates();
-            App.draw(ShopSprite);
+            App.Clear();
+            App.PushGLStates();
+            App.Draw(ShopSprite);
             DrawStatsPanel();
         }
 
         public static void LoadShopImage ( int imageno )
-        {
-            if (graphicMode == 0)
-            {
-                if (imageno == 1)
-                    ShopImage.loadFromFile("data/images/locations/retreat.png");
-                if (imageno == 2)
-                    ShopImage.loadFromFile("data/images/locations/rathskeller.png");
-                if (imageno == 3)
-                    ShopImage.loadFromFile("data/images/locations/oDamon.png");
-                if (imageno == 4)
-                    ShopImage.loadFromFile("data/images/locations/evilGuild.png");
-                if (imageno == 5)
-                    ShopImage.loadFromFile("data/images/locations/goodGuild.png");
-                if (imageno == 6)
-                    ShopImage.loadFromFile("data/images/locations/stairwayUp.png");
-                if (imageno == 7)
-                    ShopImage.loadFromFile("data/images/locations/stairwayDown.png");
-                if (imageno == 8)
-                    ShopImage.loadFromFile("data/images/locations/citySmithyNight.png");
-                if (imageno == 9)
-                    ShopImage.loadFromFile("data/images/locations/imgCitySmithy.png");
-                if (imageno == 10)
-                    ShopImage.loadFromFile("data/images/locations/imgCityTavern.png");
-                if (imageno == 11)
-                    ShopImage.loadFromFile("data/images/locations/imgCityInn.png");
-                if (imageno == 12)
-                    ShopImage.loadFromFile("data/images/locations/imgCityShop.png");
-                if (imageno == 13)
-                    ShopImage.loadFromFile("data/images/locations/imgCityBank.png");
-                if (imageno == 14)
-                    ShopImage.loadFromFile("data/images/locations/imgCityGuild.png");
-                if (imageno == 15)
-                    ShopImage.loadFromFile("data/images/locations/imgCityHealer.png");
-                if (imageno == 16)
-                    ShopImage.loadFromFile("data/images/locations/trolls.png");
-                if (imageno == 17)
-                    ShopImage.loadFromFile("data/images/locations/goblins.png");
-                if (imageno == 18)
-                    ShopImage.loadFromFile("data/images/locations/chapel.png");
-                if (imageno == 19)
-                    ShopImage.loadFromFile("data/images/locations/fountain.png");
-                if (imageno == 20)
-                    ShopImage.loadFromFile("data/images/locations/oracle.png");
-                if (imageno == 21)
-                    ShopImage.loadFromFile("data/images/locations/imgCityHealer.png");
-                if (imageno == 22)
-                    ShopImage.loadFromFile("data/images/locations/lift.png");
-                if (imageno == 23)
-                    ShopImage.loadFromFile("data/images/locations/ferry.png");
-                if (imageno == 24)
-                    ShopImage.loadFromFile("data/images/locations/undead.png");
-                if (imageno == 25)
-                    ShopImage.loadFromFile("data/images/locations/arena.png");
-                if (imageno == 26)
-                    ShopImage.loadFromFile("data/images/locations/dwarvenSmithy.png");
-                if (imageno == 27)
-                    ShopImage.loadFromFile("data/images/locations/6.png");
-            }
+        {            
+            var useGraphics2 = graphicMode > 0;
+            var texturePath = useGraphics2 ? "data/images/locations2/" : "data/images/locations";
 
-            if (graphicMode > 0)
+            //TODO: Consolidate image names to eliminate the file checks
+            switch (imageno)
             {
-                if (imageno == 9)
-                    ShopImage.loadFromFile("data/images/locations2/smithy.png");
-                if (imageno == 10)
-                    ShopImage.loadFromFile("data/images/locations2/tavern.png");
-                if (imageno == 11)
-                    ShopImage.loadFromFile("data/images/locations2/inn.png");
-                if (imageno == 12)
-                    ShopImage.loadFromFile("data/images/locations2/shop.png");
-                if (imageno == 13)
-                    ShopImage.loadFromFile("data/images/locations2/bank.png");
-                if (imageno == 14)
-                    ShopImage.loadFromFile("data/images/locations2/guild.png");
-                if (imageno == 15)
-                    ShopImage.loadFromFile("data/images/locations2/healer1.png");
-                if (imageno == 16)
-                    ShopImage.loadFromFile("data/images/locations2/trolls.png");
-                if (imageno == 17)
-                    ShopImage.loadFromFile("data/images/locations2/goblins.png");
-                if (imageno == 1)
-                    ShopImage.loadFromFile("data/images/locations2/inn.png");
-                if (imageno == 2)
-                    ShopImage.loadFromFile("data/images/locations2/rathskeller.png");
-                if (imageno == 3)
-                    ShopImage.loadFromFile("data/images/locations2/shop.png");
-                if (imageno == 4)
-                    ShopImage.loadFromFile("data/images/locations2/guild.png");
-                if (imageno == 5)
-                    ShopImage.loadFromFile("data/images/locations2/guild.png");
-                if (imageno == 6)
-                    ShopImage.loadFromFile("data/images/locations/stairwayUp.png");
-                if (imageno == 7)
-                    ShopImage.loadFromFile("data/images/locations/stairwayDown.png");
-                if (imageno == 8)
-                    ShopImage.loadFromFile("data/images/locations/citySmithyNight.png");
-                if (imageno == 18)
-                    ShopImage.loadFromFile("data/images/locations/chapel.png");
-                if (imageno == 19)
-                    ShopImage.loadFromFile("data/images/locations/fountain.png");
-                if (imageno == 20)
-                    ShopImage.loadFromFile("data/images/locations/oracle.png");
-                if (imageno == 21)
-                    ShopImage.loadFromFile("data/images/locations2/healer2.png");
-                if (imageno == 22)
-                    ShopImage.loadFromFile("data/images/locations/lift.png");
-                if (imageno == 23)
-                    ShopImage.loadFromFile("data/images/locations2/river.png");
-                if (imageno == 24)
-                    ShopImage.loadFromFile("data/images/locations2/undead.png");
-                if (imageno == 25)
-                    ShopImage.loadFromFile("data/images/locations/arena.png");
-            }
+                case 1: texturePath += useGraphics2 ? "inn.png" : "retreat.png"; break;
+                case 2: texturePath += useGraphics2 ? "rathskeller.png" : "rathskeller.png"; break;
+                case 3: texturePath += useGraphics2 ? "shop.png" : "oDamon.png"; break;
+                case 4: texturePath += useGraphics2 ? "guild.png" : "evilGuild.png"; break;
+                case 5: texturePath += useGraphics2 ? "guild.png" : "goodGuild.png"; break;
+                case 6: texturePath += useGraphics2 ? "stairwayUp.png" : "stairwayUp.png"; break;
+                case 7: texturePath += useGraphics2 ? "stairwayDown.png" : "stairwayDown.png"; break;
+                case 8: texturePath += useGraphics2 ? "citySmithyNight.png" : "citySmithyNight.png"; break;
+                case 9: texturePath += useGraphics2 ? "smithy.png" : "imgCitySmithy.png"; break;
+                case 10: texturePath += useGraphics2 ? "tavern.png" : "imgCityTavern.png"; break;
+                case 11: texturePath += useGraphics2 ? "inn.png" : "imgCityInn.png"; break;
+                case 12: texturePath += useGraphics2 ? "shop.png" : "imgCityShop.png"; break;
+                case 13: texturePath += useGraphics2 ? "bank.png" : "imgCityBank.png"; break;
+                case 14: texturePath += useGraphics2 ? "guild.png" : "imgCityGuild.png"; break;
+                case 15: texturePath += useGraphics2 ? "healer1.png" : "imgCityHealer.png"; break;
+                case 16: texturePath += useGraphics2 ? "trolls.png" : "trolls.png"; break;
+                case 17: texturePath += useGraphics2 ? "goblins.png" : "goblins.png"; break;
+                case 18: texturePath += useGraphics2 ? "chapel.png" : "chapel.png"; break;
+                case 19: texturePath += useGraphics2 ? "fountain.png" : "fountain.png"; break;
+                case 20: texturePath += useGraphics2 ? "oracle.png" : "oracle.png"; break;
+                case 21: texturePath += useGraphics2 ? "healer2.png" : "imgCityHealer.png"; break;
+                case 22: texturePath += useGraphics2 ? "lift.png" : "lift.png"; break;
+                case 23: texturePath += useGraphics2 ? "river.png" : "ferry.png"; break;
+                case 24: texturePath += useGraphics2 ? "undead.png" : "undead.png"; break;
+                case 25: texturePath += useGraphics2 ? "arena.png" : "arena.png"; break;
+                case 26: texturePath += useGraphics2 ? "dwarvenSmithy.png" : "dwarvenSmithy.png"; break;
+                case 27: texturePath += useGraphics2 ? "6.png" : "6.png"; break;
 
-            ShopSprite.setTexture(ShopImage);
-            ShopSprite.setScale(2.0, 2.0);
-            ShopSprite.setPosition(((windowWidth - 640) / 2), shopPictureY);
+                default: throw new InvalidOperationException("Unknown image");
+            };
+
+            ShopSprite.Texture = new Texture(texturePath);
+            ShopSprite.Scale = new Vector2f(2.0F, 2.0F);
+            ShopSprite.Position = new Vector2f((windowWidth - 640) / 2, shopPictureY);
         }
 
-        public static int CheckCityDoors ()
-        {
-            return 0;
-        }
+        public static int CheckCityDoors () => 0;
 
         public static void LoadLogoImage ()
         {
-            LogoImage.loadFromFile("data/images/logo640x240.png");
-            LogoSprite.setTexture(LogoImage);
+            LogoImage = new Texture("data/images/logo640x240.png");
+            LogoSprite.Texture = LogoImage;
             var x = (windowWidth - 640) / 2;
             var y = (windowHeight - (180 + 240)) / 2;
-            LogoSprite.setPosition(x, y);
-
-        }
-        public static void DrawLogo ()
-        {
-            App.draw(LogoSprite);
+            LogoSprite.Position = new Vector2f(x, y);
         }
 
-        public static sf.Sprite encImage = new sf.Sprite();
+        public static void DrawLogo () => App.Draw(LogoSprite);
+
+        public static Sprite encImage = new Sprite();
 
         public static string version = "0.82";
 
@@ -1109,50 +995,54 @@ namespace P3Net.Arx
         public static int shopPictureY;
 
         // Main window
-        public static sf.RenderWindow App = new sf.RenderWindow();
+        public static RenderWindow App;
 
         public static bool mainMenuQuit = false;
 
-        public static sf.Texture img0 = new sf.Texture();
-        public static sf.Texture img1 = new sf.Texture();
-        public static sf.Texture img2 = new sf.Texture();
-        public static sf.Texture img3 = new sf.Texture();
-        public static sf.Texture img4 = new sf.Texture();
-        public static sf.Texture img5 = new sf.Texture();
-        public static sf.Texture img6 = new sf.Texture();
-        public static sf.Texture img7 = new sf.Texture();
-        public static sf.Texture img8 = new sf.Texture();
-        public static sf.Texture img9 = new sf.Texture();
-        public static sf.Texture imgDungeonGate = new sf.Texture();
-        public static sf.Texture imgCityGate = new sf.Texture();
-        public static sf.Texture imgc0 = new sf.Texture();
-        public static sf.Texture imgc1 = new sf.Texture();
-        public static sf.Texture imgc2 = new sf.Texture();
-        public static sf.Texture imgc3 = new sf.Texture();
-        public static sf.Texture imgc4 = new sf.Texture();
-        public static sf.Texture imgc5 = new sf.Texture();
-        public static sf.Texture imgc6 = new sf.Texture();
-        public static sf.Texture imgc7 = new sf.Texture();
-        public static sf.Texture imgc8 = new sf.Texture();
-        public static sf.Texture imgc9 = new sf.Texture();
-        public static sf.Texture consoleImage = new sf.Texture();
-        public static sf.Texture BannerImageCity = new sf.Texture();
-        public static sf.Texture BannerImageStrip = new sf.Texture();
-        public static sf.Texture compassN = new sf.Texture();
-        public static sf.Texture compassS = new sf.Texture();
-        public static sf.Texture compassW = new sf.Texture();
-        public static sf.Texture compassE = new sf.Texture();
+        //TODO: Put in a texture cache to lazy load and release this
+        //TODO: Make this array or something so we can more quickly update it
+        public static Texture img0;
+        public static Texture img1;
+        public static Texture img2;
+        public static Texture img3;
+        public static Texture img4;
+        public static Texture img5;
+        public static Texture img6;
+        public static Texture img7;
+        public static Texture img8;
+        public static Texture img9;
+        public static Texture imgDungeonGate;
+        public static Texture imgCityGate;
+        public static Texture imgc0;
+        public static Texture imgc1;
+        public static Texture imgc2;
+        public static Texture imgc3;
+        public static Texture imgc4;
+        public static Texture imgc5;
+        public static Texture imgc6;
+        public static Texture imgc7;
+        public static Texture imgc8;
+        public static Texture imgc9;
+        public static Texture consoleImage;
+        public static Texture BannerImageCity;
+        public static Texture BannerImageStrip;
+        public static Texture compassN;
+        public static Texture compassS;
+        public static Texture compassW;
+        public static Texture compassE;
+        public static Texture ShopImage;
+        public static Texture LogoImage;
 
-        public static sf.Sprite Banner = new sf.Sprite();
-        public static sf.Sprite BannerStrip = new sf.Sprite();
-        public static sf.Sprite counterImage = new sf.Sprite();
-        public static sf.Sprite dungeonGate = new sf.Sprite();
-        public static sf.Sprite cityGate = new sf.Sprite();
-        public static sf.Sprite compass = new sf.Sprite();
-        public static sf.Sprite ShopSprite = new sf.Sprite();
-        public static sf.Sprite LogoSprite = new sf.Sprite();
-        public static sf.Texture ShopImage = new sf.Texture();
-        public static sf.Texture LogoImage = new sf.Texture();
+        //TODO: Use a sprite cache to lazy load, release these
+        public static Sprite Banner = new Sprite();
+        public static Sprite BannerStrip = new Sprite();
+        public static Sprite counterImage = new Sprite();
+        public static Sprite dungeonGate = new Sprite();
+        public static Sprite cityGate = new Sprite();
+        public static Sprite compass = new Sprite();
+        public static Sprite ShopSprite = new Sprite();
+        public static Sprite LogoSprite = new Sprite();
+        
         public static string olddrawText; // text string used for setting and passing strings to the print routine
 
         // If image2 == 255 then just display image1 rather than use animations below
@@ -1287,7 +1177,7 @@ namespace P3Net.Arx
         // end of animation sequences excluding city images        
 
         public static bool animationNotStarted;
-        public static sf.Texture encImageSheet = new sf.Texture();
+        public static Texture encImageSheet;
         public static int firstFrame;
         public static int lastFrame;
         public static int currentFrame; // within encounterAnim 0-7

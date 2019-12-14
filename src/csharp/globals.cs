@@ -22,9 +22,13 @@ namespace P3Net.Arx
 	 public enum GameStates
      {
         Explore = 1,
+
+        //TODO: Defined as Shopping in most references
         Module = 2,
         Encounter = 3,
         Dead = 4
+
+        //TODO: State 5 is called Dead but doesn't line up with this value
      }
 
 	 public enum SelectStates
@@ -44,7 +48,10 @@ namespace P3Net.Arx
         Palace,
         Wilderness,
         Revelation,
-        Destiny
+        Destiny,
+
+        //TODO: Change to init value to eliminate this 
+        Unknown = 255,
      }
 
 	 public enum Directions
@@ -58,8 +65,9 @@ namespace P3Net.Arx
 
 	 public enum Modules
      {
-        VAULT = 0x06,
-        RATHSKELLER = 0x1D,
+        //TODO: Fix case
+        VAULT = 0x06, 
+        RATHSKELLER = 0x1D, //29
         DwarvenSmithy = 21
      }
 

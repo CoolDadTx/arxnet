@@ -17,7 +17,7 @@ namespace P3Net.Arx
         public static void ShopFountain ()
         {
             var fountainMenu = 1; // high level menu
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
             LoadShopImage(19);
 
             var str = "";

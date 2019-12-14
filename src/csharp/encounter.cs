@@ -9,6 +9,7 @@
  */
 using System;
 using System.Linq;
+using System.Xml.Schema;
 
 namespace P3Net.Arx
 {
@@ -22,7 +23,7 @@ namespace P3Net.Arx
     {
         public int encProb { get; set; }
 
-        public int encType { get; set; }
+        public Encounters encType { get; set; }
     }
 
     public partial class GlobalMembers
@@ -348,7 +349,7 @@ namespace P3Net.Arx
         public static Monster[] Opponents = Arrays.InitializeWithDefaultInstances<Monster>(8); // max 8 monsters against you
 
         public static bool opponentSurprised;
-        public static int opponentType;
+        public static Encounters opponentType;
         public static bool playerOnGround;
         public static bool playerRunsAway = false;
         public static bool playerStunned;
@@ -390,18 +391,20 @@ namespace P3Net.Arx
             { encProb = 15, encType = Encounters.Acolyte }
         };
 
-        public static void AwardExperience ( int opponentNo )
+        public static void AwardExperience ( Encounters opponentNo )
         {
             // x2 is default experience multiplier value for defeating an opponent in the Dungeon
             var experienceMultiplier = 2;
 
-            if (opponentNo == (int)Encounters.Ghost)
+            //TODO: Move this into Encounters type
+            if (opponentNo == Encounters.Ghost)
                 experienceMultiplier = 8;
-            if (opponentNo == (int)Encounters.Doppleganger)
+            if (opponentNo == Encounters.Doppleganger)
                 experienceMultiplier = 7;
-            if (opponentNo == (int)Encounters.Mold)
+            if (opponentNo == Encounters.Mold)
                 experienceMultiplier = 3;
 
+            //TODO: This doesn't look right, shouldn't it be based upon maxHP of actual opponent, not first 
             var opponentXP = Opponents[0].maxHP * experienceMultiplier;
             IncreaseExperience(opponentXP);
         }
@@ -424,7 +427,7 @@ namespace P3Net.Arx
             weaponDamageValues[9] = monsterWeapons[weaponNo].evil;
             weaponDamageValues[10] = monsterWeapons[weaponNo].cold;
 
-            if (opponentType == (int)Encounters.Doppleganger)
+            if (opponentType == Encounters.Doppleganger)
             {
                 weaponDamageValues[0] = itemBuffer[weaponNo].blunt;
                 weaponDamageValues[1] = itemBuffer[weaponNo].sharp;
@@ -439,7 +442,7 @@ namespace P3Net.Arx
                 weaponDamageValues[10] = itemBuffer[weaponNo].cold;
             }
 
-            var armorValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            var armorValues = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             // Need to add modifier for player armor values & armor body parts
 
             var armors = new int[11]; // holds results of rolling for armor protection
@@ -699,8 +702,10 @@ namespace P3Net.Arx
                         case 0x93:
                         EncounterLoop(Encounters.Doppleganger, 1);
                         break;
+
+                        //TODO: What is encounters 37?
                         case 0x94:
-                        EncounterLoop(37, 8);
+                        EncounterLoop((Encounters)37, 8);
                         break;
                         case 0x95:
                         EncounterLoop(Encounters.Homunculus, 8);
@@ -756,9 +761,9 @@ namespace P3Net.Arx
                 encounterNotHostile = false;
 
             // Good but hostile to humans
-            if ((opponentType == (int)Encounters.Phoenix) ||
-                (opponentType == (int)Encounters.Valkyrie) ||
-                (opponentType == (int)Encounters.Dwarf))
+            if ((opponentType == Encounters.Phoenix) ||
+                (opponentType == Encounters.Valkyrie) ||
+                (opponentType == Encounters.Dwarf))
                 encounterNotHostile = false;
 
             // Check for neutral encounters without intelligence or wisdom - e.g. giant rat
@@ -787,13 +792,11 @@ namespace P3Net.Arx
         public static void CheckTreasure ()
         {
             var foundTreasure = false;
-            var no_found = 0;
-            var found = 0;
-
+            
             // Check to see if the opponent was carrying a weapon (as opposed to claws or teeth)
             // Only type 0x03 weapons can be dropped - type 0xFF refers to natural weapons such as bites, tails, claws, spells
 
-            Opponents[0] = Monsters[opponentType];
+            Opponents[0] = Monsters[(int)opponentType];
 
             var weapon = Opponents[0].w1; // Modify
 
@@ -805,8 +808,8 @@ namespace P3Net.Arx
 
             var upperRange = 75;
 
-            no_found = Randn(0, Opponents[0].tFood);
-            found = Randn(0, upperRange); // Adjusted from upperRange to reduce volume item drops
+            var no_found = Randn(0, Opponents[0].tFood);
+            var found = Randn(0, upperRange); // Adjusted from upperRange to reduce volume item drops
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(1, no_found);
@@ -909,7 +912,7 @@ namespace P3Net.Arx
                     itemBuffer[potionRef].hp = 1; // Potion identified or labelled
             }
 
-            if (opponentType == (int)Encounters.UndeadKnight)
+            if (opponentType == Encounters.UndeadKnight)
             {
                 switch (plyr.special) // Stat bonus for defeating The Seven Undead Knights
                 {
@@ -937,7 +940,7 @@ namespace P3Net.Arx
                 }
             }
 
-            if (opponentType == (int)Encounters.TrollTyrant) // troll tyrant killed
+            if (opponentType == Encounters.TrollTyrant) // troll tyrant killed
             {
                 if (plyr.trollsReforged == false)
                 {
@@ -951,7 +954,7 @@ namespace P3Net.Arx
                 foundTreasure = false;
             }
 
-            if (opponentType == (int)Encounters.GoblinLord) // goblin lord killed
+            if (opponentType == Encounters.GoblinLord) // goblin lord killed
             {
                 if (plyr.goblinsReforged == false)
                 {
@@ -971,7 +974,7 @@ namespace P3Net.Arx
 
         public static void ChooseEncounter ()
         {
-            var monsterNo = 0;
+            Encounters monsterNo = 0;
             plyr.status = GameStates.Encounter;
 
             // CITY - Day
@@ -983,7 +986,7 @@ namespace P3Net.Arx
                 {
                     if ((monsterProb >= encCount) && (monsterProb < dayEncTable[i].encProb + encCount))
                         monsterNo = dayEncTable[i].encType;
-                    encCount = encCount + dayEncTable[i].encProb;
+                    encCount += dayEncTable[i].encProb;
                 }
             }
 
@@ -996,7 +999,7 @@ namespace P3Net.Arx
                 {
                     if ((monsterProb >= encCount) && (monsterProb < nightEncTable[i].encProb + encCount))
                         monsterNo = nightEncTable[i].encType;
-                    encCount = encCount + nightEncTable[i].encProb;
+                    encCount += nightEncTable[i].encProb;
                 }
             }
 
@@ -1008,11 +1011,12 @@ namespace P3Net.Arx
                 {
                     if ((monsterProb >= encCount) && (monsterProb < wellLitEncTable[i].encProb + encCount))
                         monsterNo = wellLitEncTable[i].encType;
-                    encCount = encCount + wellLitEncTable[i].encProb;
+                    encCount += wellLitEncTable[i].encProb;
                 }
                 if (monsterNo == 0)
                 {
-                    monsterNo = 1;
+                    //TODO: Why are we erroring on this?
+                    monsterNo = Encounters.Thief;
                     Console.Write("Error: Monster 0 rolled!\n");
                 }
             }
@@ -1025,18 +1029,19 @@ namespace P3Net.Arx
                 {
                     if ((monsterProb >= encCount) && (monsterProb < dungeonTable[i].encProb + encCount))
                         monsterNo = dungeonTable[i].encType;
-                    encCount = encCount + dungeonTable[i].encProb;
+                    encCount += dungeonTable[i].encProb;
                 }
                 if (monsterNo == 0)
                 {
-                    monsterNo = 1;
+                    //TODO: Why are we erroring on this?
+                    monsterNo = Encounters.Thief;
                     Console.Write("Error: Monster 0 rolled!\n");
                 }
             }
 
             if ((plyr.scenario == Scenarios.Dungeon) && (plyr.map == 4))
-                monsterNo = 19;
-
+                monsterNo = Encounters.Mage;
+            
             plyr.fixedEncounter = false;
             EncounterLoop(monsterNo, 1); // Only one currently except for fixed encounters
 
@@ -1106,17 +1111,17 @@ namespace P3Net.Arx
             if (waitingForSpaceKey)
                 CyText(3, consoleMessages[0]);
 
-            if (graphicMode == DisplayOptions.AlternateLarge)
+            if (graphicMode == (int)DisplayOptions.AlternateLarge)
                 DrawConsoleBackground();
         }
 
-        public static void EncounterLoop ( int encounterType, int opponentQuantity )
+        public static void EncounterLoop ( Encounters encounterType, int opponentQuantity )
         {
             opponentType = encounterType;
             checkForTreasure = false;
             animationNotStarted = true;
-            firstFrame = Monsters[opponentType].image;
-            lastFrame = Monsters[opponentType].image2;
+            firstFrame = Monsters[(int)opponentType].image;
+            lastFrame = Monsters[(int)opponentType].image2;
             encounterRunning = true;
             encounterTurns = 0;
             playerTurn = true;
@@ -1133,7 +1138,7 @@ namespace P3Net.Arx
 
             // Move to display!
             //MLT: Double to float
-            if (graphicMode == DisplayOptions.AlternateLarge)
+            if (graphicMode == (int)DisplayOptions.AlternateLarge)
                 plyr.z_offset = 0.3F;
             else
                 plyr.z_offset = 1.5F;
@@ -1185,14 +1190,14 @@ namespace P3Net.Arx
                 plyr.fixedEncounter = false;
                 if (playerRunsAway)
                 {
-                    if (plyr.facing == 1)
-                        plyr.x = plyr.oldx;
-                    if (plyr.facing == 3)
-                        plyr.x = plyr.oldx;
-                    if (plyr.facing == 2)
-                        plyr.y = plyr.oldy;
-                    if (plyr.facing == 4)
-                        plyr.y = plyr.oldy;
+                    switch (plyr.facing)
+                    {
+                        case Directions.West:
+                        case Directions.East: plyr.x = plyr.oldx; break;
+
+                        case Directions.North:
+                        case Directions.South: plyr.y = plyr.oldy; break;
+                    }
                     plyr.z_offset = 1.0F;
                 } else
                 {
@@ -1439,15 +1444,15 @@ namespace P3Net.Arx
             }
         }
 
-        public static void InitialiseOpponents ( int opponentType, int opponentQuantity )
+        public static void InitialiseOpponents ( Encounters opponentType, int opponentQuantity )
         {
             // Clean out all 8 opponent slots with an empty monster object (using the unused FBI Agent for this)
             for (var i = 0; i < MAX_OPPONENTS; ++i)
                 Opponents[i] = Monsters[(int)Encounters.FbiAgent];
             for (var i = 0; i < opponentQuantity; ++i)
             {
-                Opponents[i] = Monsters[opponentType];
-                if (opponentType == (int)Encounters.Doppleganger)
+                Opponents[i] = Monsters[(int)opponentType];
+                if (opponentType == Encounters.Doppleganger)
                 {
                     // Doppleganger
                     Opponents[i].hp = plyr.hp;
@@ -1603,12 +1608,12 @@ namespace P3Net.Arx
 
             if (hitSuccess)
             {
-                if (opponentType == (int)Encounters.GiantRat)
+                if (opponentType == Encounters.GiantRat)
                     plyr.diseases[0] = 1;
                 var attackFactor = 1.0F; // change!
                 var damage = CalcOpponentWeaponDamage(chosenWeapon, attackFactor, 1);
 
-                if (opponentType == (int)Encounters.Doppleganger)
+                if (opponentType == Encounters.Doppleganger)
                 {
                     weaponName = itemBuffer[(Opponents[0].w1)].name;
                     attackDesc = "hits";
@@ -1622,7 +1627,7 @@ namespace P3Net.Arx
                 if (damage != 1000)
                     plyr.hp -= damage;
 
-                str = $"{prefix}{Opponents[0].name} {attackDesc}@{bPartText} with {weaponName}@for {Itos(damage)}.";
+                str = $"{prefix}{Opponents[0].name} {attackDesc}@{bPartText} with {weaponName}@for {damage}.";
                 if (damage == 0)
                     str = $"{prefix}{Opponents[0].name} {attackDesc}@{bPartText} with {weaponName}@which has no effect!";
             }
@@ -1704,6 +1709,7 @@ namespace P3Net.Arx
 
         public static void PlayerAttack ( int attackType, float attackFactorBonus )
         {
+            var str = "";
             var missileWeapon = false;
             var missileAmmoAvailable = false;
             encounterNotHostile = false; // Opponent now hostile as they have been attacked
@@ -1732,9 +1738,9 @@ namespace P3Net.Arx
                     itemBuffer[plyr.priWeapon].ammo--;
                     var remainingAmmo = itemBuffer[plyr.priWeapon].ammo;
                     if (remainingAmmo < 10)
-                        itemBuffer[plyr.priWeapon].name = $"Crossbow [0{Itos(remainingAmmo)}]";
+                        itemBuffer[plyr.priWeapon].name = $"Crossbow [0{remainingAmmo}]";
                     else
-                        itemBuffer[plyr.priWeapon].name = $"Crossbow [{Itos(remainingAmmo)}]";
+                        itemBuffer[plyr.priWeapon].name = $"Crossbow [{remainingAmmo}]";
                 }
                 weaponDesc = itemBuffer[plyr.priWeapon].name;
             }
@@ -1779,8 +1785,7 @@ namespace P3Net.Arx
                 hitProbability = 100;
             if (attackType == 3)
                 hitProbability -= 5;
-
-            var str = "";
+            
             var hitRoll = Randn(1, 100);
             var hitSuccess = hitRoll <= hitProbability;
 
@@ -1812,12 +1817,12 @@ namespace P3Net.Arx
                 }
                 //damage [type] = Random [0; Round (base weapon damage [type] * attack factor)]
 
-                str = $"You {attackDesc} the {Opponents[0].name}@with your {weaponDesc}@for {Itos(damage)}.";
+                str = $"You {attackDesc} the {Opponents[0].name}@with your {weaponDesc}@for {damage}.";
                 if (damage == 0)
                     str = $"You {attackDesc} the {Opponents[0].name}@with your {weaponDesc}@which has no effect!";
-                if ((plyr.scenario == 0) && (damage == 1000))
+                if ((plyr.scenario == Scenarios.City) && (damage == 1000))
                     str = $"You attack the {Opponents[0].name}@with your {weaponDesc}@which is stopped by its {Opponents[0].armorText}.";
-                if ((plyr.scenario == 1) && (damage == 1000))
+                if ((plyr.scenario == Scenarios.Dungeon) && (damage == 1000))
                     str = $"You attack the {Opponents[0].name}@with your {weaponDesc}@which is stopped by its armour.";
             }
 
@@ -1834,7 +1839,6 @@ namespace P3Net.Arx
             UpdateDisplay(); // sloppy!
 
             //C++ TO C# CONVERTER TODO TASK: The following line was determined to be a copy assignment (rather than a reference assignment) - this should be verified and a 'CopyFrom' method should be created:
-            //ORIGINAL LINE: opponent = Opponents[0];
             opponent.CopyFrom(Opponents[0]);
             encounterNotHostile = false;
             var charmSuccess = false;
@@ -2165,8 +2169,8 @@ namespace P3Net.Arx
             if ((opponent.inte > 3) && (plyr.inte != 0))
             {
                 // Check for a successful trick attempt
-                int intelligenceDifference = plyr.inte - opponent.inte;
-                int trickProbability;
+                var intelligenceDifference = plyr.inte - opponent.inte;
+                var trickProbability = 0;
                 if (intelligenceDifference <= -128)
                     trickProbability = 1;
                 if ((intelligenceDifference >= -128) && (intelligenceDifference < -64))
@@ -2309,7 +2313,7 @@ namespace P3Net.Arx
                     PlayerTrick();
                 if (key == "4")
                 {
-                    if ((plyr.encounterRef == Encounters.Healer) && (plyr.scenario == 1))
+                    if ((plyr.encounterRef == Encounters.Healer) && (plyr.scenario == Scenarios.Dungeon))
                         encounterMenu = 5;
                     else
                         PlayerHail();
@@ -2358,8 +2362,7 @@ namespace P3Net.Arx
                 }
             } else if (encounterMenu == 4) // thief grouping
             {
-                var str = $"The {Opponents[0].name} demands:";
-                CyText(2, str);
+                CyText(2, $"The {Opponents[0].name} demands:");
                 CyText(4, "\"Stand and deliver.");
                 BText(9, 5, "Thy money or thy life!\"");
                 BText(8, 7, "Dost thou yield? (Y or N)");
@@ -2441,17 +2444,22 @@ namespace P3Net.Arx
         }
 
         public static void SelectEncounterTheme ()
-        {
-            if ((plyr.scenario == 0) && (Opponents[0].alignment > 127))
-                PlayEncounterTheme(0);
-            if ((plyr.scenario == 0) && (Opponents[0].alignment < 128))
-                PlayEncounterTheme(1);
-            if ((plyr.scenario == 1) && (Opponents[0].alignment < 128))
-                PlayEncounterTheme(2);
-            if ((plyr.scenario == 1) && (Opponents[0].alignment == 128))
-                PlayEncounterTheme(3);
-            if ((plyr.scenario == 1) && (Opponents[0].alignment > 128))
-                PlayEncounterTheme(4);
+        {            
+            switch (plyr.scenario)
+            {
+                case Scenarios.City:
+                {
+                    var theme = (Opponents[0].alignment > 127) ? 0 : 1;
+                    PlayEncounterTheme(theme);
+                    break;
+                };
+                case Scenarios.Dungeon:
+                {
+                    var theme = (Opponents[0].alignment > 128) ? 4 : ((Opponents[0].alignment > 1298) ? 2 : 3);
+                    PlayEncounterTheme(theme);
+                    break;
+                };
+            };
         }
 
         public static void SurrenderToGuard ()
@@ -2542,7 +2550,7 @@ namespace P3Net.Arx
                 }
             }
             if (encounterQuantity > 1)
-                text = $"You {turnText} {Itos(encounterQuantity)} {Opponents[0].pluName}.";
+                text = $"You {turnText} {encounterQuantity} {Opponents[0].pluName}.";
             var length = text.Length;
             var xpos = (40 - length) / 2;
 

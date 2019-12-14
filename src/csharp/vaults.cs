@@ -9,6 +9,7 @@
  */
 using System;
 using System.Linq;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -35,12 +36,14 @@ namespace P3Net.Arx
         public static string bagDesc = "copper coins";
 
         public static int bagType = 0;
-        public static sf.Time gdt = new sf.Time();
-        public static sf.Clock gmyclock = new sf.Clock();
-        public static sf.Time guardCheckTime = new sf.Time();
+
+        //TODO: Use regular clock
+        public static Time gdt = new Time();
+        public static Clock gmyclock = new Clock();
+        public static Time guardCheckTime = new Time();
         public static string vaultName = "NO NAME.";
 
-        public static int vmenu;
+        public static VaultMenus vmenu;
 
         public static void AddVaultToMap ()
         {
@@ -63,26 +66,26 @@ namespace P3Net.Arx
             {
                 if (plyr.stolenFromVault == 1)
                     plyr.stolenFromVault = 2;
-                vmenu = (int)VaultMenus.MenuDraggedOutside;
+                vmenu = VaultMenus.MenuDraggedOutside;
             }
         }
 
         public static void DisplayVaultModuleText ()
         {
-            if (vmenu == (int)VaultMenus.MenuMain)
+            if (vmenu == VaultMenus.MenuMain)
             {
                 CyText(1, $"You are in {vaultName}");
                 CyText(3, $"You see a bag of {bagDesc}.");
                 BText(1, 5, "Do you (1) Grab the bag and run,");
                 BText(8, 6, "(2) Search for something else or");
                 BText(8, 7, "(0) Leave?");
-            } else if (vmenu == (int)VaultMenus.MenuGrabABag)
+            } else if (vmenu == VaultMenus.MenuGrabABag)
             {
                 CyText(1, $"@@You grab the bag of {bagDesc}@@and run!");
-            } else if (vmenu == (int)VaultMenus.MenuSearching)
+            } else if (vmenu == VaultMenus.MenuSearching)
             {
                 CyText(1, "@@@Searching...@@@(Hit SPACE key to stop searching)");
-            } else if (vmenu == (int)VaultMenus.MenuDraggedOutside)
+            } else if (vmenu == VaultMenus.MenuDraggedOutside)
             {
                 if (plyr.stolenFromVault == 0)
                     CyText(1, "@@A guard escorts you@@out of the bank's vault.");
@@ -120,43 +123,43 @@ namespace P3Net.Arx
             {
                 case VaultMenus.MenuMain:
                 if (key == "0")
-                    vmenu = (int)VaultMenus.MenuLeft;
+                    vmenu = VaultMenus.MenuLeft;
                 if (key == "1")
-                    vmenu = (int)VaultMenus.MenuGrabABag;
+                    vmenu = VaultMenus.MenuGrabABag;
                 if (key == "2")
-                    vmenu = (int)VaultMenus.MenuSearching;
+                    vmenu = VaultMenus.MenuSearching;
                 break;
                 case VaultMenus.MenuGrabABag:
                 if (key == "SPACE")
                 {
                     GrabBag();
-                    vmenu = (int)VaultMenus.MenuLeft;
+                    vmenu = VaultMenus.MenuLeft;
                 }
                 break;
                 case VaultMenus.MenuSearching:
                 if (key == "SPACE")
                 {
                     SetBagType();
-                    vmenu = (int)VaultMenus.MenuMain;
+                    vmenu = VaultMenus.MenuMain;
                 }
                 break;
                 case VaultMenus.MenuDraggedOutside:
                 if (key == "SPACE")
-                    vmenu = (int)VaultMenus.MenuLeft;
+                    vmenu = VaultMenus.MenuLeft;
                 break;
             }
         }
 
         public static void RunVault ()
         {
-            vmenu = (int)VaultMenus.MenuMain;
+            vmenu = VaultMenus.MenuMain;
             AddVaultToMap();
             LoadShopImage(27);
             SetBagType();
 
-            while (vmenu != (int)VaultMenus.MenuLeft)
+            while (vmenu != VaultMenus.MenuLeft)
             {
-                gdt = gmyclock.restart();
+                gdt = gmyclock.Restart();
 
                 ClearShopDisplay();
                 DisplayVaultModuleText();
@@ -164,10 +167,10 @@ namespace P3Net.Arx
                 ProcessVaultMenuInput();
 
                 guardCheckTime += gdt;
-                if (guardCheckTime >= sf.seconds(0.8f)) // was 0.8f
+                if (guardCheckTime >= Time.FromSeconds(0.8f)) // was 0.8f
                 {
                     CheckForGuard();
-                    guardCheckTime = sf.Time.Zero;
+                    guardCheckTime = Time.Zero;
                 }
             }
         }

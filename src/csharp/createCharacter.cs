@@ -10,6 +10,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SFML.Audio;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -28,7 +30,7 @@ namespace P3Net.Arx
         public static void DungeonGate ()
         {
             var gateNotDone = true;
-            plyr.scenario = 1;
+            plyr.scenario = Scenarios.Dungeon;
             LoadCounterImages();
 
             for (var i = 0; i < 8; i++) // copy dungeon counter data
@@ -83,14 +85,17 @@ namespace P3Net.Arx
             PlayDungeonGateSound2(); // start longer gate sound
 
             // display chosen digits
-            var counter = 0;
-            while (counter < 7) // number of counters should be 8
             {
-                if (counters[counter].y < 90)
-                    counters[counter].value1 = counters[counter].value2;
-                counters[counter].y = 96; //was 40
-                counter++;
-            }
+                var counter = 0;
+                while (counter < 7) // number of counters should be 8
+                {
+                    if (counters[counter].y < 90)
+                        counters[counter].value1 = counters[counter].value2;
+                    counters[counter].y = 96; //was 40
+                    counter++;
+                }
+            };
+
             if (counters[7].y < 344)
                 counters[7].value1 = counters[7].value2;
             counters[7].y = 336;
@@ -101,14 +106,14 @@ namespace P3Net.Arx
             UpdateDisplay();
 
             // pause
-            for (var i = 0; i < 3; i++) // 1 second
-                sf.sleep(sf.seconds(1.0));
+            for (var i = 0; i < 3; i++)
+                Sleep(TimeSpan.FromSeconds(1));
 
             // display "Joined" message
 
-            for (var i = 0; i < 6; i++) // 1 second
+            for (var i = 0; i < 6; i++) 
             {
-                sf.sleep(sf.seconds(1));
+                Sleep(TimeSpan.FromSeconds(1));
                 ClearDisplay();
                 DrawText(2, 11, "You are now joined.  Prepare to enter");
                 DrawText(6, 13, "Alternate Reality, The Dungeon.");
@@ -188,20 +193,22 @@ namespace P3Net.Arx
             PlayCityGateSound2(); // start longer gate sound
 
             // display chosen digits
-            var counter = 0;
-            while (counter < 7) // number of counters should be 8
             {
-                if (counters[counter].y < 88)
-                    counters[counter].value1 = counters[counter].value2;
-                counters[counter].y = 96; // Set vertical position of STR CHA DEX etc
-                counter++;
-            }
-            if (counters[7].y < 362)
-                counters[7].value1 = counters[7].value2;
-            counters[7].y = 370; // Set vertical position of copper counter when key pressed 354
+                var counter = 0;
+                while (counter < 7) // number of counters should be 8
+                {
+                    if (counters[counter].y < 88)
+                        counters[counter].value1 = counters[counter].value2;
+                    counters[counter].y = 96; // Set vertical position of STR CHA DEX etc
+                    counter++;
+                }
+                if (counters[7].y < 362)
+                    counters[7].value1 = counters[7].value2;
+                counters[7].y = 370; // Set vertical position of copper counter when key pressed 354
+            };
 
             // Loop while the sound is playing
-            while (cityGate2Sound.getStatus() == sf.Sound.Playing)
+            while (cityGate2Sound.Status == SoundStatus.Playing)
             {
                 ClearDisplay();
                 DisplayCounters();
@@ -210,7 +217,7 @@ namespace P3Net.Arx
             }
 
             PlayCityGateSound3(); // start final gate sound
-            while (cityGate3Sound.getStatus() == sf.Sound.Playing)
+            while (cityGate3Sound.Status == SoundStatus.Playing)
             {
                 ClearDisplay();
                 DrawText(2, 11, "You are now joined.  Prepare to enter");
@@ -238,14 +245,10 @@ namespace P3Net.Arx
             while (counter < 8) // number of counters should be 8
             {
                 // Draw the first layer number (upper)
-                digit1 = "0";
-                digit2 = "0";
-
                 var counter_x = counters[counter].x;
                 var counter_y = counters[counter].y;
-                var myStream = new ostringstream();
-                myStream << counters[counter].value1;
-                var digits = myStream.str();
+
+                var digits = counters[counter].value1.ToString();
                 var digits_number = counters[counter].value1;
                 if (digits_number < 10)
                 {
@@ -257,55 +260,11 @@ namespace P3Net.Arx
                     digit2 = digits.Substring(1, 1);
                 }
 
-                if (digit1 == "0")
-                    DrawImage("0", counter_x, counter_y);
-                if (digit1 == "1")
-                    DrawImage("1", counter_x, counter_y);
-                if (digit1 == "2")
-                    DrawImage("2", counter_x, counter_y);
-                if (digit1 == "3")
-                    DrawImage("3", counter_x, counter_y);
-                if (digit1 == "4")
-                    DrawImage("4", counter_x, counter_y);
-                if (digit1 == "5")
-                    DrawImage("5", counter_x, counter_y);
-                if (digit1 == "6")
-                    DrawImage("6", counter_x, counter_y);
-                if (digit1 == "7")
-                    DrawImage("7", counter_x, counter_y);
-                if (digit1 == "8")
-                    DrawImage("8", counter_x, counter_y);
-                if (digit1 == "9")
-                    DrawImage("9", counter_x, counter_y);
-
-                if (digit2 == "0")
-                    DrawImage("0", counter_x + 32, counter_y);
-                if (digit2 == "1")
-                    DrawImage("1", counter_x + 32, counter_y);
-                if (digit2 == "2")
-                    DrawImage("2", counter_x + 32, counter_y);
-                if (digit2 == "3")
-                    DrawImage("3", counter_x + 32, counter_y);
-                if (digit2 == "4")
-                    DrawImage("4", counter_x + 32, counter_y);
-                if (digit2 == "5")
-                    DrawImage("5", counter_x + 32, counter_y);
-                if (digit2 == "6")
-                    DrawImage("6", counter_x + 32, counter_y);
-                if (digit2 == "7")
-                    DrawImage("7", counter_x + 32, counter_y);
-                if (digit2 == "8")
-                    DrawImage("8", counter_x + 32, counter_y);
-                if (digit2 == "9")
-                    DrawImage("9", counter_x + 32, counter_y);
+                DrawImage(digit1, counter_x, counter_y);
+                DrawImage(digit2, counter_x + 32, counter_y);
 
                 // Draw the second layer number (lower)
-
-                digit1 = "0";
-                digit2 = "0";
-                var myStream2 = new ostringstream();
-                myStream2 << counters[counter].value2;
-                digits = myStream2.str();
+                digits = counters[counter].value2.ToString();
                 digits_number = counters[counter].value2;
                 if (digits_number < 10)
                 {
@@ -317,47 +276,8 @@ namespace P3Net.Arx
                     digit2 = digits.Substring(1, 1);
                 }
 
-                if (digit1 == "0")
-                    DrawImage("0", counter_x, counter_y + 16);
-                if (digit1 == "1")
-                    DrawImage("1", counter_x, counter_y + 16);
-                if (digit1 == "2")
-                    DrawImage("2", counter_x, counter_y + 16);
-                if (digit1 == "3")
-                    DrawImage("3", counter_x, counter_y + 16);
-                if (digit1 == "4")
-                    DrawImage("4", counter_x, counter_y + 16);
-                if (digit1 == "5")
-                    DrawImage("5", counter_x, counter_y + 16);
-                if (digit1 == "6")
-                    DrawImage("6", counter_x, counter_y + 16);
-                if (digit1 == "7")
-                    DrawImage("7", counter_x, counter_y + 16);
-                if (digit1 == "8")
-                    DrawImage("8", counter_x, counter_y + 16);
-                if (digit1 == "9")
-                    DrawImage("9", counter_x, counter_y + 16);
-
-                if (digit2 == "0")
-                    DrawImage("0", counter_x + 32, counter_y + 16);
-                if (digit2 == "1")
-                    DrawImage("1", counter_x + 32, counter_y + 16);
-                if (digit2 == "2")
-                    DrawImage("2", counter_x + 32, counter_y + 16);
-                if (digit2 == "3")
-                    DrawImage("3", counter_x + 32, counter_y + 16);
-                if (digit2 == "4")
-                    DrawImage("4", counter_x + 32, counter_y + 16);
-                if (digit2 == "5")
-                    DrawImage("5", counter_x + 32, counter_y + 16);
-                if (digit2 == "6")
-                    DrawImage("6", counter_x + 32, counter_y + 16);
-                if (digit2 == "7")
-                    DrawImage("7", counter_x + 32, counter_y + 16);
-                if (digit2 == "8")
-                    DrawImage("8", counter_x + 32, counter_y + 16);
-                if (digit2 == "9")
-                    DrawImage("9", counter_x + 32, counter_y + 16);
+                DrawImage(digit1, counter_x, counter_y + 16);
+                DrawImage(digit2, counter_x + 32, counter_y + 16);
 
                 counter++;
             }
@@ -366,14 +286,13 @@ namespace P3Net.Arx
         public static void GetPlayerName ()
         {
             var details_confirmed = false;
-            var player_chosen = false;
             var name_completed = false;
             string typed_name;
 
             while (!details_confirmed)
             {
                 plyr.fixedEncounter = false;
-                player_chosen = false;
+                var player_chosen = false;
                 plyr.gender = 0;
                 plyr.name = " ";
                 typed_name = "";
@@ -381,8 +300,7 @@ namespace P3Net.Arx
 
                 while (!name_completed)
                 {
-                    var single_key = "";
-                    single_key = GetTextChar();
+                    var single_key = GetTextChar();
                     if (single_key == "SPACE")
                         single_key = " ";
                     if (single_key == "ESC")
@@ -393,23 +311,19 @@ namespace P3Net.Arx
                         name_completed = true;
                     }
 
-
+                    var name_length = typed_name.Length;
                     if (single_key == "BACKSPACE")
                     {
-                        name_length = typed_name.Length;
                         if (name_length != 0)
                         {
-                            var name_length = typed_name.Length;
                             typed_name = typed_name.Substring(0, (name_length - 1));
                         }
-                        single_key = "";
                     } else
                     {
                         if (single_key != "RETURN")
-                        {
-                            name_length = typed_name.Length;
+                        {                            
                             if (name_length != 24) // check for limit of name length
-                                typed_name = typed_name + single_key;
+                                typed_name += single_key;
                         }
                     }
                     DrawPlayerDetails(typed_name);
@@ -419,19 +333,16 @@ namespace P3Net.Arx
 
                 DrawPlayerDetails(typed_name);
 
-                var sex = " ";
                 while (plyr.gender == 0)
                 {
                     var single_key = GetSingleKey();
                     if (single_key == "M")
                     {
                         plyr.gender = 1;
-                        sex = "male";
                     }
                     if (single_key == "F")
                     {
                         plyr.gender = 2;
-                        sex = "female";
                     }
                 }
 
@@ -450,7 +361,6 @@ namespace P3Net.Arx
                         player_chosen = true;
                         plyr.gender = 0;
                         plyr.name = " ";
-                        sex = " ";
                         name_completed = false;
 
                     }
@@ -465,16 +375,14 @@ namespace P3Net.Arx
         {
             ClearDisplay();
             DrawText(2, 2, "Create a new character");
-            var str = "Enter name: " + typed_name + "_";
-            DrawText(2, 5, str);
+            DrawText(2, 5, $"Enter name: {typed_name}_");
 
             if (!(plyr.name == " "))
                 DrawText(2, 16, "Art thou male or female ? (M or F)");
 
             if (!(plyr.gender == 0))
             {
-                str = "Thy name is " + typed_name;
-                DrawText(2, 18, str);
+                DrawText(2, 18, $"Thy name is {typed_name}");
                 if (plyr.gender == 1)
                     DrawText(12, 20, "Thy sex is male.");
                 else

@@ -53,7 +53,6 @@ namespace P3Net.Arx
                     enterKeyNotPressed = false;
                 if (key == "ESC")
                 {
-                    itemQuantity = 0;
                     enterKeyNotPressed = false;
                 }
             }
@@ -70,7 +69,7 @@ namespace P3Net.Arx
             var hoursSlept = 0; // number of hours slept
             var roomChoice = 0; // spot by door, drafty spot or by fire
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             SetAutoMapFlag(plyr.map, 55, 3);
             SetAutoMapFlag(plyr.map, 56, 3);
@@ -204,7 +203,7 @@ namespace P3Net.Arx
                         }
                         AddHour();
                         hoursSlept++;
-                        sf.sleep(sf.seconds(1));
+                        Sleep(TimeSpan.FromSeconds(1));
                     }
                     retreatMenu = 6;
                 }

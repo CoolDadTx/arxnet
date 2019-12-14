@@ -18,7 +18,7 @@ namespace P3Net.Arx
         {
             var liftMenu = 1; // high level menu
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             LoadShopImage(22);
 

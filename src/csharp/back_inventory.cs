@@ -75,26 +75,17 @@ namespace P3Net.Arx
         public static BufferItem[] newItemBuffer = Arrays.InitializeWithDefaultInstances<BufferItem>(itemBufferSize);
 
         public static string ReadItemName ( int stringOffset )
-        {
-            var ss = new stringstream();
-            var z = stringOffset; // current location in the binary
-            var c = 0; // current byte
-            var result = "";
+        {            
+            var value = ReadBinaryString(itemBlock, stringOffset);
+            
+            //TODO: Why are we doing this
+            value = value.Replace(Char.ConvertFromUtf32(32), Char.ConvertFromUtf32(95));
 
-            while (!(itemBlock[z] == 0))
-            {
-                c = itemBlock[z];
+            //TODO: Leaving this out for now, just make sure name is valid
+            //if ((c > 96) && (c < 123))
+            //   c = c - 32;
 
-                if (c == 32)
-                    c = 95;
-                if ((c > 96) && (c < 123))
-                    c = c - 32;
-
-                ss << (char)c;
-                z++;
-            }
-            result = ss.str();
-            return result;
+            return value;
         }
 
         //extern byte itemBlock[inventorySize];

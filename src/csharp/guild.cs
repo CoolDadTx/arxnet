@@ -9,39 +9,40 @@
  */
 using System;
 using System.Linq;
+using SFML.Audio;
 
 namespace P3Net.Arx
 {
     public class Guild
     {
-        public int associateDues { get; set; }
-
-        public int enemyGuild { get; set; }
-
-        public int fullDues { get; set; }
-
-        public int maxAlignment { get; set; }
-
-        public int minAlignment { get; set; }
-
-        public int minLevel { get; set; }
-
         public string name { get; set; }
-
-        public int type { get; set; }
 
         public int x { get; set; }
 
         public int y { get; set; }
+
+        public int minAlignment { get; set; }
+
+        public int maxAlignment { get; set; }
+
+        public int minLevel { get; set; }
+
+        public int type { get; set; }
+
+        public int enemyGuild { get; set; }
+                
+        public int fullDues { get; set; }
+
+        public int associateDues { get; set; }
     }
 
     public class GuildSpell
     {
-        public int cost { get; set; }
-
+        public string name { get; set; }
+        
         public int index { get; set; }
 
-        public string name { get; set; }
+        public int cost { get; set; }
     }
 
     public partial class GlobalMembers
@@ -240,19 +241,25 @@ namespace P3Net.Arx
 
         public static int itemQuantity; // used for number of charges to be paid for
 
-        public static sf.Music Music1 = new sf.Music();
+        public static Music Music1;
 
         public const int numberOfGuilds = 14; // 14 excluding - 2 extras in City
 
         public static void ClearGuildDisplay ()
         {
-            clock1.restart();
-            if (plyr.scenario == 0)
-                ClearShopDisplay();
-            if ((plyr.scenario == 1) && (guilds[guildNo].type == 1))
-                ClearShopDisplay();
-            if ((plyr.scenario == 1) && (guilds[guildNo].type == 2))
-                ClearShopDisplay();
+            clock1.Restart();
+
+            switch (plyr.scenario)
+            {
+                case Scenarios.City: ClearShopDisplay(); break;
+                case Scenarios.Dungeon:
+                {
+                    if (guilds[guildNo].type == 1 || guilds[guildNo].type == 2)
+                        ClearShopDisplay();
+                    break;
+                };
+            };
+            
             UpdateLyrics();
             iCounter++;
         }
@@ -261,16 +268,14 @@ namespace P3Net.Arx
         {
             var guild_no = 0;
 
-            if (plyr.scenario == 0) // City
+            if (plyr.scenario == Scenarios.City) // City
             {
                 for (var i = 0; i < numberOfGuilds; i++) // Max number of guild objects
                 {
                     if ((guilds[i].x == plyr.x) && (guilds[i].y == plyr.y))
                         guild_no = i; // The number of the guild you have entered
                 }
-            }
-
-            if (plyr.scenario == 1) // Dungeon
+            } else if (plyr.scenario == Scenarios.Dungeon) // Dungeon
             {
                 if (plyr.location == 49)
                     guild_no = 7; // chaos
@@ -299,21 +304,13 @@ namespace P3Net.Arx
             var itemRef = 9999; // Nothing selected
             var selectDesc = "Would you like to practice your spell of";
 
-            var menuitem1 = 255; // 255 is used here as nil
-            var menuitem2 = 255;
-            var menuitem3 = 255;
-            var menuitem4 = 255;
             var selectDone = false;
 
             var no_items = plyr.spellIndex; // Number of spells in players inventory
-            var cur_idx = 0;
-            var pages = 0;
             var page = 3;
-            var page_item = 0;
-            pages = 0;
 
             var noPages = no_items / 4; // based on 4 oncreen items per page
-            pages += noPages;
+            var pages = noPages;
             var tempRemainder = no_items % 4;
             if (tempRemainder != 0)
                 pages++;
@@ -336,17 +333,16 @@ namespace P3Net.Arx
                         BText(2, 8, "     #  F        B        ESC");
                         SetFontColour(215, 215, 215, 255);
 
-                        page_item = 1;
-                        cur_idx = ((page - 3) * 4);
-                        menuitem1 = 9999; // 9999 is used as nil
-                        menuitem2 = 9999;
-                        menuitem3 = 9999;
-                        menuitem4 = 9999;
+                        var page_item = 1;
+                        var cur_idx = ((page - 3) * 4);
+                        var menuitem1 = 9999; // 9999 is used as nil
+                        var menuitem2 = 9999;
+                        var menuitem3 = 9999;
+                        var menuitem4 = 9999;
 
                         while ((cur_idx < plyr.spellIndex) && (page_item < 5))
                         {
-                            var str = $"{spells[(spellBuffer[cur_idx].no)].name} {Itos(spellBuffer[cur_idx].percentage)}%";
-                            BText(9, (page_item + 2), str);
+                            BText(9, (page_item + 2), $"{spells[(spellBuffer[cur_idx].no)].name} {spellBuffer[cur_idx].percentage}%");
                             switch (page_item)
                             {
                                 case 1:
@@ -432,7 +428,7 @@ namespace P3Net.Arx
                     var str = spells[(spellBuffer[itemRef].no)].name;
                     CyText(4, str);
                     UpdateDisplay();
-                    sf.sleep(sf.seconds(1));
+                    Sleep(TimeSpan.FromSeconds(1));
                     AddHour();
                     practiceHours--;
                 }
@@ -443,7 +439,7 @@ namespace P3Net.Arx
 
         public static void ShopGuild ()
         {
-            int itemChoice;
+            int itemChoice = 0;
             var menuStartItem = 0;
             var guildSpellsNo = 0;
             guildNo = GetGuildNo();
@@ -460,7 +456,7 @@ namespace P3Net.Arx
             // Stock guild spells each visit - crash with name?
             for (var i = 0; i < 35; i++)
             {
-                if (spells[i].guilds[guildNo] == 1)
+                if (spells[i].guilds[guildNo])
                 {
                     guildSpellsNo++;
                     guildSpells[guildSpellIndex].cost = spells[i].cost;
@@ -474,56 +470,64 @@ namespace P3Net.Arx
             if (guildNo == 0)
                 guildSpellsNo--; // DIRTY FIX FOR THIEVES GUILD!
 
-            var musicPlaying = false;
+            //TODO: This doesn't seem right setting the var to false, doing if and then setting to true
+            musicPlaying = false;
 
             if (!musicPlaying)
             {
-                if (plyr.musicStyle == 0)
-                {
-                    if (plyr.scenario == 0)
-                    {
-                        Music1.openFromFile("data/audio/cityGuild.ogg");
-                        guildLyricsFilename = "goodGuild.txt";
-                    }
-                    if ((plyr.scenario == 1) && (guilds[guildNo].type == 1))
-                    {
-                        Music1.openFromFile("data/audio/evilGuild.ogg");
-                        guildLyricsFilename = "evilGuild.txt";
-                    }
-                    if ((plyr.scenario == 1) && (guilds[guildNo].type == 2))
-                    {
-                        Music1.openFromFile("data/audio/goodGuild.ogg");
-                        guildLyricsFilename = "goodGuild.txt";
-                    }
-                }
-                if (plyr.musicStyle == 1)
+                //TODO: Normalize paths
+                //TODO: Cannot convert this to simpler code right now because not all paths cover all scenarios
+                //e.g. musicStyle && scenario = 0, scenario 1 and guilds.type not in (1,2)
+                if (plyr.musicStyle)
                 {
                     if (guilds[guildNo].type == 1)
                     {
-                        Music1.openFromFile("data/audio/B/evilGuild.ogg");
+                        Music1 = new Music("data/audio/B/evilGuild.ogg");
                         guildLyricsFilename = "evilGuild.txt";
                     }
                     if (guilds[guildNo].type == 2)
                     {
-                        Music1.openFromFile("data/audio/B/goodGuild.ogg");
+                        Music1 = new Music("data/audio/B/goodGuild.ogg");
                         guildLyricsFilename = "goodGuild.txt";
-                    }
-                }
+                    }                    
+                } else
+                {
+                    if (plyr.scenario == Scenarios.City)
+                    {
+                        Music1 = new Music("data/audio/cityGuild.ogg");
+                        guildLyricsFilename = "goodGuild.txt";
+                    } else if (plyr.scenario == Scenarios.Dungeon)                        
+                    {
+                        if (guilds[guildNo].type == 1)
+                        {
+                            Music1 = new Music("data/audio/evilGuild.ogg");
+                            guildLyricsFilename = "evilGuild.txt";
+                        } else if (guilds[guildNo].type == 2)
+                        {
+                            Music1 = new Music("data/audio/goodGuild.ogg");
+                            guildLyricsFilename = "goodGuild.txt";
+                        };
+                    };
+                };
+
                 LoadLyrics(guildLyricsFilename);
-                Music1.play();
+                Music1.Play();
                 musicPlaying = true;
             }
 
             var guildMenu = 1; // high level menu
             
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
-            if (plyr.scenario == 0)
+            if (plyr.scenario == Scenarios.City)
                 LoadShopImage(14);
-            if ((plyr.scenario == 1) && (guilds[guildNo].type == 1))
-                LoadShopImage(4);
-            if ((plyr.scenario == 1) && (guilds[guildNo].type == 2))
-                LoadShopImage(5);
+            else if (plyr.scenario == Scenarios.Dungeon)
+            {
+                if (guilds[guildNo].type == 1)
+                    LoadShopImage(4);
+                else if (guilds[guildNo].type == 2)
+                    LoadShopImage(5);
+            };
 
             // Check for enemy guilds. Assume both full and associate membership counts
             var enemyGuild = false;
@@ -600,68 +604,29 @@ namespace P3Net.Arx
                         while (guildawardnotchecked)
                         {
                             ClearGuildDisplay();
-                            var text = new ostringstream();
-                            if (guildNo == 0)
-                                text << "Master Thieves show you techniques@that improve your skill.";
-                            if (guildNo == 1)
-                                text <<
-                            "A Mage from the Blue Wizards@Guild uses special magic to@increase your physical speed to " <<
-                            plyr.speed <<
-                            ".";
-                            if (guildNo == 2)
-                                text <<
-                            "A Mage from the Light Wizards@Guild uses special magic to@increase your wisdom to " <<
-                            plyr.wis <<
-                            ".";
-                            if (guildNo == 3)
-                                text <<
-                            "A Mage from the Green Wizards Academy@uses special magic to@increase your stamina to " <<
-                            plyr.sta <<
-                            ".";
-                            if (guildNo == 4)
-                                text <<
-                            "A Mage from the Red Wizards University@uses special magic to@increase your strength to " <<
-                            plyr.str <<
-                            ".";
-                            if (guildNo == 5)
-                                text <<
-                            "A Mage from the Dark Wizards Guild@uses special magic to increase@your charm to " <<
-                            plyr.chr <<
-                            ".";
-                            if (guildNo == 6)
-                                text <<
-                            "An Arch Mage from the Star Wizards@Guild uses special magic to increase@your hit points and strength.";
-                            if (guildNo == 7)
-                                text <<
-                            "A Mage from the Wizards of Chaos Guild@uses special magic to increase@your charm to " <<
-                            plyr.chr <<
-                            ".";
-                            if (guildNo == 8)
-                                text <<
-                            "A Mage from the Wizards of Law Guild@uses special magic to increase@your wisdom to " <<
-                            plyr.wis <<
-                            ".";
-                            if (guildNo == 9)
-                                text <<
-                            "A Mage from the Guild of Order uses@special magic to increase your@intelligence to " <<
-                            plyr.inte <<
-                            ".";
-                            if (guildNo == 10)
-                                text <<
-                            "A Doctor from the Physicians Guild@teaches you first aid beyond what@is commonly known. This increases@your hit points.";
-                            if (guildNo == 11)
-                                text <<
-                            "A Master Assassin shows you some basic@forms of hiding and quiet approach@which increase your ability to@surprise attackers.";
-                            if (guildNo == 12)
-                                text <<
-                            "A Mercenary from the Mercenaries Guild@uses special magic to increase@your strength to " <<
-                            plyr.str <<
-                            ".";
-                            if (guildNo == 13)
-                                text <<
-                            "A Knight from the Paladin's Guild uses@special magic to increase your stamina.";
 
-                            CText(text.str());
+                            string text;
+                            switch (guildNo)
+                            {
+                                case 0: text = "Master Thieves show you techniques@that improve your skill."; break;
+                                case 1: text = $"A Mage from the Blue Wizards@Guild uses special magic to@increase your physical speed to {plyr.speed}."; break;
+                                case 2: text = $"A Mage from the Light Wizards@Guild uses special magic to@increase your wisdom to {plyr.wis}."; break;
+                                case 3: text = $"A Mage from the Green Wizards Academy@uses special magic to@increase your stamina to {plyr.sta}."; break;
+                                case 4: text = $"A Mage from the Red Wizards University@uses special magic to@increase your strength to {plyr.str}."; break;
+                                case 5: text = $"A Mage from the Dark Wizards Guild@uses special magic to increase@your charm to {plyr.chr}."; break;
+                                case 6: text = "An Arch Mage from the Star Wizards@Guild uses special magic to increase@your hit points and strength."; break;
+                                case 7: text = $"A Mage from the Wizards of Chaos Guild@uses special magic to increase@your charm to {plyr.chr}."; break;
+                                case 8: text = $"A Mage from the Wizards of Law Guild@uses special magic to increase@your wisdom to {plyr.wis}."; break;
+                                case 9: text = $"A Mage from the Guild of Order uses@special magic to increase your@intelligence to {plyr.inte}."; break;
+                                case 10: text = "A Doctor from the Physicians Guild@teaches you first aid beyond what@is commonly known. This increases@your hit points."; break;
+                                case 11: text = "A Master Assassin shows you some basic@forms of hiding and quiet approach@which increase your ability to@surprise attackers."; break;
+                                case 12: text = $"A Mercenary from the Mercenaries Guild@uses special magic to increase@your strength to {plyr.str}."; break;
+                                case 13: text = "A Knight from the Paladin's Guild uses@special magic to increase your stamina."; break;
+
+                                default: throw new InvalidOperationException("Unknown guild");
+                            };                            
+                            CText(text);
+
                             CyText(9, "< Press any key to continue >");
                             UpdateDisplay();
 
@@ -673,8 +638,7 @@ namespace P3Net.Arx
                     }
 
                     ClearGuildDisplay();
-                    var str = $"Welcome to the {guilds[guildNo].name}.";
-                    CyText(1, str);
+                    CyText(1, $"Welcome to the {guilds[guildNo].name}.");
                     BText(6, 3, "(1) Apply for Guild membership.");
                     BText(6, 5, "(0) Leave.");
                     UpdateDisplay();
@@ -683,9 +647,9 @@ namespace P3Net.Arx
                         var key = GetSingleKey();
                         if (key == "F1")
                         {
-                            Music1.stop();
+                            Music1.Stop();
                             LoadLyrics(guildLyricsFilename);
-                            Music1.play();
+                            Music1.Play();
                         }
                         if (key == "0")
                             guildMenu = 0;
@@ -788,7 +752,7 @@ namespace P3Net.Arx
                 {
                     if (CheckCoins(0, (guilds[guildNo].fullDues), 0))
                     {
-                        var enemyGuild = guilds[guildNo].enemyGuild;
+                        var enemyGuildNumber = guilds[guildNo].enemyGuild;
                         ClearGuildDisplay();
                         CyText(1, "You are now part of our ancient order!");
                         CyText(2, "We give you your own Guild Ring to");
@@ -796,7 +760,7 @@ namespace P3Net.Arx
                         CyText(4, "to other members.  Wear it with pride!");
                         CyText(5, "You may also keep your valuables safe");
                         CyText(6, "in your guild locker. Beware of anyone");
-                        var str = $"from the {guilds[enemyGuild].name}!";
+                        var str = $"from the {guilds[enemyGuildNumber].name}!";
                         CyText(7, str);
                         CyText(9, "<<< Press any key to continue >>>");
                         UpdateDisplay();
@@ -1355,7 +1319,7 @@ namespace P3Net.Arx
                     }
                 }
             }
-            Music1.stop();
+            Music1.Stop();
             LeaveShop();
         }
 

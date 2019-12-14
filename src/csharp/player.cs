@@ -24,6 +24,7 @@ namespace P3Net.Arx
 
     public class DoorDetail
     {
+        //TODO: Make Directions
         public int direction { get; set; }
 
         public int level { get; set; }
@@ -93,9 +94,9 @@ namespace P3Net.Arx
 
         public int encounterAnimationRef { get; set; }
 
-        public int encounterRef { get; set; }
+        public Encounters encounterRef { get; set; }
 
-        public int facing { get; set; }
+        public Directions facing { get; set; }
 
         public bool fixedEncounter { get; set; }
 
@@ -209,6 +210,7 @@ namespace P3Net.Arx
 
         public int lwater { get; set; }
 
+        //TODO: Are map and scenario related?
         public int map { get; set; }
 
         public int mapHeight { get; set; }
@@ -269,7 +271,7 @@ namespace P3Net.Arx
 
         public int ringCharges { get; set; }
 
-        public int scenario { get; set; }
+        public Scenarios scenario { get; set; }
 
         public int secWeapon { get; set; }
 
@@ -291,7 +293,7 @@ namespace P3Net.Arx
 
         public int sta { get; set; }
 
-        public int status { get; set; }
+        public GameStates status { get; set; }
 
         public string status_text { get; set; }
 
@@ -362,6 +364,7 @@ namespace P3Net.Arx
 
         public static Player plyr = new Player();
 
+        //TODO: Replace with structured lists of items
         public static int[,] shopDailyWares = new int[15, 12]; //15 shops with 12 items each a day for sale
         public static int[,] smithyDailyWares = new int[4, 10]; // 4 smithies with 10 items each a day for sale
         public static int[,] tavernDailyDrinks = new int[14, 6]; // 14 taverns with 6 drink items each day for sale
@@ -570,7 +573,7 @@ namespace P3Net.Arx
             return thirstDesc;
         }
 
-        public static void CreateNewCharacter ( int scenario )
+        public static void CreateNewCharacter ( Scenarios scenario )
         {
             InitStats();
 
@@ -579,16 +582,16 @@ namespace P3Net.Arx
                 case Scenarios.City:
                 plyr.x = 35;
                 plyr.y = 36;
-                plyr.scenario = (int)Scenarios.City;
+                plyr.scenario = Scenarios.City;
                 plyr.map = 0;
-                plyr.facing = (int)Directions.North;
+                plyr.facing = Directions.North;
                 break;
                 case Scenarios.Dungeon:
-                plyr.scenario = (int)Scenarios.Dungeon;
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.map = 1;
                 plyr.x = 49;
                 plyr.y = 3;
-                plyr.facing = (int)Directions.West;
+                plyr.facing = Directions.West;
                 break;
             }
 
@@ -679,11 +682,11 @@ namespace P3Net.Arx
             plyr.healerMinutes[1] = 0;
             plyr.teleporting = 0; // counter that is used for flashing teleport sequence
             plyr.z_offset = 1.0f;
-            plyr.scenario = 255; // city 0, dungeon 1 - 255 means main menu for font choice
+            plyr.scenario = Scenarios.Unknown;
             plyr.map = 0; // city
             plyr.x = 63; // 49
             plyr.y = 63; // 3
-            plyr.facing = 2; // 2 equals north?
+            plyr.facing = Directions.North;
             plyr.sta = 16;
             plyr.chr = 13;
             plyr.str = 17;
@@ -699,7 +702,7 @@ namespace P3Net.Arx
             plyr.encounter_done = true;
             plyr.gender = 1;
             plyr.zone = 1;
-            plyr.status = 1; // Exploring
+            plyr.status = GameStates.Explore;
             plyr.torches = 3;
             plyr.food = 3;
             plyr.water = 3;

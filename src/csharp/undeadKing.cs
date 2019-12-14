@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -16,7 +15,7 @@ namespace P3Net.Arx
     {
         public static void ShopUndeadKing ()
         {
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             SetAutoMapFlag(plyr.map, 13, 26);
             SetAutoMapFlag(plyr.map, 14, 26);
@@ -57,7 +56,7 @@ namespace P3Net.Arx
 
             //MLT: Double to float
             plyr.z_offset = 1.6F; // position player just outside door
-            plyr.status = 1; // explore
+            plyr.status = GameStates.Explore; // explore
         }
     }
 }

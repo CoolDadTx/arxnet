@@ -8,7 +8,9 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+using System.IO;
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -25,15 +27,16 @@ namespace P3Net.Arx
         public static string backText;
         public static int backx;
 
-        public static sf.Clock clock1 = new sf.Clock();
+        //TODO: Use regular time
+        public static Clock clock1 = new Clock();
         public static string foreText;
         public static float fSpeedCoefficient = 0F;
         public static int iCounter;
         public static int ink;
-        public static sf.Sprite lyricCharImage = new sf.Sprite();
+        public static Sprite lyricCharImage = new Sprite();
         public static int lyricDuration;
 
-        public static sf.Texture lyricFontImage = new sf.Texture();
+        public static Texture lyricFontImage;
         public static int lyricPointer;
 
         public static LyricElement[] lyrics = Arrays.InitializeWithDefaultInstances<LyricElement>(2048);
@@ -66,15 +69,15 @@ namespace P3Net.Arx
                 char_no = 31;
             int charX = char_no * 32;
 
-            lyricCharImage.setTextureRect(sf.IntRect(charX, 0, 32, 16));
-            lyricCharImage.setPosition(lyricX + ((x - 1) * 32), lyricY);
-            App.draw(lyricCharImage);
+            lyricCharImage.TextureRect = new IntRect(charX, 0, 32, 16);
+            lyricCharImage.Position = new Vector2f(lyricX + ((x - 1) * 32), lyricY);
+            App.Draw(lyricCharImage);
         }
 
         public static void InitLyricFont ()
         {
-            lyricFontImage.loadFromFile("data/images/songFont.png");
-            lyricCharImage.setTexture(lyricFontImage);
+            lyricFontImage = new Texture("data/images/songFont.png");
+            lyricCharImage.Texture = lyricFontImage;
         }
 
         //=============================== loadLyrics ===================================
@@ -97,62 +100,57 @@ namespace P3Net.Arx
 
             var lyricsFilename = $"data/audio/{filename}";
 
-            var instream = new ifstream();
-
-            if (plyr.musicStyle == 1) // *** selects the 'modern' soundtrack
+            if (plyr.musicStyle) // *** selects the 'modern' soundtrack
                 lyricsFilename = $"data/audio/B/{filename}";
 
-            instream.open(lyricsFilename);
-
-            if (instream == null) // *** obligatory mis-load feedback
-                cerr << "Error: lyrics file could not be loaded" << "\n";
-
-            var line = "";
-            while (line != "EOF")
-            {
-                getline(instream, line); // *** read first line as blank
-                var idx = line.IndexOf(','); // *** yields the index in our LINE of the ','.
-
-                if (idx == -1) // *** no comma; assume duration value or colour change
+            using (var reader = new StreamReader(lyricsFilename))
+            {                
+                while (!reader.EndOfStream)
                 {
-                    lyrics[i].x = Convert.ToInt32(line);
-                    lyrics[i].text = "ERROR!";
+                    var line = reader.ReadLine(); // *** read first line as blank
+                    var idx = line.IndexOf(','); // *** yields the index in our LINE of the ','.
 
-                    if (line == "CYAN")
+                    if (idx == -1) // *** no comma; assume duration value or colour change
                     {
-                        lyrics[i].x = 150000;
-                        lyrics[i].text = "COLOUR!";
+                        lyrics[i].x = Convert.ToInt32(line);
+                        lyrics[i].text = "ERROR!";
+
+                        if (line == "CYAN")
+                        {
+                            lyrics[i].x = 150000;
+                            lyrics[i].text = "COLOUR!";
+                        }
+
+                        if (line == "BLUE")
+                        {
+                            lyrics[i].x = 150001;
+                            lyrics[i].text = "COLOUR!";
+                        }
+
+                        if (line == "GREEN")
+                        {
+                            lyrics[i].x = 150002;
+                            lyrics[i].text = "COLOUR!";
+                        }
+
+                        if (line == "WHITE")
+                        {
+                            lyrics[i].x = 150003;
+                            lyrics[i].text = "COLOUR!";
+                        }
+                    } else
+                    {
+                        var left = line.Substring(0, idx);
+                        var right = line.Substring(idx + 1);
+                        lyrics[i].x = Convert.ToInt32(left);
+                        lyrics[i].text = right;
                     }
 
-                    if (line == "BLUE")
-                    {
-                        lyrics[i].x = 150001;
-                        lyrics[i].text = "COLOUR!";
-                    }
-
-                    if (line == "GREEN")
-                    {
-                        lyrics[i].x = 150002;
-                        lyrics[i].text = "COLOUR!";
-                    }
-
-                    if (line == "WHITE")
-                    {
-                        lyrics[i].x = 150003;
-                        lyrics[i].text = "COLOUR!";
-                    }
-                } else
-                {
-                    var left = line.Substring(0, idx);
-                    var right = line.Substring(idx + 1);
-                    lyrics[i].x = Convert.ToInt32(left);
-                    lyrics[i].text = right;
+                    sequenceLength++;
+                    i++;
                 }
+            };
 
-                sequenceLength++;
-                i++;
-            }
-            instream.close();
             sequenceLength--;
             backText = "";
             foreText = "";
@@ -180,7 +178,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void LyricColour ( int r, int g, int b, int a ) => lyricCharImage.setColor(sf.Color(r, g, b, a));
+        public static void LyricColour ( int r, int g, int b, int a ) => lyricCharImage.Color = new Color((byte)r, (byte)g, (byte)b, (byte)a);
+        public static void LyricColour ( byte r, byte g, byte b, byte a ) => lyricCharImage.Color = new Color(r, g, b, a);
 
         //=============================== updateLyrics =================================
         //  Interprets the lyricElement structure and updates accordingly. Assigns a
@@ -211,7 +210,7 @@ namespace P3Net.Arx
                         LyricColour(192, 192, 192, 255);
                     Lyric(x, foreText);
 
-                    sf.sleep(sf.milliseconds(100));
+                    Sleep(TimeSpan.FromMilliseconds(100));
                     lyricDuration -= 100;
 
                     if (lyricDuration <= 0)
@@ -302,10 +301,10 @@ namespace P3Net.Arx
                 //----------------------------------------------------------------------
                 if ((lyrics[lyricPointer].x > 20) && (lyrics[lyricPointer].x < 150000) && (lyricDuration == 0))
                 {
-                    var timeSinceLast = clock1.getElapsedTime();
-                    var timeGiven = sf.milliseconds(lyrics[lyricPointer].x);
-                    var fSinceLast = timeSinceLast.asSeconds();
-                    var fGiven = timeGiven.asSeconds();
+                    var timeSinceLast = clock1.ElapsedTime;
+                    var timeGiven = Time.FromMilliseconds(lyrics[lyricPointer].x);
+                    var fSinceLast = timeSinceLast.AsSeconds();
+                    var fGiven = timeGiven.AsSeconds();
                     var fRatio = (fSinceLast / fGiven);
                     if ((1.0 - fRatio) > 0.50)
                         fSpeedCoefficient = 1.0F;

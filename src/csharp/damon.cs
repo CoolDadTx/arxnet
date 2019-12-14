@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.IO;
 
 namespace P3Net.Arx
 {
@@ -43,7 +44,7 @@ namespace P3Net.Arx
         public static void ShopDamon ()
         {
             var damonMenu = 1; // high level menu
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
             var menuStartItem = 0;
             var offerStatus = 0; // 0 is normal, 1 is demanding, 2 is bartering
             var offerRounds = 0;
@@ -1002,15 +1003,10 @@ namespace P3Net.Arx
 
         public static void LoadDamonBinary ()
         {
+            //TODO: Ignoring file size - damonFileSize
+
             // Loads armour,weapons and clothing binary data into the "damonBinary" array
-            var tempString = String.Format("{0}{1}", "data/map/", "DamonItems.bin");
-            var fp = fopen(tempString, "rb");
-            if (fp != null)
-            {
-                for (var i = 0; i < damonFileSize; i++)
-                    damonBinary[i] = fgetc(fp);
-            }
-            fclose(fp);
+            damonBinary = File.ReadAllBytes("data/map/DamonItems.bin");
         }
 
         // Take a binary offset within damonBinary and create a new inventory item from the binary data (weapon, armour or clothing)
@@ -1019,30 +1015,31 @@ namespace P3Net.Arx
         //MLT: No return value
         public static void CreateInventoryItem ( int startByte )
         {
-            int index;
-            int alignment;
-            int weight;
-            int wAttributes;
-            int melee;
-            int ammo;
-            int blunt;
-            int sharp;
-            int earth;
-            int air;
-            int fire;
-            int water;
-            int power;
-            int magic;
-            int good;
-            int evil;
-            int cold;
-            int minStrength;
-            int minDexterity;
-            int hp;
-            int maxHP;
-            int flags;
-            int parry;
-            int useStrength;
+            //TODO: Read this better and are these booleans?
+            int index = 0;
+            int alignment = 0;
+            int weight = 0;
+            int wAttributes = 0;
+            int melee = 0;
+            int ammo = 0;
+            int blunt = 0;
+            int sharp = 0;
+            int earth = 0;
+            int air = 0;
+            int fire = 0;
+            int water = 0;
+            int power = 0;
+            int magic = 0;
+            int good = 0;
+            int evil = 0;
+            int cold = 0;
+            int minStrength = 0;
+            int minDexterity = 0;
+            int hp = 0;
+            int maxHP = 0;
+            int flags = 0;
+            int parry = 0;
+            int useStrength = 0;
 
             var offset = startByte;
             var itemType = damonBinary[offset];
@@ -1145,21 +1142,8 @@ namespace P3Net.Arx
             itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
         }
 
-        public static string ReadNameString ( int stringOffset )
-        {
-            var ss = new stringstream();
-            var z = stringOffset; // current location in the binary
-
-            while (!(damonBinary[z] == 0))
-            {
-                var c = damonBinary[z];
-                ss << (char)c;
-                z++;
-            }
-            
-            return ss.str();
-        }
-
+        public static string ReadNameString ( int stringOffset ) => ReadBinaryString(damonBinary, stringOffset);
+        
         public static byte[] damonBinary = new byte[damonFileSize];
         public static int itemNameOffset;
 

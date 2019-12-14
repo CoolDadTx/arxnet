@@ -25,7 +25,7 @@ namespace P3Net.Arx
             SetAutoMapFlag(plyr.map, 1, 14);
             SetAutoMapFlag(plyr.map, 1, 15);
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
             var goblinsMenu = 1; // high level menu
             LoadShopImage(17); // goblins
             if (CheckForQuestItem(0))
@@ -72,16 +72,10 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    if (plyr.musicStyle == 0)
-                    {
-                        PlayShopMusic(2);
-                        goblinLyricsFilename = "goblins.txt";
-                    }
-                    if (plyr.musicStyle == 1)
-                    {
-                        PlayShopMusic(5);
-                        goblinLyricsFilename = "goblins.txt";
-                    }
+                    var music = plyr.musicStyle ? 5 : 2;
+                    PlayShopMusic(music);
+                    goblinLyricsFilename = "goblins.txt";
+                    
                     LoadLyrics(goblinLyricsFilename);
 
                     var key = GetSingleKey();

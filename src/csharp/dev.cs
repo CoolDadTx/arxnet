@@ -29,8 +29,8 @@ namespace P3Net.Arx
 
 	public class DevSettings
 	{
-		public bool CHARACTER_CREATION { get; set; } // Skip the full character creation sequence for the City and the Dungeon
-		public bool TELEPORT_OPTION { get; set; } // Option for teleporting around map
+		public OnOff CHARACTER_CREATION { get; set; } // Skip the full character creation sequence for the City and the Dungeon
+		public OnOff TELEPORT_OPTION { get; set; } // Option for teleporting around map
 	}
 
 	public partial class GlobalMembers

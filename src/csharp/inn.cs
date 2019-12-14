@@ -111,13 +111,13 @@ namespace P3Net.Arx
             new Inn()
             { name = "Lazy Griffin Inn", costMultiplier = 2, jobProbability = 154, x = 33, y = 11 },
             new Inn()
-            { name = "Sleeping Dragon Inn", costMultiplier = 0.5, jobProbability = 64, x = 60, y = 57 },
+            { name = "Sleeping Dragon Inn", costMultiplier = 0.5F, jobProbability = 64, x = 60, y = 57 },
             new Inn()
             { name = "Traveller's Inn", costMultiplier = 6, jobProbability = 179, x = 32, y = 39 },
             new Inn()
             { name = "Midnight Inn", costMultiplier = 3, jobProbability = 56, x = 32, y = 40 },
             new Inn()
-            { name = "Warrior's Retreat", costMultiplier = 0.75, jobProbability = 77, x = 28, y = 9 },
+            { name = "Warrior's Retreat", costMultiplier = 0.75F, jobProbability = 77, x = 28, y = 9 },
             new Inn()
             { name = "Royal Resort Inn", costMultiplier = 8, jobProbability = 102, x = 31, y = 60 }
         };
@@ -210,12 +210,11 @@ namespace P3Net.Arx
             var roomChoice = 0;
             var sleepingHours = 1;
             var workingHours = 0;
-            var hourlyRate = 0;
             var jobIncome = 0;
 
             LoadShopImage(11);
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             while (InnMenu > 0)
             {
@@ -514,7 +513,7 @@ namespace P3Net.Arx
                         var str = $"{Rooms[roomChoice].name}.";
                         CyText(3, str);
                         UpdateDisplay();
-                        sf.sleep(sf.seconds(1));
+                        Sleep(TimeSpan.FromSeconds(1));
                         // check for diseases
                         // modify fatigue
 
@@ -641,10 +640,8 @@ namespace P3Net.Arx
                             InnMenu = 1;
                     } else
                     {
-                        ar str = $"We have an opening for a {innJobs[jobNumber].name}";
-                        CyText(0, str);
-                        str = $"for {Itos(innJobOpenings[InnNo].JobHoursRequired)} hours at {Itos(innJobOpenings[InnNo].jobHourlyIncome)} coppers per hour.";
-                        CyText(1, str);
+                        CyText(0, $"We have an opening for a {innJobs[jobNumber].name}");
+                        CyText(1, $"for {Itos(innJobOpenings[InnNo].JobHoursRequired)} hours at {Itos(innJobOpenings[InnNo].jobHourlyIncome)} coppers per hour.");
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
                         SetFontColour(40, 96, 244, 255);
@@ -691,7 +688,7 @@ namespace P3Net.Arx
                     } else
                     {
                         workingHours = innJobOpenings[InnNo].JobHoursRequired;
-                        hourlyRate = innJobOpenings[InnNo].jobHourlyIncome;
+                        var hourlyRate = innJobOpenings[InnNo].jobHourlyIncome;
                         jobIncome = workingHours * hourlyRate;
                         InnMenu = 10;
                     }
@@ -704,7 +701,7 @@ namespace P3Net.Arx
                         ClearShopDisplay();
                         CyText(2, "WORKING");
                         UpdateDisplay();
-                        sf.sleep(sf.seconds(1));
+                        Sleep(TimeSpan.FromSeconds(1));
                         for (var i = 0; i < 60; i++) // 60 minutes
                         {
                             // check for diseases

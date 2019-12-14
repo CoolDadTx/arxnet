@@ -20,7 +20,7 @@ namespace P3Net.Arx
             int menu = 1; // high level menu
             string str;
             string key;
-            plyr.status = 2; // special module
+            plyr.status = GameStates.Module; // special module
 
             LoadShopImage(25);
 
@@ -70,7 +70,7 @@ namespace P3Net.Arx
 
         public static void ArenaNorthernEntrance ()
         {
-            plyr.status = 2; // special module
+            plyr.status = GameStates.Module; // special module
 
             while (true)
             {
@@ -88,8 +88,8 @@ namespace P3Net.Arx
                     plyr.x = 16;
                     plyr.y = 1;
                     plyr.z_offset = 1.0F;
-                    plyr.scenario = 0;
-                    plyr.status = 1; // explore
+                    plyr.scenario = Scenarios.City;
+                    plyr.status = GameStates.Explore; // explore
                     break;
                 }
 
@@ -98,8 +98,8 @@ namespace P3Net.Arx
                     plyr.x = 16;
                     plyr.y = 3;
                     plyr.z_offset = 1.0F;
-                    plyr.scenario = 2;
-                    plyr.status = 1; // explore
+                    plyr.scenario = Scenarios.Arena;
+                    plyr.status = GameStates.Explore; // explore
                     break;
                 }                
             }

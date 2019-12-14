@@ -9,6 +9,8 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
 
 namespace P3Net.Arx
@@ -85,17 +87,11 @@ namespace P3Net.Arx
 
         public static void LoadDungeonItems ()
         {
+            //TODO: Ignoring dungeonItemsSize
             // Load items into binary char array
-
-            var tempString = String.Format("{0}{1}", "data/map/", "items.bin");
-            var fp = fopen(tempString, "rb");
-            if (fp != null)
-            {
-                for (int i = 0; i < dungeonItemsSize; i++)
-                    dungeonItems[i] = fgetc(fp);
-            }
-            fclose(fp);
+            dungeonItems = File.ReadAllBytes("data/map/items.bin");
         }
+
         public static void CreateBareHands ()
         {
             var itemRef = CreateItem(178, 0, "bare hand", 255, 255, 6, 0, 0, 1, 0x15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 0);
@@ -116,43 +112,46 @@ namespace P3Net.Arx
             TidyObjectBuffer();
 
             // Create a new item
-            var new_item = new Buffer_Item();
+            var new_item = new Buffer_Item() {
 
-            // Set item attributes
-            new_item.type = type;
-            new_item.index = index;
-            new_item.name = name;
-            new_item.hp = hp;
-            new_item.maxHP = maxHP;
-            new_item.flags = flags;
-            new_item.minStrength = minStrength;
-            new_item.minDexterity = minDexterity;
-            new_item.useStrength = useStrength;
-            new_item.blunt = blunt;
-            new_item.sharp = sharp;
-            new_item.earth = earth;
-            new_item.air = air;
-            new_item.fire = fire;
-            new_item.water = water;
-            new_item.power = power;
-            new_item.magic = magic;
-            new_item.good = good;
-            new_item.evil = evil;
-            new_item.cold = cold;
-            new_item.weight = weight;
-            new_item.alignment = alignment;
-            new_item.melee = melee;
-            new_item.ammo = ammo;
-            new_item.parry = parry;
+                // Set item attributes
+                type = type,
+                index = index,
+                name = name,
+                hp = hp,
+                maxHP = maxHP,
+                flags = flags,
+                minStrength = minStrength,
+                minDexterity = minDexterity,
+                useStrength = useStrength,
+                blunt = blunt,
+                sharp = sharp,
+                earth = earth,
+                air = air,
+                fire = fire,
+                water = water,
+                power = power,
+                magic = magic,
+                good = good,
+                evil = evil,
+                cold = cold,
+                weight = weight,
+                alignment = alignment,
+                melee = melee,
+                ammo = ammo,
+                parry = parry,
 
-            // Set location attributes
-            new_item.location = 1; // the floor
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
+                // Set location attributes
+                location = 1, // the floor
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map
+            };
 
             // Update buffer and buffer references
             itemBuffer[plyr.buffer_index] = new_item;
+
+            //TODO: Isn't this equivalent to plyr.Buffer_index++     
             var new_item_ref = plyr.buffer_index;
             plyr.buffer_index++;
             return new_item_ref; // what was the new items index in the object buffer
@@ -204,49 +203,51 @@ namespace P3Net.Arx
 
         public static void CannotCarryMessage ()
         {
+            var key = "";
             do
             {
                 DispMain();
                 CText("@You cannot carry any more!@@@@(Press SPACE to continue)");
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
         public static void DisplayLocation ()
         {
-            string levelDesc;
+            var levelDesc = "";
             var keynotpressed = true;
             var squaresNorth = 63 - plyr.y;
             while (keynotpressed)
             {
-                if (plyr.map == 0)
-                    levelDesc = "the City";
-                if (plyr.map == 1)
-                    levelDesc = "level 1";
-                if (plyr.map == 2)
+                switch (plyr.map)
                 {
+                    case 0:
+                    levelDesc = "the City";
+                    break;
+                    case 1:
+                    levelDesc = "level 1";
+                    break;
+                    case 2:
                     levelDesc = "level 2";
                     squaresNorth = 31 - plyr.y;
-                }
-                if (plyr.map == 3)
-                {
+                    break;
+                    case 3:
                     levelDesc = "level 3";
                     squaresNorth = 15 - plyr.y;
-                }
-                if (plyr.map == 4)
-                {
+                    break;
+                    case 4:
                     levelDesc = "level 4";
                     squaresNorth = 7 - plyr.y;
-                }
+                    break;
+                };
 
-                if (plyr.status == 3)
+                if (plyr.status == GameStates.Encounter)
                     DrawEncounterView();
-                if (plyr.status == 1)
+                else if (plyr.status == GameStates.Explore)
                     DispMain();
-                if (plyr.status == 0)
+                else if (plyr.status == (GameStates)0)
                     DispMain();
-                var str = "You are " + Itos(squaresNorth) + " squares North@and " + Itos(plyr.x) + " squares East from the SouthWest@corner of " + levelDesc + ".";
-                CyText(3, str);
+                CyText(3, $"You are {squaresNorth} squares North@and {plyr.x} squares East from the SouthWest@corner of {levelDesc}.");
                 CyText(8, "<<< Press any key to continue >>>");
                 UpdateDisplay();
                 var key = GetSingleKey();
@@ -263,14 +264,14 @@ namespace P3Net.Arx
             //int weapon_no = encounters[monster_no].weapon_no;
             TidyObjectBuffer();
 
-            //TODO: Object init syntax
-            var new_item = new Buffer_Item();
-            new_item.type = 200; // type for quest items e.g ring halves, silver key etc
-            new_item.index = questItemNo; // for quest items index is used to identify the object
-            new_item.location = 1; // the floor
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
+            var new_item = new Buffer_Item() {
+                type = 200, // type for quest items e.g ring halves, silver key etc
+                index = questItemNo, // for quest items index is used to identify the object
+                location = 1, // the floor
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map,
+            };
             itemBuffer[plyr.buffer_index] = new_item;
 
             //TODO: Just use x++ right?
@@ -287,44 +288,45 @@ namespace P3Net.Arx
 
             TidyObjectBuffer();
 
-            //TODO: Object init syntax
-            var new_item = new Buffer_Item();
+            var new_item = new Buffer_Item() {
 
-            // Set weapon type
-            new_item.type = monsterWeapons[weapon_no].type;
-            new_item.type = 178; // type for a weapon that can be wielded (e.g not claws)
-            new_item.index = weapon_no; // Reference to monsterWeapons - currently index not a binary offset
+                //TODO: Hard coded type, why?
+                // Set weapon type
+                //type = monsterWeapons[weapon_no].type,
+                type = 178, // type for a weapon that can be wielded (e.g not claws)
+                index = weapon_no, // Reference to monsterWeapons - currently index not a binary offset
 
-            // Copy weapon attributes
-            new_item.name = monsterWeapons[weapon_no].name;
-            new_item.hp = monsterWeapons[weapon_no].hp;
-            new_item.maxHP = monsterWeapons[weapon_no].maxHP;
-            new_item.flags = monsterWeapons[weapon_no].flags;
-            new_item.minStrength = monsterWeapons[weapon_no].minStrength;
-            new_item.minDexterity = monsterWeapons[weapon_no].minDexterity;
-            new_item.useStrength = monsterWeapons[weapon_no].useStrength;
-            new_item.blunt = monsterWeapons[weapon_no].blunt;
-            new_item.sharp = monsterWeapons[weapon_no].sharp;
-            new_item.earth = monsterWeapons[weapon_no].earth;
-            new_item.air = monsterWeapons[weapon_no].air;
-            new_item.fire = monsterWeapons[weapon_no].fire;
-            new_item.water = monsterWeapons[weapon_no].water;
-            new_item.power = monsterWeapons[weapon_no].power;
-            new_item.magic = monsterWeapons[weapon_no].magic;
-            new_item.good = monsterWeapons[weapon_no].good;
-            new_item.evil = monsterWeapons[weapon_no].evil;
-            new_item.cold = monsterWeapons[weapon_no].cold;
-            new_item.weight = monsterWeapons[weapon_no].weight;
-            new_item.alignment = monsterWeapons[weapon_no].alignment;
-            new_item.melee = monsterWeapons[weapon_no].melee; // Don't think needed
-            new_item.ammo = monsterWeapons[weapon_no].ammo; // Don't think needed
-            new_item.parry = monsterWeapons[weapon_no].parry;
+                // Copy weapon attributes
+                name = monsterWeapons[weapon_no].name,
+                hp = monsterWeapons[weapon_no].hp,
+                maxHP = monsterWeapons[weapon_no].maxHP,
+                flags = monsterWeapons[weapon_no].flags,
+                minStrength = monsterWeapons[weapon_no].minStrength,
+                minDexterity = monsterWeapons[weapon_no].minDexterity,
+                useStrength = monsterWeapons[weapon_no].useStrength,
+                blunt = monsterWeapons[weapon_no].blunt,
+                sharp = monsterWeapons[weapon_no].sharp,
+                earth = monsterWeapons[weapon_no].earth,
+                air = monsterWeapons[weapon_no].air,
+                fire = monsterWeapons[weapon_no].fire,
+                water = monsterWeapons[weapon_no].water,
+                power = monsterWeapons[weapon_no].power,
+                magic = monsterWeapons[weapon_no].magic,
+                good = monsterWeapons[weapon_no].good,
+                evil = monsterWeapons[weapon_no].evil,
+                cold = monsterWeapons[weapon_no].cold,
+                weight = monsterWeapons[weapon_no].weight,
+                alignment = monsterWeapons[weapon_no].alignment,
+                melee = monsterWeapons[weapon_no].melee, // Don't think needed
+                ammo = monsterWeapons[weapon_no].ammo, // Don't think needed
+                parry = monsterWeapons[weapon_no].parry,
 
-            // Set weapon location
-            new_item.location = 1; // the floor
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
+                // Set weapon location
+                location = 1, // the floor
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map
+            };
 
             // Update buffer and buffer references
             itemBuffer[plyr.buffer_index] = new_item;
@@ -338,16 +340,16 @@ namespace P3Net.Arx
         {
             TidyObjectBuffer();
 
-            //TODO: Object init syntax
-            var new_item = new Buffer_Item();
-            new_item.name = clothingItems[clothing_no].name;
-            new_item.type = 180; // clothing type
-            new_item.index = clothing_no;
-            new_item.location = 10; // carried in inventory but not in use
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
-            new_item.hp = 12; // temp value to act as breakable value
+            var new_item = new Buffer_Item() {
+                name = clothingItems[clothing_no].name,
+                type = 180, // clothing type
+                index = clothing_no,
+                location = 10, // carried in inventory but not in use
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map,
+                hp = 12, // temp value to act as breakable value
+            };
             itemBuffer[plyr.buffer_index] = new_item;
 
             //TODO: Just use x++ right?
@@ -362,15 +364,15 @@ namespace P3Net.Arx
             // 13 - worn, 14 - head, 15 - arms, 16 - legs, 17 - body
             TidyObjectBuffer();
 
-            //TODO: Object init
-            var new_item = new Buffer_Item();
-            new_item.type = 177; // temporary object type to indicate armor
-            new_item.index = armor_no;
-            new_item.location = 10; // carried in inventory but not in use
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
-            new_item.hp = 12; // temp value to act as breakable value
+            var new_item = new Buffer_Item {
+                type = 177, // temporary object type to indicate armor
+                index = armor_no,
+                location = 10, // carried in inventory but not in use
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map,
+                hp = 12 // temp value to act as breakable value
+            };
             itemBuffer[plyr.buffer_index] = new_item;
 
             //TODO: Just use x++ right?
@@ -385,15 +387,15 @@ namespace P3Net.Arx
             // 13 - worn, 14 - head, 15 - arms, 16 - legs, 17 - body
             TidyObjectBuffer();
 
-            //TODO: Object init
-            var new_item = new Buffer_Item();
-            new_item.type = 176; // object type to indicate potion
-            new_item.index = potion_no; // Index will define which of 42 potion types this is
-            new_item.location = 1; // On floor after encounter
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
-            new_item.hp = 0; // For potions 0 indicates unidentified
+            var new_item = new Buffer_Item {
+                type = 176, // object type to indicate potion
+                index = potion_no, // Index will define which of 42 potion types this is
+                location = 1, // On floor after encounter
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map,
+                hp = 0 // For potions 0 indicates unidentified
+            };
             itemBuffer[plyr.buffer_index] = new_item;
 
             //TODO: Just use x++ right?
@@ -408,24 +410,27 @@ namespace P3Net.Arx
 
             while (!keypressed)
             {
-                if (plyr.status == 2)
+                switch (plyr.status)
+                {
+                    case GameStates.Module:
                     ClearGuildDisplay();
-                if (plyr.status == 3)
+                    break;
+                    case GameStates.Encounter:
                     DrawEncounterView();
-                if (plyr.status == 1)
+                    break;
+                    case GameStates.Explore:
                     DispMain();
-                if (plyr.status == 0)
+                    break;
+                    case (GameStates)0:
                     DispMain();
+                    break;
+                };
 
                 CyText(1, "Wear instead of:");
-                var str = "(1) " + clothingItems[itemBuffer[plyr.clothing[0]].index].name;
-                BText(5, 3, str);
-                str = "(2) " + clothingItems[itemBuffer[plyr.clothing[1]].index].name;
-                BText(5, 4, str);
-                str = "(3) " + clothingItems[itemBuffer[plyr.clothing[2]].index].name;
-                BText(5, 5, str);
-                str = "(4) " + clothingItems[itemBuffer[plyr.clothing[3]].index].name;
-                BText(5, 6, str);
+                BText(5, 3, $"(1) {clothingItems[itemBuffer[plyr.clothing[0]].index].name}");
+                BText(5, 4, $"(2) {clothingItems[itemBuffer[plyr.clothing[1]].index].name}");
+                BText(5, 5, $"(3) {clothingItems[itemBuffer[plyr.clothing[2]].index].name}");
+                BText(5, 6, $"(4) {clothingItems[itemBuffer[plyr.clothing[3]].index].name}");
                 BText(2, 8, "Item # or ESC to exit");
                 SetFontColour(40, 96, 244, 255);
                 BText(2, 8, "     #    ESC");
@@ -467,17 +472,17 @@ namespace P3Net.Arx
             //int weapon_no = encounters[monster_no].weapon_no;
             TidyObjectBuffer();
 
-            //TODO: Object init
-            var new_item = new Buffer_Item();
-            //new_item.index = 0; // should be weapon_no?
-            new_item.type = type; // gold, crystals, keys, gems
-                                  //new_item.index = weapon_no;
-            new_item.location = 1; // the floor
-            new_item.x = plyr.x;
-            new_item.y = plyr.y;
-            new_item.level = plyr.map;
+            var new_item = new Buffer_Item {
+                //new_item.index = 0; // should be weapon_no?
+                type = type, // gold, crystals, keys, gems
+                             //new_item.index = weapon_no;
+                location = 1, // the floor
+                x = plyr.x,
+                y = plyr.y,
+                level = plyr.map,
 
-            new_item.hp = value; // for generic items sets number e.g. 4 food packets, 3 gold
+                hp = value // for generic items sets number e.g. 4 food packets, 3 gold
+            };
             itemBuffer[plyr.buffer_index] = new_item;
 
             //TODO: x++ right?
@@ -500,6 +505,7 @@ namespace P3Net.Arx
             }
             return response;
         }
+
         public static int GetQuestItemRef ( int itemNo )
         {
             // checks through item buffer for carried quest items of type 200
@@ -515,6 +521,7 @@ namespace P3Net.Arx
             }
             return response;
         }
+
         public static void GetItems ()
         {
             // types = 1 - food, 2 - water, 3 - torches, 4 - timepieces, 5 - compasses
@@ -533,44 +540,68 @@ namespace P3Net.Arx
                         CyText(1, "GET?");
 
                         var str = "";
-                        if (itemBuffer[cur_idx].type == 1)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Food Packet(s)";
-                        if (itemBuffer[cur_idx].type == 2)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Water Flask(s)";
-                        if (itemBuffer[cur_idx].type == 3)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Torch(es)";
-                        if (itemBuffer[cur_idx].type == 4)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Timepiece(s)";
-                        if (itemBuffer[cur_idx].type == 5)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Compass(es)";
-                        if (itemBuffer[cur_idx].type == 6)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Key(s)";
-                        if (itemBuffer[cur_idx].type == 7)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Crystal(s)";
-                        if (itemBuffer[cur_idx].type == 8)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Gem(s)";
-                        if (itemBuffer[cur_idx].type == 9)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Jewel(s)";
-                        if (itemBuffer[cur_idx].type == 10)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Gold";
-                        if (itemBuffer[cur_idx].type == 11)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Silver";
-                        if (itemBuffer[cur_idx].type == 12)
-                            str = Itos(itemBuffer[cur_idx].hp) + " Copper";
-                        if ((itemBuffer[cur_idx].type == 176) && (itemBuffer[cur_idx].hp == 0))
-                            str = "Potion";
-                        if ((itemBuffer[cur_idx].type == 176) && (itemBuffer[cur_idx].hp == 1))
-                            str = Potions[(itemBuffer[cur_idx].index)].name;
-                        if (itemBuffer[cur_idx].type == 177)
+                        switch (itemBuffer[cur_idx].type)
+                        {
+                            case 1:
+                            str = $"{itemBuffer[cur_idx].hp} Food Packet(s)";
+                            break;
+                            case 2:
+                            str = $"{itemBuffer[cur_idx].hp} Water Flask(s)";
+                            break;
+                            case 3:
+                            str = $"{itemBuffer[cur_idx].hp} Torch(es)";
+                            break;
+                            case 4:
+                            str = $"{itemBuffer[cur_idx].hp} Timepiece(s)";
+                            break;
+                            case 5:
+                            str = $"{itemBuffer[cur_idx].hp} Compass(es)";
+                            break;
+                            case 6:
+                            str = $"{itemBuffer[cur_idx].hp} Key(s)";
+                            break;
+                            case 7:
+                            str = $"{itemBuffer[cur_idx].hp} Crystal(s)";
+                            break;
+                            case 8:
+                            str = $"{itemBuffer[cur_idx].hp} Gem(s)";
+                            break;
+                            case 9:
+                            str = $"{itemBuffer[cur_idx].hp} Jewel(s)";
+                            break;
+                            case 10:
+                            str = $"{itemBuffer[cur_idx].hp} Gold";
+                            break;
+                            case 11:
+                            str = $"{itemBuffer[cur_idx].hp} Silver";
+                            break;
+                            case 12:
+                            str = $"{itemBuffer[cur_idx].hp} Copper";
+                            break;
+                            case 176:
+                            {
+                                if (itemBuffer[cur_idx].hp == 0)
+                                    str = "Potion";
+                                else if (itemBuffer[cur_idx].hp == 1)
+                                    str = Potions[(itemBuffer[cur_idx].index)].name;
+                                break;
+                            }
+                            case 177:
                             str = itemBuffer[cur_idx].name;
-                        if (itemBuffer[cur_idx].type == 178)
+                            break;
+                            case 178:
                             str = itemBuffer[cur_idx].name;
-                        if (itemBuffer[cur_idx].type == 199)
+                            break;
+                            case 199:
                             str = itemBuffer[cur_idx].name;
-                        if (itemBuffer[cur_idx].type == 180)
+                            break;
+                            case 180:
                             str = itemBuffer[cur_idx].name;
-                        if (itemBuffer[cur_idx].type == 200)
+                            break;
+                            case 200:
                             str = questItems[(itemBuffer[cur_idx].index)].name;
+                            break;
+                        };
                         CyText(4, str);
                         CyText(7, "Yes, No or ESC.");
                         UpdateDisplay();
@@ -584,47 +615,59 @@ namespace P3Net.Arx
                                 CannotCarryMessage();
                             else
                             {
-                                if (itemBuffer[cur_idx].type < 13) // get food packets
+                                // get food packets
+                                if (itemBuffer[cur_idx].type < 13)
                                 {
-                                    int type = itemBuffer[cur_idx].type;
-                                    if (type == 1)
+                                    switch (itemBuffer[cur_idx].type)
+                                    {
+                                        case 1:
                                         plyr.food += (itemBuffer[cur_idx].hp);
-                                    if (type == 2)
+                                        break;
+                                        case 2:
                                         plyr.water += (itemBuffer[cur_idx].hp);
-                                    if (type == 3)
+                                        break;
+                                        case 3:
                                         plyr.torches += (itemBuffer[cur_idx].hp);
-                                    if (type == 4)
+                                        break;
+                                        case 4:
                                         plyr.timepieces += (itemBuffer[cur_idx].hp);
-                                    if (type == 5)
+                                        break;
+                                        case 5:
                                         plyr.compasses += (itemBuffer[cur_idx].hp);
-                                    if (type == 6)
+                                        break;
+                                        case 6:
                                         plyr.keys += (itemBuffer[cur_idx].hp);
-                                    if (type == 7)
+                                        break;
+                                        case 7:
                                         plyr.crystals += (itemBuffer[cur_idx].hp);
-                                    if (type == 8)
+                                        break;
+                                        case 8:
                                         plyr.gems += (itemBuffer[cur_idx].hp);
-                                    if (type == 9)
+                                        break;
+                                        case 9:
                                         plyr.jewels += (itemBuffer[cur_idx].hp);
-                                    if (type == 10)
+                                        break;
+                                        case 10:
                                         plyr.gold += (itemBuffer[cur_idx].hp);
-                                    if (type == 11)
+                                        break;
+                                        case 11:
                                         plyr.silver += (itemBuffer[cur_idx].hp);
-                                    if (type == 12)
+                                        break;
+                                        case 12:
                                         plyr.copper += (itemBuffer[cur_idx].hp);
-                                    itemBuffer[cur_idx].location = 0; // remove this item to the void
-                                }
+                                        break;
+                                    };
 
-                                if (itemBuffer[cur_idx].type > 150)
+                                    itemBuffer[cur_idx].location = 0; // remove this item to the void
+                                } else if (itemBuffer[cur_idx].type > 150)
                                     itemBuffer[cur_idx].location = 10; // moved to player inventory
                             }
                             keypressed = true;
                         }
 
-
                         if (key_value == "N")
                             keypressed = true;
-
-                        if (key_value == "ESC")
+                        else if (key_value == "ESC")
                         {
                             keypressed = true;
                             noGetQuit = false;
@@ -634,6 +677,8 @@ namespace P3Net.Arx
                 cur_idx++;
             }
         }
+
+        public static int SelectItem ( SelectStates state ) => SelectItem((int)state);
 
         public static int SelectItem ( int selectItemMode )
         {
@@ -653,19 +698,11 @@ namespace P3Net.Arx
             if (selectItemMode == 5)
                 selectDesc = "Withdrawal";
 
-            var menuitem1 = 255; // 255 is used here as nil
-            var menuitem2 = 255;
-            var menuitem3 = 255;
-            var menuitem4 = 255;
             var selectDone = false;
 
             var no_items = 0;
             var cur_idx = 0;
             var page = 0;
-            var weapon = 0;
-            var armor = 0;
-            var clothing = 0;
-            var page_item = 0;
 
             while (cur_idx < plyr.buffer_index)
             {
@@ -673,9 +710,9 @@ namespace P3Net.Arx
                     no_items++;
                 cur_idx++;
             }
-            var pages = 0;
-            var noPages = no_items / 4; // based on 4 oncreen items per page
-            pages += noPages;
+
+            var noPages = no_items / 4; // based on 4 on screen items per page
+            var pages = noPages;
             var tempRemainder = no_items % 4;
             if (tempRemainder != 0)
                 pages++;
@@ -685,40 +722,45 @@ namespace P3Net.Arx
                 if (page == 0)
                 {
                     // this is effectively page 0 in terms of using items
-                    if (plyr.status == 2)
+                    switch (plyr.status)
+                    {
+                        case GameStates.Module:
                         ClearGuildDisplay();
-                    if (plyr.status == 3)
+                        break;
+                        case GameStates.Encounter:
                         DrawEncounterView();
-                    if (plyr.status == 1)
-                    {
+                        break;
+                        case GameStates.Explore:
                         DispMain();
                         DrawConsoleBackground();
-                    }
-                    if (plyr.status == 0)
-                    {
+                        break;
+
+                        //TODO: What state is this?
+                        case (GameStates)0:
                         DispMain();
                         DrawConsoleBackground();
-                    }
+                        break;
+                    };
 
                     CyText(1, selectDesc);
-                    var str = "(1) Food Packets: " + Itos(plyr.food);
+                    var str = $"(1) Food Packets: {plyr.food}";
                     if (selectItemMode == 5)
-                        str = "(1) Food Packets: " + Itos(plyr.lfood);
+                        str = $"(1) Food Packets: {plyr.lfood}";
                     BText(5, 3, str);
 
-                    str = "(2) Water Flasks: " + Itos(plyr.water);
+                    str = $"(2) Water Flasks: {plyr.water}";
                     if (selectItemMode == 5)
-                        str = "(2) Water Flasks: " + Itos(plyr.lwater);
+                        str = $"(2) Water Flasks: {plyr.lwater}";
                     BText(5, 4, str);
 
-                    str = "(3) Unlit Torches: " + Itos(plyr.torches);
+                    str = $"(3) Unlit Torches: {plyr.torches}";
                     if (selectItemMode == 5)
-                        str = "(3) Unlit Torches: " + Itos(plyr.ltorches);
+                        str = $"(3) Unlit Torches: {plyr.ltorches}";
                     BText(5, 5, str);
 
-                    str = "(4) Timepieces: " + Itos(plyr.timepieces);
+                    str = $"(4) Timepieces: {plyr.timepieces}";
                     if (selectItemMode == 5)
-                        str = "(4) Timepieces: " + Itos(plyr.ltimepieces);
+                        str = $"(4) Timepieces: {plyr.ltimepieces}";
                     BText(5, 6, str);
 
                     BText(2, 8, "Item #, Forward, Back, or ESC to exit");
@@ -729,74 +771,88 @@ namespace P3Net.Arx
                     UpdateDisplay();
 
                     var key_value = GetSingleKey();
-                    if (key_value == "1")
+                    switch (key_value)
                     {
-                        itemRef = 1000;
+                        case "1":
+                        {
+                            itemRef = 1000;
+                            selectDone = true;
+                            break;
+                        };
+                        case "2":
+                        {
+                            itemRef = 1001;
+                            selectDone = true;
+                            break;
+                        };
+                        case "3":
+                        {
+                            itemRef = 1002;
+                            selectDone = true;
+                            break;
+                        };
+                        case "4":
+                        {
+                            itemRef = 1003;
+                            selectDone = true;
+                            break;
+                        }
+                        case "E":
                         selectDone = true;
-                    }
-                    if (key_value == "2")
-                    {
-                        itemRef = 1001;
+                        break;
+                        case "ESC":
                         selectDone = true;
-                    }
-                    if (key_value == "3")
-                    {
-                        itemRef = 1002;
-                        selectDone = true;
-                    }
-                    if (key_value == "4")
-                    {
-                        itemRef = 1003;
-                        selectDone = true;
-                    }
-                    if (key_value == "E")
-                        selectDone = true;
-                    if (key_value == "ESC")
-                        selectDone = true;
-                    if ((key_value == "F") || (key_value == "down"))
-                    {
-                        if ((selectItemMode == 1) && (pages > 0))
-                            page = 3;
-                        if ((selectItemMode == 2) || (selectItemMode == 3) || (selectItemMode == 4) || (selectItemMode == 5))
-                            page = 1;
-                    }
+                        break;
 
-                }
-
-                if (page == 1)
+                        case "F":
+                        case "down":
+                        {
+                            if ((selectItemMode == 1) && (pages > 0))
+                                page = 3;
+                            if ((selectItemMode == 2) || (selectItemMode == 3) || (selectItemMode == 4) || (selectItemMode == 5))
+                                page = 1;
+                            break;
+                        };
+                    };
+                } else if (page == 1)
                 {
                     // this is effectively page 1 in terms of using items
-                    if (plyr.status == 2)
+                    switch (plyr.status)
+                    {
+                        case GameStates.Module:
                         ClearGuildDisplay();
-                    if (plyr.status == 3)
+                        break;
+                        case GameStates.Encounter:
                         DrawEncounterView();
-                    if (plyr.status == 1)
-                    {
+                        break;
+                        case GameStates.Explore:
                         DispMain();
                         DrawConsoleBackground();
-                    }
-                    if (plyr.status == 0)
-                    {
+                        break;
+
+                        //TODO: What state is this?
+                        case (GameStates)0:
                         DispMain();
                         DrawConsoleBackground();
-                    }
+                        break;
+                    };
 
                     CyText(1, selectDesc);
-                    var str = "(1) Compasses: " + Itos(plyr.compasses);
+                    var str = $"(1) Compasses: {plyr.compasses}";
                     if (selectItemMode == 5)
-                        str = "(1) Compasses: " + Itos(plyr.lcompasses);
+                        str = $"(1) Compasses: {plyr.lcompasses}";
                     BText(5, 3, str);
-                    str = "(2) Keys: " + Itos(plyr.keys);
+                    str = $"(2) Keys: {plyr.keys}";
                     if (selectItemMode == 5)
-                        str = "(2) Keys: " + Itos(plyr.lkeys);
+                        str = $"(2) Keys: {plyr.lkeys}";
                     BText(5, 4, str);
-                    str = "(3) Crystals: " + Itos(plyr.crystals);
+                    str = $"(3) Crystals: {plyr.crystals}";
                     if (selectItemMode == 5)
-                        str = "(3) Crystals: " + Itos(plyr.lcrystals);
+                        str = $"(3) Crystals: {plyr.lcrystals}";
                     BText(5, 5, str);
-                    str = "(4) Gems: " + Itos(plyr.gems);
+                    str = $"(4) Gems: {plyr.gems}";
                     if (selectItemMode == 5)
-                        str = "(4) Gems: " + Itos(plyr.lgems);
+                        str = $"(4) Gems: {plyr.lgems}";
                     BText(5, 6, str);
                     BText(2, 8, "Item #, Forward, Back, or ESC to exit");
                     SetFontColour(40, 96, 244, 255);
@@ -806,74 +862,86 @@ namespace P3Net.Arx
                     UpdateDisplay();
 
                     var key_value = GetSingleKey();
-                    if (key_value == "1")
+                    switch (key_value)
                     {
-                        itemRef = 1004;
+                        case "1":
+                        {
+                            itemRef = 1004;
+                            selectDone = true;
+                            break;
+                        };
+                        case "2":
+                        {
+                            itemRef = 1005;
+                            selectDone = true;
+                            break;
+                        };
+                        case "3":
+                        {
+                            itemRef = 1006;
+                            selectDone = true;
+                            break;
+                        };
+                        case "4":
+                        {
+                            itemRef = 1007;
+                            selectDone = true;
+                            break;
+                        };
+                        case "E":
+                        case "ESC":
                         selectDone = true;
-                    }
-                    if (key_value == "2")
-                    {
-                        itemRef = 1005;
-                        selectDone = true;
-                    }
-                    if (key_value == "3")
-                    {
-                        itemRef = 1006;
-                        selectDone = true;
-                    }
-                    if (key_value == "4")
-                    {
-                        itemRef = 1007;
-                        selectDone = true;
-                    }
-                    if (key_value == "E")
-                        selectDone = true;
-                    if (key_value == "ESC")
-                        selectDone = true;
-                    if (key_value == "F")
-                        page = 2;
-                    if (key_value == "down")
-                        page = 2;
-                    if (key_value == "B")
-                        page = 0;
-                    if (key_value == "up")
-                        page = 0;
-                }
+                        break;
 
-                if (page == 2)
+                        case "F":
+                        case "down":
+                        page = 2;
+                        break;
+
+                        case "B":
+                        case "up":
+                        page = 0;
+                        break;
+                    };
+                } else if (page == 2)
                 {
                     // this is effectively page 2 in terms of using items
-                    if (plyr.status == 2)
+                    switch (plyr.status)
+                    {
+                        case GameStates.Module:
                         ClearGuildDisplay();
-                    if (plyr.status == 3)
+                        break;
+                        case GameStates.Encounter:
                         DrawEncounterView();
-                    if (plyr.status == 1)
-                    {
+                        break;
+                        case GameStates.Explore:
                         DispMain();
                         DrawConsoleBackground();
-                    }
-                    if (plyr.status == 0)
-                    {
+                        break;
+
+                        //TODO: What state is this?
+                        case (GameStates)0:
                         DispMain();
                         DrawConsoleBackground();
+                        break;
                     }
 
                     CyText(1, selectDesc);
-                    var str = "(1) Jewels: " + Itos(plyr.jewels);
+                    var str = $"(1) Jewels: {plyr.jewels}";
                     if (selectItemMode == 5)
-                        str = "(1) Jewels: " + Itos(plyr.ljewels);
+                        str = $"(1) Jewels: {plyr.ljewels}";
                     BText(5, 3, str);
-                    str = "(2) Gold: " + Itos(plyr.gold);
+                    str = $"(2) Gold: {plyr.gold}";
                     if (selectItemMode == 5)
-                        str = "(2) Gold: " + Itos(plyr.lgold);
+                        str = $"(2) Gold: {plyr.lgold}";
                     BText(5, 4, str);
-                    str = "(3) Silver: " + Itos(plyr.silver);
+                    str = $"(3) Silver: {plyr.silver}";
                     if (selectItemMode == 5)
-                        str = "(3) Silver: " + Itos(plyr.lsilver);
+                        str = $"(3) Silver: {plyr.lsilver}";
                     BText(5, 5, str);
-                    str = "(4) Copper: " + Itos(plyr.copper);
+                    str = $"(4) Copper: {plyr.copper}";
                     if (selectItemMode == 5)
-                        str = "(4) Copper: " + Itos(plyr.lcopper);
+                        str = $"(4) Copper: {plyr.lcopper}";
                     BText(5, 6, str);
                     BText(2, 8, "Item #, Forward, Back, or ESC to exit");
                     SetFontColour(40, 96, 244, 255);
@@ -881,60 +949,76 @@ namespace P3Net.Arx
                     SetFontColour(215, 215, 215, 255);
                     UpdateDisplay();
 
-                    var key_value = GetSingleKey();
-                    if (key_value == "1")
+                    switch (GetSingleKey())
                     {
-                        itemRef = 1008;
-                        selectDone = true;
-                    }
-                    if (key_value == "2")
-                    {
-                        itemRef = 1009;
-                        selectDone = true;
-                    }
-                    if (key_value == "3")
-                    {
-                        itemRef = 1010;
-                        selectDone = true;
-                    }
-                    if (key_value == "4")
-                    {
-                        itemRef = 1011;
-                        selectDone = true;
-                    }
-                    if (key_value == "E")
-                        selectDone = true;
-                    if (key_value == "ESC")
-                        selectDone = true;
-                    if ((key_value == "F") && (pages > 0) && (selectItemMode < 4))
-                        page = 3;
-                    if ((key_value == "down") && (pages > 0) && (selectItemMode < 4))
-                        page = 3;
-                    if (key_value == "B")
-                        page = 1;
-                    if (key_value == "up")
-                        page = 1;
-                }
+                        case "1":
+                        {
+                            itemRef = 1008;
+                            selectDone = true;
+                            break;
+                        };
+                        case "2":
+                        {
+                            itemRef = 1009;
+                            selectDone = true;
+                            break;
+                        };
+                        case "3":
+                        {
+                            itemRef = 1010;
+                            selectDone = true;
+                            break;
+                        };
+                        case "4":
+                        {
+                            itemRef = 1011;
+                            selectDone = true;
+                            break;
+                        };
 
-                if (page > 2) // Variable items
+                        case "E":
+                        case "ESC":
+                        selectDone = true;
+                        break;
+
+                        case "F":
+                        case "down":
+                        {
+                            if ((pages > 0) && (selectItemMode < 4))
+                                page = 3;
+                            break;
+                        };
+
+                        case "B":
+                        case "up":
+                        page = 1;
+                        break;
+                    };
+                } else if (page > 2) // Variable items
                 {
                     var keypressed = false;
                     while (!keypressed)
                     {
-                        if (plyr.status == 2)
+                        switch (plyr.status)
+                        {
+                            case GameStates.Module:
                             ClearGuildDisplay();
-                        if (plyr.status == 3)
+                            break;
+                            case GameStates.Encounter:
                             DrawEncounterView();
-                        if (plyr.status == 1)
-                        {
+                            break;
+                            case GameStates.Explore:
                             DispMain();
                             DrawConsoleBackground();
-                        }
-                        if (plyr.status == 0)
-                        {
+                            break;
+
+                            //TODO: What state is this?
+                            case (GameStates)0:
                             DispMain();
                             DrawConsoleBackground();
-                        }
+                            break;
+                        };
+
                         CyText(1, selectDesc);
                         BText(5, 3, "(1)");
                         BText(5, 4, "(2)");
@@ -972,18 +1056,17 @@ namespace P3Net.Arx
                             }
                         }
 
-                        page_item = 1;
-                        menuitem1 = 9999; // 9999 is used as nil
-                        menuitem2 = 9999;
-                        menuitem3 = 9999;
-                        menuitem4 = 9999;
+                        var page_item = 1;
+                        var menuitem1 = 9999; // 9999 is used as nil
+                        var menuitem2 = 9999;
+                        var menuitem3 = 9999;
+                        var menuitem4 = 9999;
 
                         while ((cur_idx < plyr.buffer_index) && (page_item < 5))
                         {
                             var str = "";
                             if ((itemBuffer[cur_idx].location == 10))
                             {
-
                                 // Display a Potion item
                                 if (itemBuffer[cur_idx].type == 176) // armour
                                 {
@@ -1057,72 +1140,97 @@ namespace P3Net.Arx
                         }
                         UpdateDisplay();
 
-                        var key_value = GetSingleKey();
-                        if ((key_value == "1") && (menuitem1 != 9999))
+                        switch (GetSingleKey())
                         {
-                            itemRef = menuitem1;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "2") && (menuitem2 != 9999))
-                        {
-                            itemRef = menuitem2;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "3") && (menuitem3 != 9999))
-                        {
-                            itemRef = menuitem3;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "4") && (menuitem4 != 9999))
-                        {
-                            itemRef = menuitem4;
-                            keypressed = true;
-                            selectDone = true;
-                        }
+                            case "1":
+                            {
+                                if (menuitem1 != 9999)
+                                {
+                                    itemRef = menuitem1;
+                                    keypressed = true;
+                                    selectDone = true;
+                                };
+                                break;
+                            };
+                            case "2":
+                            {
+                                if (menuitem2 != 9999)
+                                {
+                                    itemRef = menuitem2;
+                                    keypressed = true;
+                                    selectDone = true;
+                                };
+                                break;
+                            };
+                            case "3":
+                            {
+                                if (menuitem3 != 9999)
+                                {
+                                    itemRef = menuitem3;
+                                    keypressed = true;
+                                    selectDone = true;
+                                };
+                                break;
+                            };
+                            case "4":
+                            {
+                                if (menuitem4 != 9999)
+                                {
+                                    itemRef = menuitem4;
+                                    keypressed = true;
+                                    selectDone = true;
+                                };
+                                break;
+                            };
 
-                        if (key_value == "ESC")
-                        {
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "B") && (selectItemMode == 1) && (page == 3))
-                        {
-                            keypressed = true;
-                            page = 0;
-                        }
-                        if ((key_value == "B") && (selectItemMode == 2) && (page == 3))
-                        {
-                            keypressed = true;
-                            page = 2;
-                        }
-                        if ((key_value == "B") && (selectItemMode == 3) && (page == 3))
-                        {
-                            keypressed = true;
-                            page = 2;
-                        }
-                        if ((key_value == "B") && (page > 3))
-                        {
-                            keypressed = true;
-                            page--;
-                        }
-                        if ((key_value == "up") && (page > 3))
-                        {
-                            keypressed = true;
-                            page--;
-                        }
-                        if ((key_value == "F") && (pages > (page-2)))
-                        {
-                            keypressed = true;
-                            page++;
-                        }
-                        if ((key_value == "down") && (pages > (page-2)))
-                        {
-                            keypressed = true;
-                            page++;
-                        }
+                            case "ESC":
+                            {
+                                keypressed = true;
+                                selectDone = true;
+                                break;
+                            };
+
+                            case "B":
+                            {
+                                if ((selectItemMode == 1) && (page == 3))
+                                {
+                                    keypressed = true;
+                                    page = 0;
+                                } else if ((selectItemMode == 2) && (page == 3))
+                                {
+                                    keypressed = true;
+                                    page = 2;
+                                } else if ((selectItemMode == 3) && (page == 3))
+                                {
+                                    keypressed = true;
+                                    page = 2;
+                                } else if (page > 3)
+                                {
+                                    keypressed = true;
+                                    page--;
+                                };
+                                break;
+                            };
+                            case "up":
+                            {
+                                if (page > 3)
+                                {
+                                    keypressed = true;
+                                    page--;
+                                };
+                                break;
+                            };
+                            case "F":
+                            case "down":
+                            {
+                                if (pages > (page-2))
+                                {
+                                    keypressed = true;
+                                    page++;
+                                };
+                                break;
+                            };
+                        };
                     }
                 }
             }
@@ -1171,43 +1279,53 @@ namespace P3Net.Arx
         }
         public static int InputItemQuantity ( int selectItemMode )
         {
+            var itemQuantity = 0;
             var inputText = "";
             var maxNumberSize = 6;
             var enterKeyNotPressed = true;
             while (enterKeyNotPressed)
             {
-
-                if (plyr.status == 3)
-                    DrawEncounterView();
-                if (plyr.status == 2)
-                    ClearShopDisplay();
-                if ((plyr.status != 3) && (plyr.status != 2))
+                switch (plyr.status)
                 {
+                    case GameStates.Module:
+                    ClearShopDisplay();
+                    break;
+                    case GameStates.Encounter:
+                    DrawEncounterView();
+                    break;
+
+                    default:
                     DispMain();
                     DrawConsoleBackground();
-                }
+                    break;
+                };
 
-                if (selectItemMode == 2)
+                switch (selectItemMode)
+                {
+                    case 2:
                     CyText(2, "Drop how many?");
-                if (selectItemMode == 3)
+                    break;
+                    case 3:
                     CyText(2, "Offer how many?");
-                if (selectItemMode == 4)
+                    break;
+                    case 4:
                     CyText(2, "Deposit how many?");
+                    break;
+                };
 
-                var str = ">" + inputText + "_";
-                BText(10, 5, str);
+                BText(10, 5, $">{inputText}_");
                 BText(10, 9, "Enter amount or press ESC.");
                 UpdateDisplay();
                 var key = GetSingleKey();
                 if ((key == "0") || (key == "1") || (key == "2") || (key == "3") || (key == "4") || (key == "5") || (key == "6") || (key == "7") || (key == "8") || (key == "9"))
                 {
-                    int numberLength = inputText.Length;
+                    var numberLength = inputText.Length;
                     if (numberLength < maxNumberSize)
                         inputText = inputText + key;
                 }
                 if (key == "BACKSPACE")
                 {
-                    int numberLength = inputText.Length;
+                    var numberLength = inputText.Length;
                     if (numberLength != 0)
                     {
                         inputText = inputText.Substring(0, (numberLength - 1));
@@ -1221,149 +1339,201 @@ namespace P3Net.Arx
                     enterKeyNotPressed = false;
                 }
             }
-            var itemQuantity = Convert.ToInt32(inputText);
+            //TODO: What happens on RETURN/ESC
+            itemQuantity = Convert.ToInt32(inputText);
 
             return itemQuantity;
         }
         public static void DropVolumeObject ( int selectItemMode, int object_ref )
         {
-            var existingItem = 9999;
             var itemQuantity = InputItemQuantity(selectItemMode);
-            if ((object_ref == 1000) && (plyr.food > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.food)
-                    itemQuantity = plyr.food;
-                existingItem = CheckForGenericItemsHere(1);
-                if (existingItem == 9999)
-                    CreateGenericItem(1, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.food -= itemQuantity;
-            }
-            if ((object_ref == 1001) && (plyr.water > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.water)
-                    itemQuantity = plyr.water;
-                existingItem = CheckForGenericItemsHere(2);
-                if (existingItem == 9999)
-                    CreateGenericItem(2, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.water -= itemQuantity;
-            }
-            if ((object_ref == 1002) && (plyr.torches > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.torches)
-                    itemQuantity = plyr.torches;
-                existingItem = CheckForGenericItemsHere(3);
-                if (existingItem == 9999)
-                    CreateGenericItem(3, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.torches -= itemQuantity;
-            }
-            if ((object_ref == 1003) && (plyr.timepieces > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.timepieces)
-                    itemQuantity = plyr.timepieces;
-                existingItem = CheckForGenericItemsHere(4);
-                if (existingItem == 9999)
-                    CreateGenericItem(4, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.timepieces -= itemQuantity;
-            }
-            if ((object_ref == 1004) && (plyr.compasses > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.compasses)
-                    itemQuantity = plyr.compasses;
-                existingItem = CheckForGenericItemsHere(5);
-                if (existingItem == 9999)
-                    CreateGenericItem(5, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.compasses -= itemQuantity;
-            }
-            if ((object_ref == 1005) && (plyr.keys > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.keys)
-                    itemQuantity = plyr.keys;
 
-                existingItem = CheckForGenericItemsHere(6);
-                if (existingItem == 9999)
-                    CreateGenericItem(6, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.keys -= itemQuantity;
-            }
-            if ((object_ref == 1006) && (plyr.crystals > 0) && (itemQuantity > 0))
+            switch (object_ref)
             {
-                if (itemQuantity > plyr.crystals)
-                    itemQuantity = plyr.crystals;
-                existingItem = CheckForGenericItemsHere(7);
-                if (existingItem == 9999)
-                    CreateGenericItem(7, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.crystals -= itemQuantity;
-            }
-            if ((object_ref == 1007) && (plyr.gems > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.gems)
-                    itemQuantity = plyr.gems;
-                existingItem = CheckForGenericItemsHere(8);
-                if (existingItem == 9999)
-                    CreateGenericItem(8, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.gems -= itemQuantity;
-            }
-            if ((object_ref == 1008) && (plyr.jewels > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.jewels)
-                    itemQuantity = plyr.jewels;
-                existingItem = CheckForGenericItemsHere(9);
-                if (existingItem == 9999)
-                    CreateGenericItem(9, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.jewels -= itemQuantity;
-            }
-            if ((object_ref == 1009) && (plyr.gold > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.gold)
-                    itemQuantity = plyr.gold;
-                existingItem = CheckForGenericItemsHere(10);
-                if (existingItem == 9999)
-                    CreateGenericItem(10, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.gold -= itemQuantity;
-            }
-            if ((object_ref == 1010) && (plyr.silver > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.silver)
-                    itemQuantity = plyr.silver;
-                existingItem = CheckForGenericItemsHere(11);
-                if (existingItem == 9999)
-                    CreateGenericItem(11, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.silver -= itemQuantity;
-            }
-            if ((object_ref == 1011) && (plyr.copper > 0) && (itemQuantity > 0))
-            {
-                if (itemQuantity > plyr.copper)
-                    itemQuantity = plyr.copper;
-                existingItem = CheckForGenericItemsHere(12);
-                if (existingItem == 9999)
-                    CreateGenericItem(12, itemQuantity);
-                else
-                    itemBuffer[existingItem].hp += itemQuantity;
-                plyr.copper -= itemQuantity;
-            }
+                case 1000:
+                {
+                    if ((plyr.food > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.food)
+                            itemQuantity = plyr.food;
+                        var existingItem = CheckForGenericItemsHere(1);
+                        if (existingItem == 9999)
+                            CreateGenericItem(1, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.food -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1001:
+                {
+                    if ((plyr.water > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.water)
+                            itemQuantity = plyr.water;
+                        var existingItem = CheckForGenericItemsHere(2);
+                        if (existingItem == 9999)
+                            CreateGenericItem(2, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.water -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1002:
+                {
+                    if ((plyr.torches > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.torches)
+                            itemQuantity = plyr.torches;
+                        var existingItem = CheckForGenericItemsHere(3);
+                        if (existingItem == 9999)
+                            CreateGenericItem(3, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.torches -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1003:
+                {
+                    if ((plyr.timepieces > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.timepieces)
+                            itemQuantity = plyr.timepieces;
+                        var existingItem = CheckForGenericItemsHere(4);
+                        if (existingItem == 9999)
+                            CreateGenericItem(4, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.timepieces -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1004:
+                {
+                    if ((plyr.compasses > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.compasses)
+                            itemQuantity = plyr.compasses;
+                        var existingItem = CheckForGenericItemsHere(5);
+                        if (existingItem == 9999)
+                            CreateGenericItem(5, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.compasses -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1005:
+                {
+                    if ((plyr.keys > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.keys)
+                            itemQuantity = plyr.keys;
 
+                        var existingItem = CheckForGenericItemsHere(6);
+                        if (existingItem == 9999)
+                            CreateGenericItem(6, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.keys -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1006:
+                {
+                    if ((plyr.crystals > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.crystals)
+                            itemQuantity = plyr.crystals;
+                        var existingItem = CheckForGenericItemsHere(7);
+                        if (existingItem == 9999)
+                            CreateGenericItem(7, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.crystals -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1007:
+                {
+                    if ((plyr.gems > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.gems)
+                            itemQuantity = plyr.gems;
+                        var existingItem = CheckForGenericItemsHere(8);
+                        if (existingItem == 9999)
+                            CreateGenericItem(8, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.gems -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1008:
+                {
+                    if ((plyr.jewels > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.jewels)
+                            itemQuantity = plyr.jewels;
+                        var existingItem = CheckForGenericItemsHere(9);
+                        if (existingItem == 9999)
+                            CreateGenericItem(9, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.jewels -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1009:
+                {
+                    if ((plyr.gold > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.gold)
+                            itemQuantity = plyr.gold;
+                        var existingItem = CheckForGenericItemsHere(10);
+                        if (existingItem == 9999)
+                            CreateGenericItem(10, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.gold -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1010:
+                {
+                    if ((plyr.silver > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.silver)
+                            itemQuantity = plyr.silver;
+                        var existingItem = CheckForGenericItemsHere(11);
+                        if (existingItem == 9999)
+                            CreateGenericItem(11, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.silver -= itemQuantity;
+                    };
+                    break;
+                };
+                case 1011:
+                {
+                    if ((plyr.copper > 0) && (itemQuantity > 0))
+                    {
+                        if (itemQuantity > plyr.copper)
+                            itemQuantity = plyr.copper;
+                        var existingItem = CheckForGenericItemsHere(12);
+                        if (existingItem == 9999)
+                            CreateGenericItem(12, itemQuantity);
+                        else
+                            itemBuffer[existingItem].hp += itemQuantity;
+                        plyr.copper -= itemQuantity;
+                    };
+                    break;
+                };
+            };
         }
+
         public static void CheckForItemsHere ()
         {
             // counts number of objects on a map square - equal to 1
@@ -1371,8 +1541,6 @@ namespace P3Net.Arx
             var cur_idx = 0;
             while (cur_idx < plyr.buffer_index)
             {
-                //    if ((itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y)
-                //    && (itemBuffer[cur_idx].location == 1)) { no_items++; }
                 if ((itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
                     no_items++;
                 cur_idx++;
@@ -1384,6 +1552,7 @@ namespace P3Net.Arx
                 plyr.status_text = "There are several things here.";
 
         }
+
         public static int CheckForGenericItemsHere ( int type )
         {
             // counts number of objects on a map square - equal to 1
@@ -1391,8 +1560,6 @@ namespace P3Net.Arx
             var cur_idx = 0;
             while (cur_idx < plyr.buffer_index)
             {
-                //    if ((itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y)
-                //    && (itemBuffer[cur_idx].location == 1)) { no_items++; }
                 if ((itemBuffer[cur_idx].type == type) && (itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
                     value = cur_idx;
                 cur_idx++;
@@ -1400,6 +1567,7 @@ namespace P3Net.Arx
             }
             return value;
         }
+
         public static void UseFood ()
         {
             if (plyr.food > 0)
@@ -1410,9 +1578,9 @@ namespace P3Net.Arx
                 plyr.food--;
             }
         }
+
         public static void UseWater ()
         {
-
             if (plyr.water > 0)
             {
                 plyr.thirst -= 15;
@@ -1420,8 +1588,8 @@ namespace P3Net.Arx
                     plyr.thirst = 0;
                 plyr.water--;
             }
-
         }
+
         public static void UseTorch ()
         {
             // Header - 8B 24 00 00 02 10
@@ -1454,8 +1622,7 @@ namespace P3Net.Arx
                     if (key_value == "1")
                     {
                         plyr.priWeapon = CreateItem(178, 0x0, "Lit Torch", 0x16, 0x16, 0x82, 0x04, 0x01, 0x0, 0x13, 0, 0, 0, 0x13, 0, 0, 0, 0, 0, 0, 0x02, 0, 0xFF, 0, 0x03);
-                        //createWeapon(71); // create a new lit torch was 11
-                        itemBuffer[plyr.priWeapon].location = 10; // primary was 11
+                        itemBuffer[plyr.priWeapon].location = 10;
                         plyr.torches--;
                         // remove old primary ref if exists
                         keypressed = true;
@@ -1463,15 +1630,14 @@ namespace P3Net.Arx
                     if (key_value == "2")
                     {
                         plyr.secWeapon = CreateItem(178, 0x0, "Lit Torch", 0x16, 0x16, 0x82, 0x04, 0x01, 0x0, 0x13, 0, 0, 0, 0x13, 0, 0, 0, 0, 0, 0, 0x02, 0, 0xFF, 0, 0x03);
-                        itemBuffer[plyr.secWeapon].location = 10; // secondary was 12
+                        itemBuffer[plyr.secWeapon].location = 10;
                         plyr.torches--;
                         keypressed = true;
                         // remove old secondary ref if exists
                     }
                     if (key_value == "ESC")
                         keypressed = true;
-                }
-                // use_weapon();
+                }                
             } else
             {
                 while (!keypressed)
@@ -1496,10 +1662,9 @@ namespace P3Net.Arx
                 hourtext = "nd";
             if ((plyr.hours == 3) || (plyr.hours == 23))
                 hourtext = "rd";
-            var myStream = new ostringstream();
-            myStream << "It is " << plyr.minutes << " minutes@past the " << plyr.hours << hourtext << " hour.@@@@(Press SPACE to continue)";
-            string str = myStream.str();
 
+            var str = $"It is {plyr.minutes} minutes@past the {plyr.hours} {hourtext} hour.@@@@(Press SPACE to continue)";
+            var key = "";
             if (plyr.timepieces > 0)
             {
                 do
@@ -1507,9 +1672,8 @@ namespace P3Net.Arx
                     DispMain();
                     CText(str);
                     UpdateDisplay();
-                    var key = GetSingleKey();
+                    key = GetSingleKey();
                 } while (key != "SPACE");
-
             } else
             {
                 do
@@ -1517,7 +1681,7 @@ namespace P3Net.Arx
                     DispMain();
                     CText("You have none.");
                     UpdateDisplay();
-                    var key = GetSingleKey();
+                    key = GetSingleKey();
                 } while (key != "SPACE");
             }
         }
@@ -1532,13 +1696,12 @@ namespace P3Net.Arx
 
             while (!keypressed)
             {
-                if (plyr.status == 3)
+                if (plyr.status == GameStates.Encounter)
                     DrawEncounterView();
                 else
                     DispMain();
 
                 CyText(1, "POTION");
-                //bText (12, 3, "Do you want to:");
                 BText(16, 3, "(1) Taste");
                 BText(16, 4, "(2) Sip");
                 BText(16, 5, "(3) Examine");
@@ -1576,8 +1739,7 @@ namespace P3Net.Arx
             var potionType = itemBuffer[object_ref].index;
             var potionName = Potions[potionType].name;
 
-            var str = "You drink a@@" + potionName;
-            ItemMessage(str);
+            ItemMessage($"You drink a@@{potionName}");
 
             // Implement potion effect
             if (potionType == 0)
@@ -1720,7 +1882,7 @@ namespace P3Net.Arx
 
             while (!keypressed)
             {
-                if (plyr.status == 3)
+                if (plyr.status == GameStates.Encounter)
                     DrawEncounterView();
                 else
                     DispMain();
@@ -1842,9 +2004,9 @@ namespace P3Net.Arx
             var keynotpressed = true;
             while (keynotpressed)
             {
-                if (plyr.status == 3)
+                if (plyr.status == GameStates.Encounter)
                     DrawEncounterView();
-                if (plyr.status == 1)
+                else if (plyr.status == GameStates.Explore)
                     DispMain();
 
                 CText(message);
@@ -2078,31 +2240,31 @@ namespace P3Net.Arx
                 if (itemRef == 1012)
                     CyText(2, "It costs a silver per unit. How many?");
                 if (itemRef == 1000)
-                    str = "(up to " + Itos(plyr.food) + ")";
+                    str = $"(up to {plyr.food})";
                 if (itemRef == 1001)
-                    str = "(up to " + Itos(plyr.water) + ")";
+                    str = $"(up to {plyr.water})";
                 if (itemRef == 1002)
-                    str = "(up to " + Itos(plyr.torches) + ")";
+                    str = $"(up to {plyr.torches})";
                 if (itemRef == 1003)
-                    str = "(up to " + Itos(plyr.timepieces) + ")";
+                    str = $"(up to {plyr.timepieces})";
                 if (itemRef == 1004)
-                    str = "(up to " + Itos(plyr.compasses) + ")";
+                    str = $"(up to {plyr.compasses})";
                 if (itemRef == 1005)
-                    str = "(up to " + Itos(plyr.keys) + ")";
+                    str = $"(up to {plyr.keys})";
                 if (itemRef == 1006)
-                    str = "(up to " + Itos(plyr.crystals) + ")";
+                    str = $"(up to {plyr.crystals})";
                 if (itemRef == 1007)
-                    str = "(up to " + Itos(plyr.gems) + ")";
+                    str = $"(up to {plyr.gems})";
                 if (itemRef == 1008)
-                    str = "(up to " + Itos(plyr.jewels) + ")";
+                    str = $"(up to {plyr.jewels})";
                 if (itemRef == 1009)
-                    str = "(up to " + Itos(plyr.gold) + ")";
+                    str = $"(up to {plyr.gold})";
                 if (itemRef == 1010)
-                    str = "(up to " + Itos(plyr.silver) + ")";
+                    str = $"(up to {plyr.silver})";
                 if (itemRef == 1011)
-                    str = "(up to " + Itos(plyr.copper) + ")";
+                    str = $"(up to {plyr.copper})";
                 if (itemRef == 1012)
-                    str = "(up to " + Itos(99 - plyr.ringCharges) + ")";
+                    str = $"(up to {99 - plyr.ringCharges})";
                 CyText(3, str);
 
                 str = ">" + inputText + "_";
@@ -2175,32 +2337,32 @@ namespace P3Net.Arx
                 if (itemRef == 1011)
                     CyText(2, "Withdraw how much Copper?");
                 if (itemRef == 1000)
-                    str = "(up to " + Itos(plyr.lfood) + ")";
+                    str = $"(up to {plyr.lfood})";
                 if (itemRef == 1001)
-                    str = "(up to " + Itos(plyr.lwater) + ")";
+                    str = $"(up to {plyr.lwater})";
                 if (itemRef == 1002)
-                    str = "(up to " + Itos(plyr.ltorches) + ")";
+                    str = $"(up to {plyr.ltorches})";
                 if (itemRef == 1003)
-                    str = "(up to " + Itos(plyr.ltimepieces) + ")";
+                    str = $"(up to {plyr.ltimepieces})";
                 if (itemRef == 1004)
-                    str = "(up to " + Itos(plyr.lcompasses) + ")";
+                    str = $"(up to {plyr.lcompasses})";
                 if (itemRef == 1005)
-                    str = "(up to " + Itos(plyr.lkeys) + ")";
+                    str = $"(up to {plyr.lkeys})";
                 if (itemRef == 1006)
-                    str = "(up to " + Itos(plyr.lcrystals) + ")";
+                    str = $"(up to {plyr.lcrystals})";
                 if (itemRef == 1007)
-                    str = "(up to " + Itos(plyr.lgems) + ")";
+                    str = $"(up to {plyr.lgems})";
                 if (itemRef == 1008)
-                    str = "(up to " + Itos(plyr.ljewels) + ")";
+                    str = $"(up to {plyr.ljewels})";
                 if (itemRef == 1009)
-                    str = "(up to " + Itos(plyr.lgold) + ")";
+                    str = $"(up to {plyr.lgold})";
                 if (itemRef == 1010)
-                    str = "(up to " + Itos(plyr.lsilver) + ")";
+                    str = $"(up to {plyr.lsilver})";
                 if (itemRef == 1011)
-                    str = "(up to " + Itos(plyr.lcopper) + ")";
+                    str = $"(up to {plyr.lcopper})";
                 CyText(3, str);
 
-                str = ">" + inputText + "_";
+                str = $">{inputText}_";
                 BText(10, 5, str);
                 BText(10, 9, "Enter amount or press ESC.");
                 UpdateDisplay();
@@ -2271,7 +2433,9 @@ namespace P3Net.Arx
         {
             var keypressed = false;
             var oldStatus = plyr.status;
-            plyr.status = 255; // Diag screen being displayed
+
+            //TODO: What does state 255 meanu?
+            plyr.status = (GameStates)255; // Diag screen being displayed
 
             while (!keypressed)
             {
@@ -2285,7 +2449,7 @@ namespace P3Net.Arx
                 Text(18, 2, "L");
                 Text(20, 2, "Item");
 
-                Text(0, 0, "Buffer Index " + Itos(plyr.buffer_index) + " of " + Itos(itemBufferSize));
+                Text(0, 0, $"Buffer Index {plyr.buffer_index} of {itemBufferSize}");
 
                 var cur_idx = 0;
                 while (cur_idx < plyr.buffer_index)
@@ -2300,7 +2464,6 @@ namespace P3Net.Arx
                     Text(18, (cur_idx + 3), itemBuffer[cur_idx].level);
                     if (itemBuffer[cur_idx].type < 20)
                         str = "Volume item";
-                    //if (itemBuffer[cur_idx].type==178) { str = monsterWeapons[(itemBuffer[cur_idx].index)].name; }
                     if (itemBuffer[cur_idx].type == 178)
                         str = itemBuffer[cur_idx].name;
                     if (itemBuffer[cur_idx].type == 177)
@@ -2317,7 +2480,6 @@ namespace P3Net.Arx
                         str = questItems[(itemBuffer[cur_idx].index)].name;
                     if (itemBuffer[cur_idx].type == 201)
                         str = questItems[(itemBuffer[cur_idx].index)].name;
-                    //str = (questItems[(itemBuffer[cur_idx].index)].name) + " [" + itos(plyr.ringCharges) + "]";
                     Text(20, (cur_idx + 3), str);
 
                     cur_idx++;
@@ -2380,6 +2542,7 @@ namespace P3Net.Arx
 
         public static int ReturnCarriedWeight ()
         {
+            //TODO: This does nothing
             var itemWeight = 0;
 
             var gold = plyr.gold / 16;

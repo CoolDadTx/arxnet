@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.IO;
 using System.Linq;
 
 namespace P3Net.Arx
@@ -236,223 +237,194 @@ namespace P3Net.Arx
 
         public static void InitMaps ()
         {
-            var instream = new ifstream();
-            string junk;
-            string line;
-
-            instream.open("data/map/maps.txt");
-            if (instream == null)
-                cerr << "Error: MAPS.TXT file could not be loaded" << "\n";
-            var i = 0;
-            while (junk != "EOF")
+            //TODO: Read as structure instead
+            using (var reader = new StreamReader("data/map/maps.txt"))
             {
-                var fields = 5; // should be 45
-                getline(instream, junk); // read first line as blank
-                for (var a = 0; a < fields; ++a) // number of attributes - test for 33
+                var i = 0;
+                while (!reader.EndOfStream)
                 {
-                    getline(instream, line);
-                    var idx = line.IndexOf('=');
-                    var text = line.Substring(idx + 2);
-                    if (a == 0)
-                        maps[i].filename = text;
-                    if (a == 1)
-                        maps[i].width = Convert.ToInt32(text);
-                    if (a == 2)
-                        maps[i].height = Convert.ToInt32(text);
-                    if (a == 3)
-                        maps[i].description = text;
-                    if (a == 4)
-                        maps[i].background = Convert.ToInt32(text);
+                    // read first line as blank
+                    reader.ReadLine();
+                    
+                    var fields = 5; // should be 45                    
+                    for (var a = 0; a < fields; ++a) // number of attributes - test for 33
+                    {
+                        var line = reader.ReadLine();                        
+                        var idx = line.IndexOf('=');
+                        var text = line.Substring(idx + 2);
+
+                        if (a == 0)
+                            maps[i].filename = text;
+                        if (a == 1)
+                            maps[i].width = Convert.ToInt32(text);
+                        if (a == 2)
+                            maps[i].height = Convert.ToInt32(text);
+                        if (a == 3)
+                            maps[i].description = text;
+                        if (a == 4)
+                            maps[i].background = Convert.ToInt32(text);
+                    }
+                    reader.ReadLine();
+                    i++;
                 }
-                getline(instream, junk);
-                i++;
-            }
-            instream.close();
+            };
         }
 
         // Level handling routines
 
         public static void LoadBinaryLevel ()
         {
+            var filename = "data/map/dun4.bin"; //dungeon1
+
+            //TODO: Read as structure
             // Define an array of mapcells used to hold map data converted from binary data
-            var tempString = $"{"data/map/"}{"dun4.bin"}"; //dungeon1
-            var fp = fopen(tempString, "rb");
-            if (fp != null)
-            {
+            using (var reader = new BinaryReader(File.OpenRead(filename)))
+            { 
                 for (var i = 0; i < 4096; i++)
                 {
-                    var tmp = fgetc(fp);
+                    //TODO: Read as integral value??
+                    var tmp = reader.ReadByte();
                     if (tmp == 2)
                     {
                         Console.Write(tmp);
                         Console.Write(" , ");
                         Console.Write(i);
                         Console.Write("\n");
-                    }
+                    };
+
                     levelmap[i].east = (tmp & 240) >> 4;
                     levelmap[i].north = tmp & 15;
-                    tmp = fgetc(fp);
+
+                    tmp = reader.ReadByte();
                     levelmap[i].west = (tmp & 240) >> 4;
                     levelmap[i].south = tmp & 15;
-                    tmp = fgetc(fp);
+
+                    tmp = reader.ReadByte();
                     levelmap[i].location = tmp;
-                    tmp = fgetc(fp);
+
+                    tmp = reader.ReadByte();
                     levelmap[i].special = tmp;
                 }
-            }
-            fclose(fp);
+            };            
         }
 
         public static void LoadDescriptions ( int map )
         {
-            for (var i = 0; i < 255; i++)
-                descriptions[i] = "";
-            var filename = $"data/map/{(maps[map].filename)}Descriptions.txt";
-            var instream = new ifstream();
-            string line;
-            instream.open(filename);
-            if (instream == null)
-                cerr << "Error: " << filename << " file could not be loaded" << "\n";
-            var i = 0;
-            while (line != "EOF")
-            {
-                getline(instream, line);
-                descriptions[i] = line;
-                i++;
-            }
-            instream.close();
+            //TODO: Ignoring description size here
+            var filename = $"data/map/{maps[map].filename}Descriptions.txt";
+
+            descriptions = File.ReadAllLines(filename);            
         }
 
+        //TODO: Read as structured data
         public static void LoadMapData ( int map )
         {
-            var instream = new ifstream();
-            var filename = $"data/map/{(maps[map].filename)}Cells.txt";
-            instream.open(filename);
-            if (instream == null)
-                cerr << "Error: terrain file could not be loaded" << "\n";
+            var filename = $"data/map/{maps[map].filename}Cells.txt";
 
-            var totalMapCells = plyr.mapWidth * plyr.mapHeight;
-            for (var i = 0; i < totalMapCells; ++i)
+            using (var reader = new StreamReader(filename))
             {
-                string junk;
-                string line;
-                var mapCell_attributes = 13; // should be 12
-                getline(instream, junk); // read first line as blank
-
-                for (var a = 0; a < mapCell_attributes; ++a) // number of attributes - test for 33
+                var totalMapCells = plyr.mapWidth * plyr.mapHeight;
+                for (var i = 0; i < totalMapCells; ++i)
                 {
-                    getline(instream, line);
+                    var mapCell_attributes = 13; // should be 12
 
-                    var idx = line.IndexOf('=');
-                    var text = line.Substring(idx + 2);
-                    if (a == 0)
-                        levelmap[i].east = Convert.ToInt32(text);
-                    if (a == 1)
-                        levelmap[i].north = Convert.ToInt32(text);
-                    if (a == 2)
-                        levelmap[i].west = Convert.ToInt32(text);
-                    if (a == 3)
-                        levelmap[i].south = Convert.ToInt32(text);
-                    if (a == 4)
-                        levelmap[i].eastHeight = Convert.ToInt32(text);
-                    if (a == 5)
-                        levelmap[i].northHeight = Convert.ToInt32(text);
-                    if (a == 6)
-                        levelmap[i].westHeight = Convert.ToInt32(text);
-                    if (a == 7)
-                        levelmap[i].southHeight = Convert.ToInt32(text);
-                    if (a == 8)
-                        levelmap[i].ceiling = Convert.ToInt32(text);
-                    if (a == 9)
-                        levelmap[i].floor = Convert.ToInt32(text);
-                    if (a == 10)
-                        levelmap[i].zone = Convert.ToInt32(text);
-                    if (a == 11)
-                        levelmap[i].location = Convert.ToInt32(text);
-                    if (a == 12)
-                        levelmap[i].special = Convert.ToInt32(text);
+                    // read first line as blank
+                    reader.ReadLine();
+
+                    for (var a = 0; a < mapCell_attributes; ++a) // number of attributes - test for 33
+                    {
+                        var line = reader.ReadLine();
+
+                        var idx = line.IndexOf('=');
+                        var text = line.Substring(idx + 2);
+
+                        if (a == 0)
+                            levelmap[i].east = Convert.ToInt32(text);
+                        if (a == 1)
+                            levelmap[i].north = Convert.ToInt32(text);
+                        if (a == 2)
+                            levelmap[i].west = Convert.ToInt32(text);
+                        if (a == 3)
+                            levelmap[i].south = Convert.ToInt32(text);
+                        if (a == 4)
+                            levelmap[i].eastHeight = Convert.ToInt32(text);
+                        if (a == 5)
+                            levelmap[i].northHeight = Convert.ToInt32(text);
+                        if (a == 6)
+                            levelmap[i].westHeight = Convert.ToInt32(text);
+                        if (a == 7)
+                            levelmap[i].southHeight = Convert.ToInt32(text);
+                        if (a == 8)
+                            levelmap[i].ceiling = Convert.ToInt32(text);
+                        if (a == 9)
+                            levelmap[i].floor = Convert.ToInt32(text);
+                        if (a == 10)
+                            levelmap[i].zone = Convert.ToInt32(text);
+                        if (a == 11)
+                            levelmap[i].location = Convert.ToInt32(text);
+                        if (a == 12)
+                            levelmap[i].special = Convert.ToInt32(text);
+                    }
+                    reader.ReadLine();
                 }
-                getline(instream, junk);
-            }
-            instream.close();
+            };
         }
 
         public static void LoadMessages ( int map )
         {
-            for (var i = 0; i < 100; i++)
-                roomMessages[i] = "";
-            var filename = $"data/map/{(maps[map].filename)}Messages.txt";
-            var instream = new ifstream();
-            string line;
-            instream.open(filename);
-            if (instream == null)
-                cerr << "Error:" << filename << "could not be loaded" << "\n";
-            var i = 0;
-            while (line != "EOF")
-            {
-                getline(instream, line);
-                roomMessages[i] = line;
-                i++;
-            }
-            instream.close();
+            //TODO: Ignoring fixed size of roomMessages            
+            var filename = $"data/map/{maps[map].filename}Messages.txt";
+            roomMessages = File.ReadAllLines(filename);            
         }
 
         public static void LoadZoneData ( int map )
         {
-            for (var a = 0; a < 255; ++a)
+            //TODO: Use structured data
+            
+            var filename = $"data/map/{maps[map].filename}Zones.txt";
+
+            using (var reader = new StreamReader(filename))
             {
-                zones2[a].x1 = 0;
-                zones2[a].x2 = 0;
-                zones2[a].y1 = 0;
-                zones2[a].y2 = 0;
-                zones2[a].zoneRef = 0;
-            }
-
-            var filename = $"data/map/{(maps[map].filename)}Zones.txt";
-            var instream = new ifstream();
-            string junk;
-            string line;
-
-            instream.open(filename);
-
-            if (instream == null)
-                cerr << "Error:" << filename << " could not be loaded" << "\n";
-            var i = 0;
-            while (junk != "EOF")
-            {
-                var fields = 5;
-                getline(instream, junk); // read first line as blank
-                for (var a = 0; a < fields; ++a) // number of attributes
+                var i = 0;
+                while (!reader.EndOfStream)
                 {
-                    getline(instream, line);
-                    var idx = line.IndexOf('=');
-                    var text = line.Substring(idx + 2);
-                    if (a == 0)
-                        zones2[i].y1 = Convert.ToInt32(text);
-                    if (a == 1)
-                        zones2[i].x1 = Convert.ToInt32(text);
-                    if (a == 2)
-                        zones2[i].y2 = Convert.ToInt32(text);
-                    if (a == 3)
-                        zones2[i].x2 = Convert.ToInt32(text);
-                    if (a == 4)
-                        zones2[i].zoneRef = Convert.ToInt32(text);
+                    var fields = 5;
+                    //Read first line as blank
+                    reader.ReadLine();
+
+                    for (var a = 0; a < fields; ++a) // number of attributes
+                    {
+                        var line = reader.ReadLine();
+                        var idx = line.IndexOf('=');
+                        var text = line.Substring(idx + 2);
+
+                        if (a == 0)
+                            zones2[i].y1 = Convert.ToInt32(text);
+                        if (a == 1)
+                            zones2[i].x1 = Convert.ToInt32(text);
+                        if (a == 2)
+                            zones2[i].y2 = Convert.ToInt32(text);
+                        if (a == 3)
+                            zones2[i].x2 = Convert.ToInt32(text);
+                        if (a == 4)
+                            zones2[i].zoneRef = Convert.ToInt32(text);
+                    }
+                    reader.ReadLine();
+                    i++;
                 }
-                getline(instream, junk);
-                i++;
-            }
-            instream.close();
+            };
         }
 
         public static void MoveMapLevel ()
         {
+            //TODO: Make this data-bound
             if ((plyr.x == 50) && (plyr.y == 3) && (plyr.map == 1)) // to the city from dungeon 1
             {
                 plyr.x = 49;
                 plyr.y = 3;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 0; // The City
-                plyr.scenario = 0; // The City
+                plyr.scenario = Scenarios.City;
                 plyr.z_offset = 1.0f;
                 LoadMapData(0);
                 LoadDescriptions(0);
@@ -464,9 +436,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 59;
                 plyr.y = 63;
-                plyr.facing = 4;
+                plyr.facing = Directions.South;
                 plyr.map = 0; // The City
-                plyr.scenario = 0; // The City
+                plyr.scenario = Scenarios.City;
                 plyr.z_offset = 1.0f;
                 LoadMapData(0);
                 LoadDescriptions(0);
@@ -478,9 +450,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 49;
                 plyr.y = 3;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 LoadMapData(1);
                 LoadDescriptions(1);
@@ -492,9 +464,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 59;
                 plyr.y = 61;
-                plyr.facing = 2;
+                plyr.facing = Directions.North;                
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 LoadMapData(1);
                 LoadDescriptions(1);
@@ -506,9 +478,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 30;
                 plyr.y = 31;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -522,9 +494,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 47;
                 plyr.y = 48;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 64;
                 plyr.mapHeight = 64;
@@ -538,9 +510,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 1;
                 plyr.y = 31;
-                plyr.facing = 3;
+                plyr.facing = Directions.East;
                 plyr.map = 2; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -554,9 +526,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 17;
                 plyr.y = 48;
-                plyr.facing = 3;
+                plyr.facing = Directions.East;
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 64;
                 plyr.mapHeight = 64;
@@ -570,9 +542,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 30;
                 plyr.y = 0;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -586,9 +558,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 0;
                 plyr.y = 0;
-                plyr.facing = 2;
+                plyr.facing = Directions.North;
                 plyr.map = 2; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -602,9 +574,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 16;
                 plyr.y = 16;
-                plyr.facing = 2;
+                plyr.facing = Directions.North;
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 64;
                 plyr.mapHeight = 64;
@@ -618,9 +590,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 48;
                 plyr.y = 17;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 64;
                 plyr.mapHeight = 64;
@@ -634,9 +606,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 9;
                 plyr.y = 3;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 3; // The Dungeon level 3
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32; // due to rooms of confusion
                 plyr.mapHeight = 32; // due to rooms of confusion
@@ -650,9 +622,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 16;
                 plyr.y = 12;
-                plyr.facing = 1;
+                plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon level 2
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -666,9 +638,9 @@ namespace P3Net.Arx
             {
                 plyr.x = 14;
                 plyr.y = 22;
-                plyr.facing = 2;
+                plyr.facing = Directions.North;
                 plyr.map = 2; // The Dungeon level 2
-                plyr.scenario = 1; // The Dungeon
+                plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
                 plyr.mapWidth = 32;
                 plyr.mapHeight = 32;
@@ -713,38 +685,35 @@ namespace P3Net.Arx
 
         public static void SaveHumanReadableMap ()
         {
-            var outdata = new ofstream(); // outdata is like cin
-            outdata.open("data/map/dungeon4.txt"); // opens the file
-            if (outdata == null)
-            { // file couldn't be opened
-                cerr << "Error: map file could not be saved" << "\n";
-                Environment.Exit(1);
-            }
+            //TODO: Use structured data
+            var filename = "data/map/dungeon4.txt";
 
-            var z = 0; // Up to 4096 - current mapcell
-            for (var y = 0; y < 32; ++y)
+            using (var writer = new StreamWriter(filename))
             {
-                for (var x = 0; x < 32; ++x)
+                var z = 0; // Up to 4096 - current mapcell
+                for (var y = 0; y < 32; ++y)
                 {
-                    outdata << "# Map Cell Item: " << x << "," << y << "\n";
-                    outdata << "East wall = " << levelmap[z].east << "\n";
-                    outdata << "North wall = " << levelmap[z].north << "\n";
-                    outdata << "West wall = " << levelmap[z].west << "\n";
-                    outdata << "South wall = " << levelmap[z].south << "\n";
-                    outdata << "East wall height = " << 1 << "\n";
-                    outdata << "North wall height = " << 1 << "\n";
-                    outdata << "West wall height = " << 1 << "\n";
-                    outdata << "South wall height = " << 1 << "\n";
-                    outdata << "Ceiling = " << 0 << "\n";
-                    outdata << "Floor = " << 0 << "\n";
-                    outdata << "Zone = " << 0 << "\n";
-                    outdata << "Location = " << levelmap[z].location << "\n";
-                    outdata << "Special = " << levelmap[z].special << "\n";
-                    outdata << "      " << "\n";
-                    z++;
-                }
-            }
-            outdata.close();
+                    for (var x = 0; x < 32; ++x)
+                    {
+                        writer.WriteLine($"# Map Cell Item: {x},{y}");
+                        writer.WriteLine($"East wall = {levelmap[z].east}");
+                        writer.WriteLine($"North wall = {levelmap[z].north}");
+                        writer.WriteLine($"West wall = {levelmap[z].west}");
+                        writer.WriteLine($"South wall = {levelmap[z].south}");
+                        writer.WriteLine("East wall height = 1");
+                        writer.WriteLine("North wall height = 1");
+                        writer.WriteLine("West wall height = 1");
+                        writer.WriteLine("South wall height = 1");
+                        writer.WriteLine("Ceiling = 0");
+                        writer.WriteLine("Floor = 0");
+                        writer.WriteLine("Zone = 0");
+                        writer.WriteLine($"Location = {levelmap[z].location}");
+                        writer.WriteLine($"Special = {levelmap[z].special} ");
+                        writer.WriteLine();
+                        z++;
+                    };
+                };
+            };
         }
 
         public static void SetCurrentZone ()
@@ -802,7 +771,7 @@ namespace P3Net.Arx
         {
             var facing = plyr.facing;
 
-            if (facing == 1) // facing west?
+            if (facing == Directions.West)
             {
                 plyr.back = levelmap[idx].east;
                 plyr.left = levelmap[idx].south;
@@ -811,9 +780,7 @@ namespace P3Net.Arx
                 plyr.leftheight = levelmap[idx].southHeight;
                 plyr.rightheight = levelmap[idx].northHeight;
                 plyr.frontheight = levelmap[idx].westHeight;
-            }
-
-            if (facing == 2) // facing north?
+            } else if (facing == Directions.North)
             {
                 plyr.back = levelmap[idx].south;
                 plyr.left = levelmap[idx].west;
@@ -822,9 +789,7 @@ namespace P3Net.Arx
                 plyr.leftheight = levelmap[idx].westHeight;
                 plyr.rightheight = levelmap[idx].eastHeight;
                 plyr.frontheight = levelmap[idx].northHeight;
-            }
-
-            if (facing == 3) // facing east?
+            } else if (facing == Directions.East)
             {
                 plyr.back = levelmap[idx].west;
                 plyr.right = levelmap[idx].south;
@@ -833,9 +798,7 @@ namespace P3Net.Arx
                 plyr.rightheight = levelmap[idx].southHeight;
                 plyr.leftheight = levelmap[idx].northHeight;
                 plyr.frontheight = levelmap[idx].eastHeight;
-            }
-
-            if (facing == 4) // facing south?
+            } else
             {
                 plyr.back = levelmap[idx].north;
                 plyr.right = levelmap[idx].west;

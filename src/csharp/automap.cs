@@ -8,8 +8,9 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -36,13 +37,13 @@ namespace P3Net.Arx
                 if (single_key == "ESC")
                     mapComplete = true;
             }
-            plyr.status = 1;
+            plyr.status = GameStates.Explore;
         }
 
         public static void SetAutoMapFlag ( int mapno, int x, int y )
         {
             var cellNo = GetMapIndex(x, y);
-            autoMapExplored[mapno][cellNo] = true;
+            autoMapExplored[mapno, cellNo] = true;
         }
 
         public static void ClearAutoMaps ()
@@ -50,80 +51,77 @@ namespace P3Net.Arx
             for (var y = 0; y < 5; y++)
             {
                 for (var x = 0; x < 4096; x++)
-                    autoMapExplored[y][x] = false;
+                    autoMapExplored[y, x] = false;
             }
         }
 
         public static void InitMap ()
         {
-            mapImage.loadFromFile("data/images/maptiles.png");
-            cellImage.setTexture(mapImage);
+            mapImage = new Texture("data/images/maptiles.png");
+            cellImage.Texture = mapImage;
 
-            if (plyr.scenario == 0)
-                legendImage.loadFromFile("data/images/cityLegend.png");
-            if (plyr.scenario == 1)
-                legendImage.loadFromFile("data/images/dungeonLegend.png");
-            mapLegend.setTexture(legendImage);
+            if (plyr.scenario == Scenarios.City)
+                legendImage = new Texture("data/images/cityLegend.png");
+            if (plyr.scenario == Scenarios.Dungeon)
+                legendImage = new Texture("data/images/dungeonLegend.png");
+            mapLegend.Texture = legendImage;
         }
 
         public static void DrawAutomap ()
         {
             if (plyr.miniMapOn)
             {
-                if ((graphicMode == 2) && (plyr.status != 2)) // shopping?
+                if ((graphicMode == 2) && (plyr.status != GameStates.Module)) // shopping?
                 {
-                    var rectangle2 = new sf.RectangleShape();
-                    rectangle2.setSize(sf.Vector2f(176, 176)); // 672, 184
-                    rectangle2.setOutlineColor(sf.Color.Yellow);
-                    rectangle2.setFillColor(sf.Color(0, 0, 0, 128));
-                    rectangle2.setOutlineThickness(1);
-                    rectangle2.setPosition(miniMapX + 1, miniMapY + 1);
-                    App.draw(rectangle2);
+                    var rectangle2 = new RectangleShape() {
+                                            Size = new Vector2f(176, 176),
+                                            OutlineColor = Color.Yellow,
+                                            FillColor = new Color(0, 0, 0, 128),
+                                            OutlineThickness = 1,
+                                            Position = new Vector2f(miniMapX + 1, miniMapY + 1)
+                                    };
+                    App.Draw(rectangle2);
                 }
 
                 pixelSize = 16;
                 var automapHeight = 9; // how many map cells displayed including central player cell + 1 for for loop
                 var automapWidth = 9; //was 9
 
-                var startx = 0; // map cell coords for first x
-                var starty = 0; // map cell coords for first y
-                var currentx = 0;
-                var currenty = 0;
-                var pixelx = 0;
-                var pixely = 0;
-                startx = plyr.x - ((automapWidth - 1) / 2);
-                starty = plyr.y - ((automapHeight - 1) / 2);
+                var startx = plyr.x - ((automapWidth - 1) / 2);     // map cell coords for first x
+                var starty = plyr.y - ((automapHeight - 1) / 2);    // map cell coords for first y
 
                 for (var y = 0; y < (automapHeight); y++)
                 {
                     for (var x = 0; x < (automapWidth); x++)
                     {
                         // check for valid on map square
-                        currentx = startx + x;
-                        currenty = starty + y;
+                        var currentx = startx + x;
+                        var currenty = starty + y;
                         if ((currentx >= 0) && (currentx < plyr.mapWidth) && (currenty >= 0) && (currenty < plyr.mapHeight))
                         {
-                            pixelx = miniMapX + (x * pixelSize); // 16 = pixels in cell image
-                            pixely = miniMapY + (y * pixelSize); // 16 = pixels in cell image
+                            var pixelx = miniMapX + (x * pixelSize); // 16 = pixels in cell image
+                            var pixely = miniMapY + (y * pixelSize); // 16 = pixels in cell image
                             mapLocation = GetMapIndex(currentx, currenty);
                             DrawCell(currentx, currenty, pixelx, pixely);
-                            if (!autoMapExplored[plyr.map][mapLocation])
+                            if (!autoMapExplored[plyr.map, mapLocation])
                                 DrawImage(pixelx, pixely, 24);
                         }
                     }
                 }
 
                 // Draw arrow to represent position and direction of player
-                pixelx = miniMapX + (((automapWidth - 1) / 2) * pixelSize);
-                pixely = miniMapY + (((automapHeight - 1) / 2) * pixelSize);
-                if (plyr.facing == 1)
-                    DrawImage(pixelx, pixely, 17);
-                if (plyr.facing == 2)
-                    DrawImage(pixelx, pixely, 14);
-                if (plyr.facing == 3)
-                    DrawImage(pixelx, pixely, 16);
-                if (plyr.facing == 4)
-                    DrawImage(pixelx, pixely, 15);
+                {
+                    var pixelx = miniMapX + (((automapWidth - 1) / 2) * pixelSize);
+                    var pixely = miniMapY + (((automapHeight - 1) / 2) * pixelSize);
+                    if (plyr.facing == Directions.West)
+                        DrawImage(pixelx, pixely, 17);
+                    if (plyr.facing == Directions.North)
+                        DrawImage(pixelx, pixely, 14);
+                    if (plyr.facing == Directions.East)
+                        DrawImage(pixelx, pixely, 16);
+                    if (plyr.facing == Directions.South)
+                        DrawImage(pixelx, pixely, 15);
+                }
             }
         }
 
@@ -137,10 +135,7 @@ namespace P3Net.Arx
             var cornerY = 0; // top left pixel coordinate for automap
             var startx = 0; // map cell coords for first x
             var starty = 0; // map cell coords for first y
-            var currentx = 0;
-            var currenty = 0;
-            var pixelx = 0;
-            var pixely = 0;
+            
             if ((plyr.x < 32) && (plyr.y < 32))
             {
                 startx = 0;
@@ -167,45 +162,47 @@ namespace P3Net.Arx
                 for (var x = 0; x < (automapWidth); x++)
                 {
                     // check for valid on map square
-                    currentx = startx + x;
-                    currenty = starty + y;
-                    pixelx = cornerX + (x * pixelSize); // 16 = pixels in cell image
-                    pixely = cornerY + (y * pixelSize); // 16 = pixels in cell image
+                    var currentx = startx + x;
+                    var currenty = starty + y;
+                    var pixelx = cornerX + (x * pixelSize); // 16 = pixels in cell image
+                    var pixely = cornerY + (y * pixelSize); // 16 = pixels in cell image
                     mapLocation = GetMapIndex(currentx, currenty);
                     DrawCell(currentx, currenty, pixelx, pixely);
-                    if (!autoMapExplored[plyr.map][mapLocation])
+                    if (!autoMapExplored[plyr.map, mapLocation])
                         DrawImage(pixelx, pixely, 24);
                 }
             }
 
             // Draw arrow to represent position and direction of player
-            pixelx = (plyr.x) * pixelSize+16;
-            pixely = (plyr.y) * pixelSize;
-            if (plyr.y > 31)
-                pixely = (plyr.y - 32) * pixelSize;
-            if (plyr.x > 31)
-                pixelx = (plyr.x - 32) * pixelSize;
-            if (plyr.facing == 1)
-                DrawImage(pixelx, pixely, 17);
-            if (plyr.facing == 2)
-                DrawImage(pixelx, pixely, 14);
-            if (plyr.facing == 3)
-                DrawImage(pixelx, pixely, 16);
-            if (plyr.facing == 4)
-                DrawImage(pixelx, pixely, 15);
+            {
+                var pixelx = (plyr.x) * pixelSize+16;
+                var pixely = (plyr.y) * pixelSize;
+                if (plyr.y > 31)
+                    pixely = (plyr.y - 32) * pixelSize;
+                if (plyr.x > 31)
+                    pixelx = (plyr.x - 32) * pixelSize;
+                if (plyr.facing == Directions.West)
+                    DrawImage(pixelx, pixely, 17);
+                if (plyr.facing == Directions.North)
+                    DrawImage(pixelx, pixely, 14);
+                if (plyr.facing == Directions.East)
+                    DrawImage(pixelx, pixely, 16);
+                if (plyr.facing == Directions.South)
+                    DrawImage(pixelx, pixely, 15);
+            };
 
             // Draw legend sprite
-            mapLegend.setPosition(512 + 16, 16);
-            App.draw(mapLegend);
+            mapLegend.Position = new SFML.System.Vector2f(512 + 16, 16);
+            App.Draw(mapLegend);
 
             plyr.drawingBigAutomap = false;
         }
 
-        public static sf.Texture mapImage = new sf.Texture();
-        public static sf.Texture legendImage = new sf.Texture();
-        public static sf.Sprite cellImage = new sf.Sprite();
+        public static Texture mapImage;
+        public static Texture legendImage;
+        public static Sprite cellImage = new Sprite();
 
-        public static sf.Sprite mapLegend = new sf.Sprite();
+        public static Sprite mapLegend = new Sprite();
 
         //float scale;
         public static int pixelSize;
@@ -234,9 +231,9 @@ namespace P3Net.Arx
 
             var tileX = (column) * tileSize; // x loc on tiles image in pixels
             var tileY = ((row) * tileSize); // y loc on tiles image in pixels
-            cellImage.setTextureRect(sf.IntRect(tileX, tileY, tileSize, tileSize));
-            cellImage.setPosition(x, y); // simply display at x,y pixel locations
-            App.draw(cellImage);
+            cellImage.TextureRect = new IntRect(tileX, tileY, tileSize, tileSize);
+            cellImage.Position = new Vector2f(x, y); // simply display at x,y pixel locations
+            App.Draw(cellImage);
         }
 
         // Draw all the images required for a single cell on the automap
@@ -251,7 +248,7 @@ namespace P3Net.Arx
             int tile;
 
             // Draw cell background colour
-            if (autoMapExplored[plyr.map][mapLocation])
+            if (autoMapExplored[plyr.map, mapLocation])
             {
                 DrawImage(pixelx, pixely, 0);
                 if (special == 144)
@@ -290,11 +287,11 @@ namespace P3Net.Arx
                     DrawImage(pixelx, pixely, 25);
             }
 
-            if (!autoMapExplored[plyr.map][mapLocation])
+            if (!autoMapExplored[plyr.map, mapLocation])
                 DrawImage(pixelx, pixely, 24);
 
             // Standard Dungeon "special" ranges			
-            if ((special >= 0xE0) && (special <= 0xFF) && (plyr.scenario == 1))
+            if ((special >= 0xE0) && (special <= 0xFF) && (plyr.scenario == Scenarios.Dungeon))
                 DrawImage(pixelx, pixely, 22);
 
             // switch statement to set value to image tile
@@ -321,7 +318,6 @@ namespace P3Net.Arx
                 tile = 4;
             if (north == 14)
                 tile = 4;
-
 
             if (tile != 0)
                 DrawImage(pixelx, pixely, tile);

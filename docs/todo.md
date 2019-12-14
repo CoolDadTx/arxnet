@@ -2,7 +2,7 @@
 
 ## Must Haves
 
-- [ ] Add SFML support
+- [X] Add SFML support
 - [ ] Add Glex support
 - [ ] Replace C++ file logic 
 - [ ] Replace iostream logic
@@ -21,18 +21,20 @@
 
 ## Enhancements
 
+- [ ] Make Scenarios a standalone type
+- [ ] Make Items a standalone type
+- [ ] Make Spells a standalone type
+- [ ] Make Encounters a standalone type
+- [ ] Make Modules a standalone type
+- [ ] Make Guilds a standalone type
 - [ ] Implement game loop with hooks so we can separate logic out as needed
 - [ ] Make load/save flexible to support versioned data (perhaps JSON because files aren't too big)
 - [ ] Implement event-style system for reacting to important events to decouple the code
 - [ ] Support unlimited # of items, spells, etc
 - [ ] Add extensibility points for adding new stuff (items, spells, etc)
+- [ ] Normalize music/graphics files so the various filename/path logic can be simplified
 - [ ] DirectX support
 - [ ] Expand support for resolutions
-- [ ] Make guilds a standalone class
 - [ ] Move all hard coded lists of stuff to data files
 - [ ] Make menu logic a standalone class that can be instantiated and used via delegates on demand
-- [ ] Make spells a standalone class with derived types (or just data) for each unique spell
-- [ ] Make encounters a standalone class with derived types (or just data) for each unique encounter
-- [ ] Make City, Dungeon, Arena separate modules that can be snapped into place
-- [ ] Make items a standalone class with data for each unique item
 - [ ] Lazy load data such as items so we can speed up the game (use a cache to prevent it from growing out of control)

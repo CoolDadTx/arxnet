@@ -8,14 +8,16 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static sf.Sprite CharImage = new sf.Sprite();
-        public static sf.Texture FontImage = new sf.Texture();
+        public static Sprite CharImage = new Sprite();
+        public static Texture FontImage;
 
         public static int yBase = 0;
 
@@ -25,7 +27,7 @@ namespace P3Net.Arx
             {
                 var current_char = text[i];
                 var char_no = ((int)current_char);
-                if (plyr.status == 2)
+                if (plyr.status == GameStates.Module)
                     DrawChar(shopConsoleY, x, y, char_no);
                 else
                     DrawChar(consoleY, x, y, char_no);
@@ -35,15 +37,13 @@ namespace P3Net.Arx
 
         public static void BText ( int x, int y, int number )
         {
-            var @out = new stringstream();
-            @out << number;
-            var text = @out.str();
+            var text = number.ToString();
 
             for (var i = 0; i < text.Length; ++i)
             {
                 var current_char = text[i];
                 var char_no = ((int)current_char);
-                if (plyr.status == 2)
+                if (plyr.status == GameStates.Module)
                     DrawChar(shopConsoleY, x, y, char_no);
                 else
                     DrawChar(consoleY, x, y, char_no);
@@ -72,7 +72,7 @@ namespace P3Net.Arx
                     current_string = "";
                 } else
                 {
-                    current_string = current_string + current_char;
+                    current_string += current_char;
                     char_count++;
                 }
             }
@@ -80,7 +80,6 @@ namespace P3Net.Arx
 
         public static void CyText ( int y, string str )
         {
-            var y = 0;
             var char_count = 0;
             var current_string = "";
 
@@ -100,7 +99,7 @@ namespace P3Net.Arx
                     current_string = "";
                 } else
                 {
-                    current_string = current_string + current_char;
+                    current_string += current_char;
                     char_count++;
                 }
             }
@@ -129,16 +128,16 @@ namespace P3Net.Arx
             var charX = (column) * 16; // x loc on tiles image in pixels
             var charY = ((row) * 16); // y loc on tiles image in pixels
 
-            CharImage.scale(1.0f, 1.0f);
+            CharImage.Scale = new Vector2f(1.0f, 1.0f);
 
-            CharImage.setTextureRect(sf.IntRect(charX, charY, 16, 16));
+            CharImage.TextureRect = new IntRect(charX, charY, 16, 16);
 
             if (char_no == 16)
-                CharImage.setTextureRect(sf.IntRect(0, 16, 16, 16));
+                CharImage.TextureRect = new IntRect(0, 16, 16, 16);
 
-            CharImage.setPosition(consoleX + ((x - 1) * 16), topY + (y * 18));
+            CharImage.Position = new Vector2f(consoleX + ((x - 1) * 16), topY + (y * 18));
 
-            App.draw(CharImage);
+            App.Draw(CharImage);
         }
 
         public static void DrawText ( int x, int y, string text )
@@ -147,7 +146,7 @@ namespace P3Net.Arx
             {
                 var current_char = text[i];
                 var char_no = ((int)current_char);
-                if (plyr.status == 2)
+                if (plyr.status == GameStates.Module)
                     DrawChar(shopStatsY, x, y, char_no);
                 else
                     DrawChar(statPanelY, x, y, char_no);
@@ -157,16 +156,14 @@ namespace P3Net.Arx
 
         public static void DrawText ( int x, int y, int number )
         {
-            var @out = new stringstream();
-            @out << number;
-            var text = @out.str();
+            var text = number.ToString();
 
             for (var i = 0; i < text.Length; ++i)
             {
                 var current_char = text[i];
                 var char_no = ((int)current_char);
 
-                if (plyr.status == 2)
+                if (plyr.status == GameStates.Module)
                     DrawChar(shopStatsY, x, y, char_no);
                 else
                     DrawChar(statPanelY, x, y, char_no);
@@ -181,10 +178,10 @@ namespace P3Net.Arx
                 var current_char = text[i];
                 var char_no = ((int)current_char);
 
-                if (plyr.status == 2)
+                if (plyr.status == GameStates.Module)
                     DrawChar(shopConsoleY, x, y, char_no);
                 else
-                    DrawChar(consoleY, x, y, char_no); // was 16
+                    DrawChar(consoleY, x, y, char_no);
                 x++;
             }
         }
@@ -192,13 +189,14 @@ namespace P3Net.Arx
         public static void InitFont ()
         {
             if (plyr.fontStyle == 0)
-                FontImage.loadFromFile("data/images/arfontSmooth.png");
+                FontImage = new Texture("data/images/arfontSmooth.png");
             if (plyr.fontStyle == 1)
-                FontImage.loadFromFile("data/images/arfont.png");
-            CharImage.setTexture(FontImage);
+                FontImage = new Texture("data/images/arfont.png");
+            CharImage.Texture = FontImage;
         }
 
-        public static void SetFontColour ( int r, int g, int b, int a ) => CharImage.setColor(sf.Color(r, g, b, a));
+        public static void SetFontColour ( int r, int g, int b, int a ) => SetFontColour((byte)r, (byte)g, (byte)b, (byte)a);
+        public static void SetFontColour ( byte r, byte g, byte b, byte a ) => CharImage.Color = new Color(r, g, b, a);
 
         /* Seem to only be used in item.h */
         public static void Text ( int x, int y, string text )
@@ -215,9 +213,7 @@ namespace P3Net.Arx
 
         public static void Text ( int x, int y, int number )
         {
-            var @out = new stringstream();
-            @out << number;
-            var text = @out.str();
+            var text = number.ToString();
 
             for (var i = 0; i < text.Length; ++i)
             {

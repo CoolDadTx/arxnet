@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.IO;
 using System.Linq;
 
 namespace P3Net.Arx
@@ -84,24 +85,20 @@ namespace P3Net.Arx
                     if (key == "ESC")
                     {
                         savegameMenu = 256;
-                        plyr.status = 1;
+                        plyr.status = GameStates.Explore;
                     }
                 }
                 while (savegameMenu < 10) // attempt to save a character
                 {
                     SaveCharacter(savegameMenu);
-                    plyr.status = 1; // for display canvas
+                    plyr.status = GameStates.Explore; // for display canvas
                     savegameMenu = 256;
                 }
             }
         }
 
-        public static string Ftos ( float i )
-        {
-            var s = new stringstream();
-            s << i;
-            return s.str();
-        }
+        [Obsolete("Use ToString")]
+        public static string Ftos ( float i ) => i.ToString();
 
         public static void Initcharacter ()
         {
@@ -111,48 +108,18 @@ namespace P3Net.Arx
 
         public static void InitSaveGameDescriptions ()
         {
-            var instream = new ifstream();
-            instream.open("data/saves/saveGames.txt");
-            string text;
-
-            for (var a = 0; a < 10; a++) // number of save game slots 0 - 9
-            {
-                getline(instream, text);
-                saveGameDescriptions[a] = text;
-            }
-            instream.close();
+            //TODO: Ignoring fixed saved game slots 0-9
+            saveGameDescriptions = File.ReadAllLines("data/saves/saveGames.txt");
         }
 
-        public static string Itos ( int i )
-        {
-            var s = new stringstream();
-            s << i;
-            return s.str();
-        }
+        [Obsolete("Use ToString")]
+        public static string Itos ( int i ) => i.ToString();
 
         public static bool LoadCharacter ( int saveSlot )
         {
-            var instream = new ifstream();
-            string junk;
-            string junk2;
-            string data;
-
-            var filename = $"data/saves/save{Itos(saveSlot)}.txt";
-            instream.open(filename); // opens the file            
-            if (instream == null)
-            {
-                cerr << "No save game in this slot" << "\n";
-                return false;
-            }
-            string text;
-
-            for (var a = 0; a < saveGameSize; ++a)
-            {
-                getline(instream, text);
-                character[a] = text;
-            }
-
-            instream.close();
+            //TODO: Use a normal struct reader
+            //TODO: Ignoring fixed saved game size - saveGameSize
+            character = File.ReadAllLines($"data/saves/save{saveSlot}.txt");
 
             plyr.status = GameStates.Explore;
 
@@ -160,7 +127,7 @@ namespace P3Net.Arx
             plyr.hp = Convert.ToInt32(character[1]);
             plyr.maxhp = Convert.ToInt32(character[2]);
 
-            plyr.scenario = Convert.ToInt32(character[3]);
+            plyr.scenario = (Scenarios)Convert.ToInt32(character[3]);
             plyr.map = Convert.ToInt32(character[4]);
             plyr.mapWidth = Convert.ToInt32(character[5]);
             plyr.mapHeight = Convert.ToInt32(character[6]);
@@ -168,7 +135,7 @@ namespace P3Net.Arx
             plyr.oldx = Convert.ToInt32(character[8]);
             plyr.y = Convert.ToInt32(character[9]);
             plyr.oldy = Convert.ToInt32(character[10]);
-            plyr.facing = Convert.ToInt32(character[11]);
+            plyr.facing = (Directions)Convert.ToInt32(character[11]);
 
             plyr.front = Convert.ToInt32(character[12]);
             plyr.back = Convert.ToInt32(character[13]);
@@ -182,7 +149,7 @@ namespace P3Net.Arx
             plyr.location = Convert.ToInt32(character[21]);
             plyr.special = Convert.ToInt32(character[22]);
 
-            plyr.alive = Convert.ToInt32(character[23]);
+            plyr.alive = Convert.ToInt32(character[23]) != 0;
 
             plyr.teleporting = Convert.ToInt32(character[24]);
             plyr.buffer_index = Convert.ToInt32(character[25]);
@@ -215,10 +182,10 @@ namespace P3Net.Arx
             plyr.strPartials = Convert.ToInt32(character[51]);
             plyr.speed = Convert.ToInt32(character[52]);
             plyr.stealth = Convert.ToInt32(character[53]);
-            plyr.diagOn = Convert.ToInt32(character[54]);
-            plyr.mapOn = Convert.ToInt32(character[55]);
-            plyr.fpsOn = Convert.ToInt32(character[56]);
-            plyr.miniMapOn = Convert.ToInt32(character[57]);
+            plyr.diagOn = Convert.ToInt32(character[54]) != 0;
+            plyr.mapOn = Convert.ToInt32(character[55]) != 0;
+            plyr.fpsOn = Convert.ToInt32(character[56]) != 0;
+            plyr.miniMapOn = Convert.ToInt32(character[57]) != 0;
             plyr.silver = Convert.ToInt32(character[58]);
             plyr.gold = Convert.ToInt32(character[59]);
             plyr.copper = Convert.ToInt32(character[60]);
@@ -231,15 +198,15 @@ namespace P3Net.Arx
             plyr.gems = Convert.ToInt32(character[67]);
             plyr.compasses = Convert.ToInt32(character[68]);
             plyr.keys = Convert.ToInt32(character[69]);
-            plyr.encounter_done = Convert.ToInt32(character[70]);
-            plyr.game_on = Convert.ToInt32(character[71]);
+            plyr.encounter_done = Convert.ToInt32(character[70]) != 0;
+            plyr.game_on = Convert.ToInt32(character[71]) != 0;
             plyr.gender = Convert.ToInt32(character[72]);
             plyr.zone = Convert.ToInt32(character[73]);
             plyr.zoneSet = Convert.ToInt32(character[74]);
             plyr.current_zone = Convert.ToInt32(character[75]); // used by drawing function
-            plyr.status = Convert.ToInt32(character[76]);
+            plyr.status = (GameStates)Convert.ToInt32(character[76]);
             plyr.specialwall = Convert.ToInt32(character[77]);
-            plyr.fixedEncounter = Convert.ToInt32(character[80]);
+            plyr.fixedEncounter = Convert.ToInt32(character[80]) != 0;
             plyr.fixedEncounterRef = Convert.ToInt32(character[81]);
             plyr.thirst = Convert.ToInt32(character[82]);
             plyr.hunger = Convert.ToInt32(character[83]);
@@ -247,9 +214,9 @@ namespace P3Net.Arx
             plyr.alcohol = Convert.ToInt32(character[85]);
 
             for (var y = 0; y < 12; ++y)
-                plyr.guildAwards[y] = Convert.ToInt32(character[86 + y]);
+                plyr.guildAwards[y] = Convert.ToInt32(character[86 + y]) != 0;
             for (var y = 0; y < 32; ++y)
-                plyr.fixedEncounters[y] = Convert.ToInt32(character[98 + y]);
+                plyr.fixedEncounters[y] = Convert.ToInt32(character[98 + y]) != 0;
             for (var y = 0; y < 14; ++y)
                 plyr.guildMemberships[y] = Convert.ToInt32(character[130 + y]);
 
@@ -302,18 +269,19 @@ namespace P3Net.Arx
             plyr.clothing[2] = Convert.ToInt32(character[186]);
             plyr.clothing[3] = Convert.ToInt32(character[187]);
 
-            plyr.goblinsVisited = Convert.ToInt32(character[188]);
-            plyr.goblinsChallenged = Convert.ToInt32(character[189]);
-            plyr.goblinsDefeated = Convert.ToInt32(character[190]);
-            plyr.goblinsCombat = Convert.ToInt32(character[191]);
-            plyr.goblinsReforged = Convert.ToInt32(character[192]);
-            plyr.trollsVisited = Convert.ToInt32(character[193]);
-            plyr.trollsChallenged = Convert.ToInt32(character[194]);
-            plyr.trollsDefeated = Convert.ToInt32(character[195]);
-            plyr.trollsCombat = Convert.ToInt32(character[196]);
-            plyr.trollsReforged = Convert.ToInt32(character[197]);
+            //TODO: Consider moving these into property bag so we don't have to work with this data directly, only the interested code
+            plyr.goblinsVisited = Convert.ToInt32(character[188]) != 0;
+            plyr.goblinsChallenged = Convert.ToInt32(character[189]) != 0;
+            plyr.goblinsDefeated = Convert.ToInt32(character[190]) != 0;
+            plyr.goblinsCombat = Convert.ToInt32(character[191]) != 0;
+            plyr.goblinsReforged = Convert.ToInt32(character[192]) != 0;
+            plyr.trollsVisited = Convert.ToInt32(character[193]) != 0;
+            plyr.trollsChallenged = Convert.ToInt32(character[194]) != 0;
+            plyr.trollsDefeated = Convert.ToInt32(character[195]) != 0;
+            plyr.trollsCombat = Convert.ToInt32(character[196]) != 0;
+            plyr.trollsReforged = Convert.ToInt32(character[197]) != 0;
 
-            plyr.oracleReturnTomorrow = Convert.ToInt32(character[198]);
+            plyr.oracleReturnTomorrow = Convert.ToInt32(character[198]) != 0;
             plyr.oracleDay = Convert.ToInt32(character[199]);
             plyr.oracleMonth = Convert.ToInt32(character[200]);
             plyr.oracleYear = Convert.ToInt32(character[201]);
@@ -404,14 +372,14 @@ namespace P3Net.Arx
                 effectBuffer[z].duration = Convert.ToInt32(character[loadGameIndex + 3]);
                 loadGameIndex = loadGameIndex + 4;
             }
-
+            
             // Smithy daily wares
             loadGameIndex = 7670;
             for (var z = 0; z < 4; ++z)
             {
                 for (var x = 0; x < 10; ++x)
                 {
-                    smithyDailyWares[z][x] = Convert.ToInt32(character[loadGameIndex]);
+                    smithyDailyWares[z, x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
                 }
             }
@@ -421,7 +389,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 6; ++x)
                 {
-                    tavernDailyFoods[z][x] = Convert.ToInt32(character[loadGameIndex]);
+                    tavernDailyFoods[z, x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
                 }
             }
@@ -431,7 +399,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 6; ++x)
                 {
-                    tavernDailyDrinks[z][x] = Convert.ToInt32(character[loadGameIndex]);
+                    tavernDailyDrinks[z, x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
                 }
             }
@@ -441,7 +409,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 12; ++x)
                 {
-                    shopDailyWares[z][x] = Convert.ToInt32(character[loadGameIndex]);
+                    shopDailyWares[z, x] = Convert.ToInt32(character[loadGameIndex]);
                     loadGameIndex++;
                 }
             }
@@ -454,7 +422,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 4096; ++x)
                 {
-                    autoMapExplored[z][x] = Convert.ToInt32(character[loadGameIndex]);
+                    autoMapExplored[z, x] = Convert.ToInt32(character[loadGameIndex]) != 0;
                     loadGameIndex++;
                 }
             }
@@ -469,203 +437,203 @@ namespace P3Net.Arx
 
         public static bool SaveCharacter ( int saveSlot )
         {
-            var outdata = new ofstream();
-
+            //TODO: Use a regular struct system
+            
             saveGameDescriptions[saveSlot] = plyr.name;
             UpdateSaveGameDescriptions();
 
             Initcharacter(); // Clear out string array
-
+            
             // Copy character object data (except name) into the character[4096] int block
-            character[0] = Itos(plyr.gender);
-            character[1] = Itos(plyr.hp);
-            character[2] = Itos(plyr.maxhp);
-            character[3] = Itos(plyr.scenario);
-            character[4] = Itos(plyr.map);
-            character[5] = Itos(plyr.mapWidth);
-            character[6] = Itos(plyr.mapHeight);
-            character[7] = Itos(plyr.x);
-            character[8] = Itos(plyr.oldx);
-            character[9] = Itos(plyr.y);
-            character[10] = Itos(plyr.oldy);
-            character[11] = Itos(plyr.facing);
-            character[12] = Itos(plyr.front);
-            character[13] = Itos(plyr.back);
-            character[14] = Itos(plyr.left);
-            character[15] = Itos(plyr.right);
-            character[16] = Itos(plyr.frontheight);
-            character[17] = Itos(plyr.leftheight);
-            character[18] = Itos(plyr.rightheight);
-            character[19] = Itos(plyr.floorTexture);
-            character[20] = Itos(plyr.ceiling);
-            character[21] = Itos(plyr.location);
-            character[22] = Itos(plyr.special);
-            character[23] = Itos(plyr.alive);
-            character[24] = Itos(plyr.teleporting);
-            character[25] = Itos(plyr.buffer_index);
-            character[26] = Itos(plyr.infoPanel);
-            character[27] = Itos(plyr.priWeapon);
-            character[28] = Itos(plyr.secWeapon);
-            character[29] = Itos(plyr.headArmour);
-            character[30] = Itos(plyr.bodyArmour);
-            character[31] = Itos(plyr.legsArmour);
-            character[32] = Itos(plyr.armsArmour);
-            character[33] = Itos(plyr.timeOfDay);
-            character[34] = Itos(plyr.minutes);
-            character[35] = Itos(plyr.hours);
-            character[36] = Itos(plyr.days);
-            character[37] = Itos(plyr.months);
-            character[38] = Itos(plyr.years);
+            character[0] = plyr.gender.ToString();
+            character[1] = plyr.hp.ToString();
+            character[2] = plyr.maxhp.ToString();
+            character[3] = plyr.scenario.ToString();
+            character[4] = plyr.map.ToString();
+            character[5] = plyr.mapWidth.ToString();
+            character[6] = plyr.mapHeight.ToString();
+            character[7] = plyr.x.ToString();
+            character[8] = plyr.oldx.ToString();
+            character[9] = plyr.y.ToString();
+            character[10] = plyr.oldy.ToString();
+            character[11] = plyr.facing.ToString();
+            character[12] = plyr.front.ToString();
+            character[13] = plyr.back.ToString();
+            character[14] = plyr.left.ToString();
+            character[15] = plyr.right.ToString();
+            character[16] = plyr.frontheight.ToString();
+            character[17] = plyr.leftheight.ToString();
+            character[18] = plyr.rightheight.ToString();
+            character[19] = plyr.floorTexture.ToString();
+            character[20] = plyr.ceiling.ToString();
+            character[21] = plyr.location.ToString();
+            character[22] = plyr.special.ToString();
+            character[23] = plyr.alive.ToString();
+            character[24] = plyr.teleporting.ToString();
+            character[25] = plyr.buffer_index.ToString();
+            character[26] = plyr.infoPanel.ToString();
+            character[27] = plyr.priWeapon.ToString();
+            character[28] = plyr.secWeapon.ToString();
+            character[29] = plyr.headArmour.ToString();
+            character[30] = plyr.bodyArmour.ToString();
+            character[31] = plyr.legsArmour.ToString();
+            character[32] = plyr.armsArmour.ToString();
+            character[33] = plyr.timeOfDay.ToString();
+            character[34] = plyr.minutes.ToString();
+            character[35] = plyr.hours.ToString();
+            character[36] = plyr.days.ToString();
+            character[37] = plyr.months.ToString();
+            character[38] = plyr.years.ToString();
 
-            character[39] = Itos(plyr.sta);
-            character[40] = Itos(plyr.chr);
-            character[41] = Itos(plyr.str);
-            character[42] = Itos(plyr.inte);
-            character[43] = Itos(plyr.wis);
-            character[44] = Itos(plyr.skl);
-            character[45] = Itos(plyr.maxhp);
-            character[46] = Itos(plyr.hp);
-            character[47] = Itos(plyr.xp);
-            character[48] = Itos(plyr.level); // xp level
-            character[49] = Itos(plyr.chrPartials);
-            character[50] = Itos(plyr.intPartials);
-            character[51] = Itos(plyr.strPartials);
-            character[52] = Itos(plyr.speed);
-            character[53] = Itos(plyr.stealth);
-            character[54] = Itos(plyr.diagOn);
-            character[55] = Itos(plyr.mapOn);
-            character[56] = Itos(plyr.fpsOn);
-            character[57] = Itos(plyr.miniMapOn);
-            character[58] = Itos(plyr.silver);
-            character[59] = Itos(plyr.gold);
-            character[60] = Itos(plyr.copper);
-            character[61] = Itos(plyr.food);
-            character[62] = Itos(plyr.torches);
-            character[63] = Itos(plyr.water);
-            character[64] = Itos(plyr.timepieces);
-            character[65] = Itos(plyr.crystals);
-            character[66] = Itos(plyr.jewels);
-            character[67] = Itos(plyr.gems);
-            character[68] = Itos(plyr.compasses);
-            character[69] = Itos(plyr.keys);
+            character[39] = plyr.sta.ToString();
+            character[40] = plyr.chr.ToString();
+            character[41] = plyr.str.ToString();
+            character[42] = plyr.inte.ToString();
+            character[43] = plyr.wis.ToString();
+            character[44] = plyr.skl.ToString();
+            character[45] = plyr.maxhp.ToString();
+            character[46] = plyr.hp.ToString();
+            character[47] = plyr.xp.ToString();
+            character[48] = plyr.level.ToString(); // xp level
+            character[49] = plyr.chrPartials.ToString();
+            character[50] = plyr.intPartials.ToString();
+            character[51] = plyr.strPartials.ToString();
+            character[52] = plyr.speed.ToString();
+            character[53] = plyr.stealth.ToString();
+            character[54] = plyr.diagOn.ToString();
+            character[55] = plyr.mapOn.ToString();
+            character[56] = plyr.fpsOn.ToString();
+            character[57] = plyr.miniMapOn.ToString();
+            character[58] = plyr.silver.ToString();
+            character[59] = plyr.gold.ToString();
+            character[60] = plyr.copper.ToString();
+            character[61] = plyr.food.ToString();
+            character[62] = plyr.torches.ToString();
+            character[63] = plyr.water.ToString();
+            character[64] = plyr.timepieces.ToString();
+            character[65] = plyr.crystals.ToString();
+            character[66] = plyr.jewels.ToString();
+            character[67] = plyr.gems.ToString();
+            character[68] = plyr.compasses.ToString();
+            character[69] = plyr.keys.ToString();
 
-            character[70] = Itos(plyr.encounter_done);
-            character[71] = Itos(plyr.game_on);
-            character[72] = Itos(plyr.gender);
+            character[70] = plyr.encounter_done.ToString();
+            character[71] = plyr.game_on.ToString();
+            character[72] = plyr.gender.ToString();
 
-            character[73] = Itos(plyr.zone);
-            character[74] = Itos(plyr.zoneSet);
-            character[75] = Itos(plyr.current_zone); // used by drawing function
-            character[76] = Itos(plyr.status);
-            character[77] = Itos(plyr.specialwall);
-            character[80] = Itos(plyr.fixedEncounter);
-            character[81] = Itos(plyr.fixedEncounterRef);
-            character[82] = Itos(plyr.thirst);
-            character[83] = Itos(plyr.hunger);
-            character[84] = Itos(plyr.digestion);
-            character[85] = Itos(plyr.alcohol);
+            character[73] = plyr.zone.ToString();
+            character[74] = plyr.zoneSet.ToString();
+            character[75] = plyr.current_zone.ToString(); // used by drawing function
+            character[76] = plyr.status.ToString();
+            character[77] = plyr.specialwall.ToString();
+            character[80] = plyr.fixedEncounter.ToString();
+            character[81] = plyr.fixedEncounterRef.ToString();
+            character[82] = plyr.thirst.ToString();
+            character[83] = plyr.hunger.ToString();
+            character[84] = plyr.digestion.ToString();
+            character[85] = plyr.alcohol.ToString();
 
             for (var y = 0; y < 12; ++y)
-                character[86 + y] = Itos(plyr.guildAwards[y]);
+                character[86 + y] = plyr.guildAwards[y].ToString();
             for (var y = 0; y < 32; ++y)
-                character[98 + y] = Itos(plyr.fixedEncounters[y]);
+                character[98 + y] = plyr.fixedEncounters[y].ToString();
             for (var y = 0; y < 14; ++y)
-                character[130 + y] = Itos(plyr.guildMemberships[y]);
+                character[130 + y] = plyr.guildMemberships[y].ToString();
 
-            character[144] = Itos(plyr.ringCharges);
-            character[145] = Itos(plyr.alignment);
-            character[146] = Itos(plyr.lfood);
-            character[147] = Itos(plyr.lwater);
-            character[148] = Itos(plyr.ltorches);
-            character[149] = Itos(plyr.ltimepieces);
-            character[150] = Itos(plyr.lcompasses);
-            character[151] = Itos(plyr.lkeys);
-            character[152] = Itos(plyr.lcrystals);
-            character[153] = Itos(plyr.lgems);
-            character[154] = Itos(plyr.ljewels);
-            character[155] = Itos(plyr.lgold);
-            character[156] = Itos(plyr.lsilver);
-            character[157] = Itos(plyr.lcopper);
-            character[158] = Itos(plyr.spellIndex);
-            character[159] = Itos(plyr.effectIndex);
-            character[160] = Itos(plyr.retreatFriendship);
-            character[161] = Itos(plyr.damonFriendship);
+            character[144] = plyr.ringCharges.ToString();
+            character[145] = plyr.alignment.ToString();
+            character[146] = plyr.lfood.ToString();
+            character[147] = plyr.lwater.ToString();
+            character[148] = plyr.ltorches.ToString();
+            character[149] = plyr.ltimepieces.ToString();
+            character[150] = plyr.lcompasses.ToString();
+            character[151] = plyr.lkeys.ToString();
+            character[152] = plyr.lcrystals.ToString();
+            character[153] = plyr.lgems.ToString();
+            character[154] = plyr.ljewels.ToString();
+            character[155] = plyr.lgold.ToString();
+            character[156] = plyr.lsilver.ToString();
+            character[157] = plyr.lcopper.ToString();
+            character[158] = plyr.spellIndex.ToString();
+            character[159] = plyr.effectIndex.ToString();
+            character[160] = plyr.retreatFriendship.ToString();
+            character[161] = plyr.damonFriendship.ToString();
 
-            character[162] = Itos(plyr.smithyFriendships[0]);
-            character[163] = Itos(plyr.smithyFriendships[1]);
-            character[164] = Itos(plyr.smithyFriendships[2]);
-            character[165] = Itos(plyr.smithyFriendships[3]);
+            character[162] = plyr.smithyFriendships[0].ToString();
+            character[163] = plyr.smithyFriendships[1].ToString();
+            character[164] = plyr.smithyFriendships[2].ToString();
+            character[165] = plyr.smithyFriendships[3].ToString();
 
-            character[166] = Itos(plyr.bankAccountStatuses[0]);
-            character[167] = Itos(plyr.bankAccountStatuses[1]);
-            character[168] = Itos(plyr.bankAccountStatuses[2]);
-            character[169] = Itos(plyr.bankAccountStatuses[3]);
-            character[170] = Itos(plyr.bankAccountStatuses[4]);
-            character[171] = Itos(plyr.bankAccountStatuses[5]);
-            character[172] = Itos(plyr.bankAccountStatuses[6]);
-            character[173] = Itos(plyr.bankAccountStatuses[7]);
-            character[174] = Itos(plyr.bankAccountStatuses[8]);
+            character[166] = plyr.bankAccountStatuses[0].ToString();
+            character[167] = plyr.bankAccountStatuses[1].ToString();
+            character[168] = plyr.bankAccountStatuses[2].ToString();
+            character[169] = plyr.bankAccountStatuses[3].ToString();
+            character[170] = plyr.bankAccountStatuses[4].ToString();
+            character[171] = plyr.bankAccountStatuses[5].ToString();
+            character[172] = plyr.bankAccountStatuses[6].ToString();
+            character[173] = plyr.bankAccountStatuses[7].ToString();
+            character[174] = plyr.bankAccountStatuses[8].ToString();
 
-            character[175] = Itos(plyr.bankAccountBalances[0]);
-            character[176] = Itos(plyr.bankAccountBalances[1]);
-            character[177] = Itos(plyr.bankAccountBalances[2]);
-            character[178] = Itos(plyr.bankAccountBalances[3]);
-            character[179] = Itos(plyr.bankAccountBalances[4]);
-            character[180] = Itos(plyr.bankAccountBalances[5]);
-            character[181] = Itos(plyr.bankAccountBalances[6]);
-            character[182] = Itos(plyr.bankAccountBalances[7]);
-            character[183] = Itos(plyr.bankAccountBalances[8]);
+            character[175] = plyr.bankAccountBalances[0].ToString();
+            character[176] = plyr.bankAccountBalances[1].ToString();
+            character[177] = plyr.bankAccountBalances[2].ToString();
+            character[178] = plyr.bankAccountBalances[3].ToString();
+            character[179] = plyr.bankAccountBalances[4].ToString();
+            character[180] = plyr.bankAccountBalances[5].ToString();
+            character[181] = plyr.bankAccountBalances[6].ToString();
+            character[182] = plyr.bankAccountBalances[7].ToString();
+            character[183] = plyr.bankAccountBalances[8].ToString();
 
-            character[184] = Itos(plyr.clothing[0]);
-            character[185] = Itos(plyr.clothing[1]);
-            character[186] = Itos(plyr.clothing[2]);
-            character[187] = Itos(plyr.clothing[3]);
+            character[184] = plyr.clothing[0].ToString();
+            character[185] = plyr.clothing[1].ToString();
+            character[186] = plyr.clothing[2].ToString();
+            character[187] = plyr.clothing[3].ToString();
 
-            character[188] = Itos(plyr.goblinsVisited);
-            character[189] = Itos(plyr.goblinsChallenged);
-            character[190] = Itos(plyr.goblinsDefeated);
-            character[191] = Itos(plyr.goblinsCombat);
-            character[192] = Itos(plyr.goblinsReforged);
-            character[193] = Itos(plyr.trollsVisited);
-            character[194] = Itos(plyr.trollsChallenged);
-            character[195] = Itos(plyr.trollsDefeated);
-            character[196] = Itos(plyr.trollsCombat);
-            character[197] = Itos(plyr.trollsReforged);
+            character[188] = plyr.goblinsVisited.ToString();
+            character[189] = plyr.goblinsChallenged.ToString();
+            character[190] = plyr.goblinsDefeated.ToString();
+            character[191] = plyr.goblinsCombat.ToString();
+            character[192] = plyr.goblinsReforged.ToString();
+            character[193] = plyr.trollsVisited.ToString();
+            character[194] = plyr.trollsChallenged.ToString();
+            character[195] = plyr.trollsDefeated.ToString();
+            character[196] = plyr.trollsCombat.ToString();
+            character[197] = plyr.trollsReforged.ToString();
 
-            character[198] = Itos(plyr.oracleReturnTomorrow);
-            character[199] = Itos(plyr.oracleDay);
-            character[200] = Itos(plyr.oracleMonth);
-            character[201] = Itos(plyr.oracleYear);
-            character[202] = Itos(plyr.oracleQuestNo);
-            character[203] = Itos(plyr.healerDays[0]);
-            character[204] = Itos(plyr.healerDays[1]);
-            character[205] = Itos(plyr.healerHours[0]);
-            character[206] = Itos(plyr.healerHours[1]);
-            character[207] = Itos(plyr.healerMinutes[0]);
-            character[208] = Itos(plyr.healerMinutes[1]);
-            character[209] = Itos(plyr.treasureFinding);
-            character[210] = Itos(plyr.invisibility);
-            character[211] = Itos(plyr.diseases[0]);
-            character[212] = Itos(plyr.diseases[1]);
-            character[213] = Itos(plyr.diseases[2]);
-            character[214] = Itos(plyr.diseases[3]);
-            character[215] = Itos(plyr.poison[0]);
-            character[216] = Itos(plyr.poison[1]);
-            character[217] = Itos(plyr.poison[2]);
-            character[218] = Itos(plyr.poison[3]);
-            character[219] = Itos(plyr.delusion);
+            character[198] = plyr.oracleReturnTomorrow.ToString();
+            character[199] = plyr.oracleDay.ToString();
+            character[200] = plyr.oracleMonth.ToString();
+            character[201] = plyr.oracleYear.ToString();
+            character[202] = plyr.oracleQuestNo.ToString();
+            character[203] = plyr.healerDays[0].ToString();
+            character[204] = plyr.healerDays[1].ToString();
+            character[205] = plyr.healerHours[0].ToString();
+            character[206] = plyr.healerHours[1].ToString();
+            character[207] = plyr.healerMinutes[0].ToString();
+            character[208] = plyr.healerMinutes[1].ToString();
+            character[209] = plyr.treasureFinding.ToString();
+            character[210] = plyr.invisibility.ToString();
+            character[211] = plyr.diseases[0].ToString();
+            character[212] = plyr.diseases[1].ToString();
+            character[213] = plyr.diseases[2].ToString();
+            character[214] = plyr.diseases[3].ToString();
+            character[215] = plyr.poison[0].ToString();
+            character[216] = plyr.poison[1].ToString();
+            character[217] = plyr.poison[2].ToString();
+            character[218] = plyr.poison[3].ToString();
+            character[219] = plyr.delusion.ToString();
 
             for (var y = 0; y < 9; ++y)
-                character[220 + y] = Itos(plyr.invulnerability[y]);
-            character[229] = Itos(plyr.noticeability);
-            character[230] = Itos(plyr.protection1);
-            character[231] = Itos(plyr.protection2);
+                character[220 + y] = plyr.invulnerability[y].ToString();
+            character[229] = plyr.noticeability.ToString();
+            character[230] = plyr.protection1.ToString();
+            character[231] = plyr.protection2.ToString();
 
-            character[232] = Itos(plyr.forgeDays);
-            character[233] = Itos(plyr.forgeType);
-            character[234] = Itos(plyr.forgeBonus);
+            character[232] = plyr.forgeDays.ToString();
+            character[233] = plyr.forgeType.ToString();
+            character[234] = plyr.forgeBonus.ToString();
             character[235] = plyr.forgeName;
-            character[236] = Itos(plyr.stolenFromVault);
+            character[236] = plyr.stolenFromVault.ToString();
 
             character[399] = "Line 400: Item Buffer follows";
 
@@ -674,36 +642,36 @@ namespace P3Net.Arx
             var saveGameIndex = 400; // start location for object buffer items
             for (var z = 0; z < itemBufferSize; ++z)
             {
-                character[saveGameIndex] = Itos(itemBuffer[z].hp);
-                character[saveGameIndex + 1] = Itos(itemBuffer[z].index);
-                character[saveGameIndex + 2] = Itos(itemBuffer[z].level);
-                character[saveGameIndex + 3] = Itos(itemBuffer[z].location);
-                character[saveGameIndex + 4] = Itos(itemBuffer[z].type);
-                character[saveGameIndex + 5] = Itos(itemBuffer[z].x);
-                character[saveGameIndex + 6] = Itos(itemBuffer[z].y);
+                character[saveGameIndex] = itemBuffer[z].hp.ToString();
+                character[saveGameIndex + 1] = itemBuffer[z].index.ToString();
+                character[saveGameIndex + 2] = itemBuffer[z].level.ToString();
+                character[saveGameIndex + 3] = itemBuffer[z].location.ToString();
+                character[saveGameIndex + 4] = itemBuffer[z].type.ToString();
+                character[saveGameIndex + 5] = itemBuffer[z].x.ToString();
+                character[saveGameIndex + 6] = itemBuffer[z].y.ToString();
 
                 character[saveGameIndex + 7] = itemBuffer[z].name;
-                character[saveGameIndex + 8] = Itos(itemBuffer[z].maxHP);
-                character[saveGameIndex + 9] = Itos(itemBuffer[z].flags);
-                character[saveGameIndex + 10] = Itos(itemBuffer[z].minStrength);
-                character[saveGameIndex + 11] = Itos(itemBuffer[z].minDexterity);
-                character[saveGameIndex + 12] = Itos(itemBuffer[z].useStrength);
-                character[saveGameIndex + 13] = Itos(itemBuffer[z].blunt);
-                character[saveGameIndex + 14] = Itos(itemBuffer[z].sharp);
-                character[saveGameIndex + 15] = Itos(itemBuffer[z].earth);
-                character[saveGameIndex + 16] = Itos(itemBuffer[z].air);
-                character[saveGameIndex + 17] = Itos(itemBuffer[z].fire);
-                character[saveGameIndex + 18] = Itos(itemBuffer[z].water);
-                character[saveGameIndex + 19] = Itos(itemBuffer[z].power);
-                character[saveGameIndex + 20] = Itos(itemBuffer[z].magic); // mental
-                character[saveGameIndex + 21] = Itos(itemBuffer[z].good); // cleric
-                character[saveGameIndex + 22] = Itos(itemBuffer[z].evil);
-                character[saveGameIndex + 23] = Itos(itemBuffer[z].cold);
-                character[saveGameIndex + 24] = Itos(itemBuffer[z].weight);
-                character[saveGameIndex + 25] = Itos(itemBuffer[z].alignment);
-                character[saveGameIndex + 26] = Itos(itemBuffer[z].melee);
-                character[saveGameIndex + 27] = Itos(itemBuffer[z].ammo);
-                character[saveGameIndex + 28] = Itos(itemBuffer[z].parry);
+                character[saveGameIndex + 8] = itemBuffer[z].maxHP.ToString();
+                character[saveGameIndex + 9] = itemBuffer[z].flags.ToString();
+                character[saveGameIndex + 10] = itemBuffer[z].minStrength.ToString();
+                character[saveGameIndex + 11] = itemBuffer[z].minDexterity.ToString();
+                character[saveGameIndex + 12] = itemBuffer[z].useStrength.ToString();
+                character[saveGameIndex + 13] = itemBuffer[z].blunt.ToString();
+                character[saveGameIndex + 14] = itemBuffer[z].sharp.ToString();
+                character[saveGameIndex + 15] = itemBuffer[z].earth.ToString();
+                character[saveGameIndex + 16] = itemBuffer[z].air.ToString();
+                character[saveGameIndex + 17] = itemBuffer[z].fire.ToString();
+                character[saveGameIndex + 18] = itemBuffer[z].water.ToString();
+                character[saveGameIndex + 19] = itemBuffer[z].power.ToString();
+                character[saveGameIndex + 20] = itemBuffer[z].magic.ToString(); // mental
+                character[saveGameIndex + 21] = itemBuffer[z].good.ToString(); // cleric
+                character[saveGameIndex + 22] = itemBuffer[z].evil.ToString();
+                character[saveGameIndex + 23] = itemBuffer[z].cold.ToString();
+                character[saveGameIndex + 24] = itemBuffer[z].weight.ToString();
+                character[saveGameIndex + 25] = itemBuffer[z].alignment.ToString();
+                character[saveGameIndex + 26] = itemBuffer[z].melee.ToString();
+                character[saveGameIndex + 27] = itemBuffer[z].ammo.ToString();
+                character[saveGameIndex + 28] = itemBuffer[z].parry.ToString();
 
                 saveGameIndex = saveGameIndex + 28;
             }
@@ -712,8 +680,8 @@ namespace P3Net.Arx
             saveGameIndex = 7400; // start location for spell buffer items (70 bytes)
             for (var z = 0; z < 35; ++z)
             {
-                character[saveGameIndex] = Itos(spellBuffer[z].no);
-                character[saveGameIndex + 1] = Itos(spellBuffer[z].percentage);
+                character[saveGameIndex] = spellBuffer[z].no.ToString();
+                character[saveGameIndex + 1] = spellBuffer[z].percentage.ToString();
                 saveGameIndex = saveGameIndex + 2;
             }
 
@@ -721,10 +689,10 @@ namespace P3Net.Arx
             saveGameIndex = 7470; // start location for effect buffer items (200 bytes)
             for (var z = 0; z < 50; ++z)
             {
-                character[saveGameIndex] = Itos(effectBuffer[z].effect);
-                character[saveGameIndex + 1] = Itos(effectBuffer[z].negativeValue);
-                character[saveGameIndex + 2] = Itos(effectBuffer[z].positiveValue);
-                character[saveGameIndex + 3] = Itos(effectBuffer[z].duration);
+                character[saveGameIndex] = effectBuffer[z].effect.ToString();
+                character[saveGameIndex + 1] = effectBuffer[z].negativeValue.ToString();
+                character[saveGameIndex + 2] = effectBuffer[z].positiveValue.ToString();
+                character[saveGameIndex + 3] = effectBuffer[z].duration.ToString();
                 saveGameIndex = saveGameIndex + 4;
             }
 
@@ -733,7 +701,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 10; ++x)
                 {
-                    character[saveGameIndex] = Itos(smithyDailyWares[z][x]);
+                    character[saveGameIndex] = smithyDailyWares[z, x].ToString();
                     saveGameIndex++;
                 }
             }
@@ -743,7 +711,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 6; ++x)
                 {
-                    character[saveGameIndex] = Itos(tavernDailyFoods[z][x]);
+                    character[saveGameIndex] = tavernDailyFoods[z, x].ToString();
                     saveGameIndex++;
                 }
             }
@@ -753,7 +721,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 6; ++x)
                 {
-                    character[saveGameIndex] = Itos(tavernDailyDrinks[z][x]);
+                    character[saveGameIndex] = tavernDailyDrinks[z, x].ToString();
                     saveGameIndex++;
                 }
             }
@@ -763,7 +731,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 12; ++x)
                 {
-                    character[saveGameIndex] = Itos(shopDailyWares[z][x]);
+                    character[saveGameIndex] = shopDailyWares[z, x].ToString();
                     saveGameIndex++;
                 }
             }
@@ -774,7 +742,7 @@ namespace P3Net.Arx
             {
                 for (var x = 0; x < 4096; ++x)
                 {
-                    character[saveGameIndex] = Itos(autoMapExplored[z][x]);
+                    character[saveGameIndex] = autoMapExplored[z, x].ToString();
                     saveGameIndex++;
                 }
             }
@@ -783,26 +751,13 @@ namespace P3Net.Arx
             character[28539] = Ftos(plyr.z_offset);
             character[28540] = "Release 0.80";
 
-            var filename = $"data/saves/save{Itos(saveSlot)}.txt";
-            outdata.open(filename); // opens the file
-            if (outdata == null)
-                cerr << "Error: character file could not be saved" << "\n";
-
-            for (var y = 0; y < saveGameSize; ++y)
-                outdata << character[y] << "\n";
-
-            outdata.close();
+            File.WriteAllLines($"data/saves/save{saveSlot}.txt", character);            
             return true;
         }
 
         public static void UpdateSaveGameDescriptions ()
         {
-            var outdata = new ofstream(); // outdata is like cin
-            outdata.open("data/saves/saveGames.txt"); // opens the file
-
-            for (var y = 0; y < 10; ++y)
-                outdata << saveGameDescriptions[y] << "\n";
-            outdata.close();
+            File.WriteAllLines("data/saves/saveGames.txt", saveGameDescriptions);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace P3Net.Arx
         {
             var staircaseMenu = 1; // high level menu
             
-            plyr.status = 2; //shopping
+            plyr.status = GameStates.Module; //shopping
 
             var stairwayUp = true;
             if ((plyr.x == 50) && (plyr.y == 3) && (plyr.map == 0))
@@ -69,7 +69,7 @@ namespace P3Net.Arx
                     {
                         ;
                         MoveMapLevel();
-                        plyr.status = 1;
+                        plyr.status = GameStates.Explore;
                         staircaseMenu = 0;
                     }
                     ;

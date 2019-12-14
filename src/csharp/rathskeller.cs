@@ -9,6 +9,7 @@
  */
 using System;
 using System.Linq;
+using SFML.Audio;
 
 namespace P3Net.Arx
 {
@@ -64,7 +65,7 @@ namespace P3Net.Arx
         public static string eatingDescription = "";
         public static string greetingText;
 
-        public static int menu;
+        public static RathSkellerMenus menu;
         public static string npcDescription;
 
         public static string[] npcDescriptions =
@@ -294,7 +295,7 @@ namespace P3Net.Arx
             { basePrice = 0x02, hungerValue = 0x06, thirstValue = 0x0C, alcoholValue = 0x00, name = "Orange Juice" }
         };
 
-        public static sf.Music rathskellerMusic = new sf.Music();
+        public static Music rathskellerMusic;
         public static int roundCost;
         public static int stillEating;
         public static int value;
@@ -334,7 +335,7 @@ namespace P3Net.Arx
                     if (!rathskellerFoodDrinkCheck[itemNo])
                     {
                         menuItems[waresNo].menuName = rathskellerItems[itemNo].name; // its not a duplicate
-                        var str = $"{Itos((rathskellerItems[itemNo].basePrice) * 2)}           "; // its not a duplicate
+                        var str = $"{rathskellerItems[itemNo].basePrice * 2}           "; // its not a duplicate
                         str = str.Remove(3, 7).Insert(3, "silvers");
                         menuItems[waresNo].menuPrice = str;
                         menuItems[waresNo].objRef = itemNo; // its not a duplicate
@@ -347,7 +348,7 @@ namespace P3Net.Arx
 
         public static void CheckForNPC ()
         {
-            if ((npcNotPresent) && (menu == (int)RathSkellerMenus.MenuSeated))
+            if ((npcNotPresent) && (menu == RathSkellerMenus.MenuSeated))
             {
                 var npcCheck = Randn(1, 1000);
                 if (npcCheck == 1)
@@ -357,7 +358,7 @@ namespace P3Net.Arx
                     npcRumour = npcRumours[Randn(1, 98)];
                     npcDrinkCost = Randn(1, 8);
                     npcMealCost = Randn(1, 18);
-                    menu = (int)RathSkellerMenus.MenuNpcEnters;
+                    menu = RathSkellerMenus.MenuNpcEnters;
                     npcNotPresent = false;
                 }
             }
@@ -374,15 +375,15 @@ namespace P3Net.Arx
                 {
                     DeductCoins(0, itemCost, 0);
                     ConsumeFoodDrinkItem(foodDrinkChoice);
-                    menu = (int)RathSkellerMenus.MenuOrderAnythingElse;
+                    menu = RathSkellerMenus.MenuOrderAnythingElse;
                 } else
                 {
                     plyr.rathskellerFriendship--;
-                    menu = (int)RathSkellerMenus.MenuNoFunds;
+                    menu = RathSkellerMenus.MenuNoFunds;
                 }
             } else
             {
-                menu = (int)RathSkellerMenus.MenuSeated;
+                menu = RathSkellerMenus.MenuSeated;
             }
         }
 
@@ -409,16 +410,14 @@ namespace P3Net.Arx
 
         public static void DisplayModuleText ()
         {
-            if (menu == (int)RathSkellerMenus.MenuMain)
+            if (menu == RathSkellerMenus.MenuMain)
             {
                 CyText(0, greetingText);
                 CyText(2, "Where dost thou wish to sit?");
                 BText(15, 4, "(1) At the bar");
                 BText(15, 5, "(2) At a table");
                 BText(15, 7, "(0) Leave");
-            }
-
-            if (menu == (int)RathSkellerMenus.MenuSeated)
+            } else if (menu == RathSkellerMenus.MenuSeated)
             {
                 var str = bar ? "Thou art sitting at the bar." : "Thou art sitting at a table.";
                 if (stillEating > 0)
@@ -428,65 +427,49 @@ namespace P3Net.Arx
                 BText(6, 4, "(1) Order something");
                 BText(6, 5, "(2) Buy a round for the house");
                 BText(6, 7, "(0) Leave");
-            }
-
-            if (menu == (int)RathSkellerMenus.MenuLeaveATip)
+            } else if (menu == RathSkellerMenus.MenuLeaveATip)
             {
                 BText(11, 2, "(1) Say goodbye");
                 BText(11, 4, "(2) Leave a tip");
                 BText(11, 7, "(0) Leave quietly");
-            }
-
-            if (menu == (int)RathSkellerMenus.MenuTransact)
+            } else if (menu == RathSkellerMenus.MenuTransact)
             {
                 CyText(0, "Dost thou wish to:");
                 BText(10, 2, "(1) Buy him a drink");
                 BText(10, 3, "(2) Buy him a meal");
                 BText(10, 4, "(3) Transact");
                 BText(10, 6, "(0) Ignore him");
-            }
-
-            if (menu == (int)RathSkellerMenus.MenuRound)
+            } else if (menu == RathSkellerMenus.MenuRound)
             {
                 CyText(1, "A round for the house will cost:");
-                CyText(3, $"{Itos(roundCost)} silvers.");
+                CyText(3, $"{roundCost} silvers.");
                 CyText(6, "Dost thou still wish to buy? (Y or N)");
-            }
-            if (menu == (int)RathSkellerMenus.MenuNpcDrink)
+            } else if (menu == RathSkellerMenus.MenuNpcDrink)
             {
-                CyText(1, $"The drink will cost you {Itos(npcDrinkCost)} silvers.");
+                CyText(1, $"The drink will cost you {npcDrinkCost} silvers.");
                 CyText(3, "OK (Y or N)");
-            }
-            if (menu == (int)RathSkellerMenus.MenuNpcMeal)
+            } else if (menu == RathSkellerMenus.MenuNpcMeal)
             {
-                CyText(1, $"The meal will cost you {Itos(npcMealCost)} silvers.");
+                CyText(1, $"The meal will cost you {npcMealCost} silvers.");
                 CyText(3, "OK (Y or N)");
-            }
-            if (menu == (int)RathSkellerMenus.MenuNpcEnters)
+            } else if (menu == RathSkellerMenus.MenuNpcEnters)
                 CyText(1, npcDescription);
-            if (menu == (int)RathSkellerMenus.MenuNpcOpener)
+            else if (menu == RathSkellerMenus.MenuNpcOpener)
                 CyText(1, npcOpener);
-            if (menu == (int)RathSkellerMenus.MenuNpcRumour)
+            else if (menu == RathSkellerMenus.MenuNpcRumour)
                 CyText(1, npcRumour);
-
-            if (menu == (int)RathSkellerMenus.MenuThanks)
+            else if (menu == RathSkellerMenus.MenuThanks)
                 CyText(1, "Thank you!  Please come again.");
-            if (menu == (int)RathSkellerMenus.MenuRightAway)
+            else if (menu == RathSkellerMenus.MenuRightAway)
                 CyText(1, "Coming right up!");
-            if (menu == (int)RathSkellerMenus.MenuNoFunds)
+            else if (menu == RathSkellerMenus.MenuNoFunds)
                 CyText(2, "I'm sorry, you have not the funds.");
-            if (menu == (int)RathSkellerMenus.MenuNoTippingFunds)
+            else if (menu == RathSkellerMenus.MenuNoTippingFunds)
                 CyText(1, "Your generosity is greatly appreciated.@@However, your humor is not.");
-            if (menu == (int)RathSkellerMenus.MenuOrderAnythingElse)
+            else if (menu == RathSkellerMenus.MenuOrderAnythingElse)
                 CyText(1, "Coming up!@@Is there anything else@@I can get for you? (Y or N)");
-            if (menu == (int)RathSkellerMenus.MenuLeavingAlready)
-                CyText(1, "Leaving already?  You haven't@@finished your meal.  I'll wrap it@@in a packet for you.");
-            if (menu == (int)RathSkellerMenus.MenuGetTipValue)
-            {
-            }
-            if (menu == (int)RathSkellerMenus.MenuGetItemChoice)
-            {
-            }
+            else if (menu == RathSkellerMenus.MenuLeavingAlready)
+                CyText(1, "Leaving already?  You haven't@@finished your meal.  I'll wrap it@@in a packet for you.");            
         }
 
         public static void LeaveTip ()
@@ -495,13 +478,13 @@ namespace P3Net.Arx
             if (CheckCoins(0, tip, 0))
             {
                 DeductCoins(0, tip, 0);
-                menu = (int)RathSkellerMenus.MenuThanks;
+                menu = RathSkellerMenus.MenuThanks;
                 plyr.rathskellerFriendship++;
                 plyr.rathskellerFriendship++;
             } else
             {
                 plyr.rathskellerFriendship--;
-                menu = (int)RathSkellerMenus.MenuNoTippingFunds;
+                menu = RathSkellerMenus.MenuNoTippingFunds;
             }
         }
 
@@ -511,10 +494,10 @@ namespace P3Net.Arx
             {
                 var randomSong = Randn(0, 2);
                 if (randomSong == 1)
-                    rathskellerMusic.openFromFile("data/audio/rathskeller.ogg");
+                    rathskellerMusic = new Music("data/audio/rathskeller.ogg");
                 else
-                    rathskellerMusic.openFromFile("data/audio/rathskeller2.ogg");
-                rathskellerMusic.play();
+                    rathskellerMusic = new Music("data/audio/rathskeller2.ogg");
+                rathskellerMusic.Play();
                 rathMusicPlaying = true;
             }
         }
@@ -527,52 +510,50 @@ namespace P3Net.Arx
             {
                 case RathSkellerMenus.MenuMain:
                 if (key == "1")
-                    menu = (int)RathSkellerMenus.MenuSeated;
-                if (key == "2")
+                    menu = RathSkellerMenus.MenuSeated;
+                else if (key == "2")
                 {
                     bar = false;
-                    menu = (int)RathSkellerMenus.MenuSeated;
-                }
-                if (key == "0")
-                    menu = (int)RathSkellerMenus.MenuLeft;
-                if (key == "down")
-                    menu = (int)RathSkellerMenus.MenuLeft;
+                    menu = RathSkellerMenus.MenuSeated;
+                } else if (key == "0")
+                    menu = RathSkellerMenus.MenuLeft;
+                else if (key == "down")
+                    menu = RathSkellerMenus.MenuLeft;
                 break;
                 case RathSkellerMenus.MenuSeated:
                 if (key == "1")
-                    menu = (int)RathSkellerMenus.MenuGetItemChoice;
-                if (key == "2")
-                    menu = (int)RathSkellerMenus.MenuRound;
-                if (key == "0")
+                    menu = RathSkellerMenus.MenuGetItemChoice;
+                else if (key == "2")
+                    menu = RathSkellerMenus.MenuRound;
+                else if (key == "0")
                 {
                     if (stillEating > 0)
-                        menu = (int)RathSkellerMenus.MenuLeavingAlready;
+                        menu = RathSkellerMenus.MenuLeavingAlready;
                     else
-                        menu = (int)RathSkellerMenus.MenuLeaveATip;
+                        menu = RathSkellerMenus.MenuLeaveATip;
                 }
                 break;
                 case RathSkellerMenus.MenuLeaveATip:
                 if (key == "1")
                 {
-                    menu = (int)RathSkellerMenus.MenuThanks;
+                    menu = RathSkellerMenus.MenuThanks;
                     plyr.rathskellerFriendship++;
-                }
-                if (key == "2")
-                    menu = (int)RathSkellerMenus.MenuGetTipValue;
-                if (key == "0")
-                    menu = (int)RathSkellerMenus.MenuLeft;
+                } else if (key == "2")
+                    menu = RathSkellerMenus.MenuGetTipValue;
+                else if (key == "0")
+                    menu = RathSkellerMenus.MenuLeft;
                 break;
                 case RathSkellerMenus.MenuTransact:
                 if (key == "1")
-                    menu = (int)RathSkellerMenus.MenuNpcDrink;
-                if (key == "2")
-                    menu = (int)RathSkellerMenus.MenuNpcMeal;
-                if (key == "3")
-                    menu = (int)RathSkellerMenus.MenuNpcOpener;
-                if (key == "0")
+                    menu = RathSkellerMenus.MenuNpcDrink;
+                else if (key == "2")
+                    menu = RathSkellerMenus.MenuNpcMeal;
+                else if (key == "3")
+                    menu = RathSkellerMenus.MenuNpcOpener;
+                else if (key == "0")
                 {
                     npcNotPresent = true;
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                    menu = RathSkellerMenus.MenuSeated;
                 }
                 break;
                 case RathSkellerMenus.MenuRound:
@@ -581,32 +562,31 @@ namespace P3Net.Arx
                     if (CheckCoins(0, roundCost, 0))
                     {
                         DeductCoins(0, roundCost, 0);
-                        menu = (int)RathSkellerMenus.MenuSeated;
+                        menu = RathSkellerMenus.MenuSeated;
                         plyr.rathskellerFriendship++;
                     } else
                     {
                         plyr.rathskellerFriendship--;
-                        menu = (int)RathSkellerMenus.MenuNoFunds;
+                        menu = RathSkellerMenus.MenuNoFunds;
                     }
-                }
-                if (key == "N")
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                } else if (key == "N")
+                    menu = RathSkellerMenus.MenuSeated;
                 break;
                 case RathSkellerMenus.MenuNoFunds:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                    menu = RathSkellerMenus.MenuSeated;
                 break;
                 case RathSkellerMenus.MenuThanks:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuLeft;
+                    menu = RathSkellerMenus.MenuLeft;
                 break;
                 case RathSkellerMenus.MenuRightAway:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                    menu = RathSkellerMenus.MenuSeated;
                 break;
                 case RathSkellerMenus.MenuNoTippingFunds:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuGetTipValue;
+                    menu = RathSkellerMenus.MenuGetTipValue;
                 break;
                 case RathSkellerMenus.MenuGetTipValue:
                 LeaveTip();
@@ -616,13 +596,13 @@ namespace P3Net.Arx
                 break;
                 case RathSkellerMenus.MenuOrderAnythingElse:
                 if (key == "Y")
-                    menu = (int)RathSkellerMenus.MenuGetItemChoice;
-                if (key == "N")
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                    menu = RathSkellerMenus.MenuGetItemChoice;
+                else if (key == "N")
+                    menu = RathSkellerMenus.MenuSeated;
                 break;
                 case RathSkellerMenus.MenuNpcEnters:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuTransact;
+                    menu = RathSkellerMenus.MenuTransact;
                 break;
                 case RathSkellerMenus.MenuNpcDrink:
                 if (key == "Y")
@@ -630,14 +610,13 @@ namespace P3Net.Arx
                     if (CheckCoins(0, npcDrinkCost, 0))
                     {
                         DeductCoins(0, npcDrinkCost, 0);
-                        menu = (int)RathSkellerMenus.MenuNpcRumour;
+                        menu = RathSkellerMenus.MenuNpcRumour;
                     } else
                     {
-                        menu = (int)RathSkellerMenus.MenuNoFunds;
+                        menu = RathSkellerMenus.MenuNoFunds;
                     }
-                }
-                if (key == "N")
-                    menu = (int)RathSkellerMenus.MenuTransact;
+                } else if (key == "N")
+                    menu = RathSkellerMenus.MenuTransact;
                 break;
                 case RathSkellerMenus.MenuNpcMeal:
                 if (key == "Y")
@@ -645,28 +624,27 @@ namespace P3Net.Arx
                     if (CheckCoins(0, npcMealCost, 0))
                     {
                         DeductCoins(0, npcMealCost, 0);
-                        menu = (int)RathSkellerMenus.MenuNpcRumour;
+                        menu = RathSkellerMenus.MenuNpcRumour;
                     } else
                     {
-                        menu = (int)RathSkellerMenus.MenuNoFunds;
+                        menu = RathSkellerMenus.MenuNoFunds;
                     }
-                }
-                if (key == "N")
-                    menu = (int)RathSkellerMenus.MenuTransact;
+                } else if (key == "N")
+                    menu = RathSkellerMenus.MenuTransact;
                 break;
                 case RathSkellerMenus.MenuNpcRumour:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuSeated;
+                    menu = RathSkellerMenus.MenuSeated;
                 break;
                 case RathSkellerMenus.MenuNpcOpener:
                 if (key != "")
-                    menu = (int)RathSkellerMenus.MenuTransact;
+                    menu = RathSkellerMenus.MenuTransact;
                 break;
                 case RathSkellerMenus.MenuLeavingAlready:
                 if (key != "")
                 {
                     plyr.food++;
-                    menu = (int)RathSkellerMenus.MenuLeaveATip;
+                    menu = RathSkellerMenus.MenuLeaveATip;
                 }
                 break;
             }
@@ -674,7 +652,7 @@ namespace P3Net.Arx
 
         public static void RunRathskeller ()
         {
-            menu = (int)RathSkellerMenus.MenuMain;
+            menu = RathSkellerMenus.MenuMain;
             LoadShopImage(2);
             stillEating = 0;
             bar = true;
@@ -697,7 +675,7 @@ namespace P3Net.Arx
                 ProcessMenuInput();
             }
 
-            rathskellerMusic.stop();
+            rathskellerMusic.Stop();
         }
 
         public static void SetGreetingText ()

@@ -9,7 +9,11 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -18,178 +22,183 @@ namespace P3Net.Arx
         public static void Draw3DView ()
         {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            App.pushGLStates();
+            App.PushGLStates();
             Draw3DBackground(); // Draw SFML 2D item
-            App.popGLStates();
+            App.PopGLStates();
             BuildLevelView(); // Draw the OpenGL 3D corridor and room view
-            App.pushGLStates();
+            App.PushGLStates();
         }
 
         public static void Draw3DBackground ()
         {
-            var Background = new sf.Sprite();
-            Background.setScale(1.0, 1.0);
+            var Background = new Sprite();
+            Background.Scale = new Vector2f(1, 1);
 
             if (graphicMode == 0) // Atari 8bit original textures and size
             {
                 var scaleX = viewWidth / 360F;
                 var scaleY = viewHeight / 190F;
-                Background.setScale(scaleX, scaleY);
-                Background.setPosition(viewPortX, viewPortY);
+                Background.Scale = new Vector2f(scaleX, scaleY);
+                Background.Position = new Vector2f(viewPortX, viewPortY);
             }
             if (graphicMode == 1) // New textures and original size
             {
                 var scaleX = viewWidth / 1024F;
                 var scaleY = (viewHeight / 2) / 384F;
-                Background.setScale(scaleX, scaleY);
-                Background.setPosition(viewPortX, viewPortY);
+                Background.Scale = new Vector2f(scaleX, scaleY);
+                Background.Position = new Vector2f(viewPortX, viewPortY);
             }
             if (graphicMode == 2) // New textures and large size
             {
-                Background.setPosition(0, 0); // Assumes large 3D view
+                Background.Position = new Vector2f(0, 0); // Assumes large 3D view
                 var scaleX = viewWidth / 1024F;
                 var scaleY = (viewHeight / 2) / 384F;
-                Background.setScale(scaleX, scaleY);
-                Background.setPosition(viewPortX, (viewPortY));
+                Background.Scale = new Vector2f(scaleX, scaleY);
+                Background.Position = new Vector2f(viewPortX, (viewPortY));
             }
 
-            if (plyr.scenario == 2)
-                Background.setTexture(background[44]);
+            //TODO: Encapsulate this
+            var texture = (plyr.scenario == 2) ? background[44] : null;
 
-            if (plyr.zoneSet == 0)
-                Background.setTexture(background[15]);
-            if (plyr.zoneSet == 1)
-                Background.setTexture(background[10]);
-            if (plyr.zoneSet == 2)
-                Background.setTexture(background[8]);
-            if (plyr.zoneSet == 5)
-                Background.setTexture(background[46]);
-            if (plyr.zoneSet == 4)
-                Background.setTexture(background[48]);
-            if (plyr.zoneSet == 11)
-                Background.setTexture(background[12]);
-            if (plyr.zoneSet == 14)
-                Background.setTexture(background[15]);
-            if (plyr.zoneSet == 16)
-                Background.setTexture(background[16]);
-            if (plyr.zoneSet == 18)
-                Background.setTexture(background[17]);
-            if (plyr.zoneSet == 21)
-                Background.setTexture(background[44]);
-            if (plyr.zoneSet == 22)
-                Background.setTexture(background[44]);
-            if (plyr.zoneSet == 23)
-                Background.setTexture(background[45]);
-            if (plyr.zoneSet == 24)
-                Background.setTexture(background[8]);
-            if (plyr.zoneSet == 25)
-                Background.setTexture(background[15]);
-            if (plyr.zoneSet == 26)
-                Background.setTexture(background[12]);
-            if (plyr.zoneSet == 27)
-                Background.setTexture(background[16]);
+            switch (plyr.zoneSet)
+            {
+                case 0: texture = background[15]; break;
+                case 1: texture = background[10]; break;
+                case 2: texture = background[8]; break;
+                case 4: texture = background[48]; break;
+                case 5: texture = background[46]; break;
+                case 11: texture = background[12]; break;
+                case 14: texture = background[15]; break;
+                case 16: texture = background[16]; break;
+                case 18: texture = background[17]; break;
+                case 21: texture = background[44]; break;
+                case 22: texture = background[44]; break;
+                case 23: texture = background[45]; break;
+                case 24: texture = background[8]; break;
+                case 25: texture = background[15]; break;
+                case 26: texture = background[12]; break;
+                case 27: texture = background[16]; break;
+            };            
 
             if ((plyr.scenario == 0) && (plyr.zone == 99))
             {
-
-                if (plyr.timeOfDay == 1) // night
+                switch (plyr.timeOfDay)
                 {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[3]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[2]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[0]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[1]);
-                }
+                    case 0:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West:
+                            texture = background[7];
+                            break;
+                            case Directions.North:
+                            texture = background[6];
+                            break;
+                            case Directions.East:
+                            texture = background[4];
+                            break;
+                            case Directions.South:
+                            texture = background[5];
+                            break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 2) // sunrise1
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[21]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[20]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[18]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[19]);
-                }
+                    //Night
+                    case 1:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[3]; break;
+                            case Directions.North: texture = background[2]; break;
+                            case Directions.East: texture = background[0]; break;
+                            case Directions.South: texture = background[1]; break;
+                        };
+                        break;
+                    };
 
+                    //Sunrise1
+                    case 2:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[21]; break;
+                            case Directions.North: texture = background[20]; break;
+                            case Directions.East: texture = background[18]; break;
+                            case Directions.South: texture = background[19]; break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 3) // sunrise2
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[25]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[24]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[22]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[23]);
-                }
+                    //Sunrise2
+                    case 3:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[25]; break;
+                            case Directions.North: texture = background[24]; break;
+                            case Directions.East: texture = background[22]; break;
+                            case Directions.South: texture = background[23]; break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 4) // sunrise3
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[29]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[28]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[26]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[27]);
-                }
+                    //Sunrise3
+                    case 4:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[29]; break;
+                            case Directions.North: texture = background[28]; break;
+                            case Directions.East: texture = background[26]; break;
+                            case Directions.South: texture = background[27]; break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 5) // sunrise3
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[33]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[32]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[30]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[31]);
-                }
+                    //Sunrise3
+                    case 5:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[33]; break;
+                            case Directions.North: texture = background[32]; break;
+                            case Directions.East: texture = background[30]; break;
+                            case Directions.South: texture = background[31]; break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 6) // sunrise3
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[37]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[36]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[34]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[35]);
-                }
+                    //Sunrise3
+                    case 6:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[37]; break;
+                            case Directions.North: texture = background[36]; break;
+                            case Directions.East: texture = background[34]; break;
+                            case Directions.South: texture = background[35]; break;
+                        };
+                        break;
+                    };
 
-                if (plyr.timeOfDay == 7) // sunrise3
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[41]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[41]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[38]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[39]);
-                }
+                    //Sunrise3
+                    case 7:
+                    {
+                        switch (plyr.facing)
+                        {
+                            case Directions.West: texture = background[41]; break;
+                            case Directions.North: texture = background[41]; break;
+                            case Directions.East: texture = background[38]; break;
+                            case Directions.South: texture = background[39]; break;
+                        };
+                        break;
+                    };                    
+                };                          
+            };
 
-                if (plyr.timeOfDay == 0)
-                {
-                    if (plyr.facing == 1)
-                        Background.setTexture(background[7]);
-                    if (plyr.facing == 2)
-                        Background.setTexture(background[6]);
-                    if (plyr.facing == 3)
-                        Background.setTexture(background[4]);
-                    if (plyr.facing == 4)
-                        Background.setTexture(background[5]);
-                }
-            }
-            App.draw(Background);
+            Background.Texture = texture;
+            App.Draw(Background);
         }
 
         public static void CalculateWallPositions ( int c, int d )
@@ -199,22 +208,22 @@ namespace P3Net.Arx
             var y = 0;
             switch (plyr.facing)
             {
-                case 2: // north
+                case Directions.North:
                 x = (plyr.x - ((columns - 1) / 2)) + c; // total colums -1 / 2
                 y = ((plyr.y - (depth - 1)) + d); // actual depth
                 break;
 
-                case 1: // west
+                case Directions.West:
                 x = (plyr.x - (depth - 1)) + d;
                 y = (plyr.y + ((columns - 1) / 2)) - c;
                 break;
 
-                case 3: // east
+                case Directions.East:
                 x = (plyr.x + (depth - 1)) - d;
                 y = (plyr.y - ((columns - 1) / 2)) + c;
                 break;
 
-                case 4: // south
+                case Directions.South:
                 x = (plyr.x + ((columns - 1) / 2)) - c;
                 y = ((plyr.y + (depth - 1)) - d);
                 break;
@@ -280,14 +289,14 @@ namespace P3Net.Arx
 
             for (var d = 0; d < depth; d++)
             {
-                for (var c = rightmostColumn; c > (leftmostColumn - 1); c--) //  int c=leftmostColumn; c<rightmostColumn; c++
+                for (var c = rightmostColumn; c > (leftmostColumn - 1); c--) 
                     CalculateWallPositions(c, d);
             }
 
             // Draw front block of quads
-            var c = ((columns - 1) / 2); // This should be the central column 13 if columns = 25
+            var x = ((columns - 1) / 2); // This should be the central column 13 if columns = 25
             for (var d = 0; d < depth; d++)
-                CalculateWallPositions(c, d);
+                CalculateWallPositions(x, d);
         }
 
         public static void DrawCellWalls ( int c, int d, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
@@ -304,8 +313,6 @@ namespace P3Net.Arx
                 leftheight = 1;
                 rightheight = 1;
             }
-
-
 
             // Draw ceiling			
             if ((plyr.zone == 99) && (plyr.map == 1))
@@ -347,12 +354,7 @@ namespace P3Net.Arx
             if ((plyr.scenario == 0) && (plyr.floorTexture == 0) && (graphicMode == 0))
                 texture_no = 0;
             if (plyr.zone != 99)
-            {
-                if (plyr.floorTexture == 0)
-                    texture_no = zones[plyr.zoneSet].floor;
-                else
-                    texture_no = plyr.floorTexture;
-            }
+                texture_no = (plyr.floorTexture == 0) ? zones[plyr.zoneSet].floor : plyr.floorTexture;
 
             if (texture_no != 0) // 0 = no floor texture
             {
@@ -527,25 +529,20 @@ namespace P3Net.Arx
 
         public static void LoadTextureNames ()
         {
-            string filename;
             for (var i = 0; i < numberOfTextures; i++)
                 textureNames[i] = "";
-            if (graphicMode == 0)
-                filename = "data/map/textures.txt";
-            else
-                filename = "data/map/texturesUpdated.txt";
-            var instream = new ifstream();
-            string line;
-            instream.open(filename);
-
-            for (var i = 0; i < numberOfTextures; i++)
+            
+            var filename = graphicMode == 0 ? "data/map/textures.txt" : "data/map/texturesUpdated.txt";
+            
+            //TODO: Ignore fixed texture count - numberOfTextures
+            var lines = File.ReadAllLines(filename);
+            for (var i = 0; i < lines.Length; i++)
             {
-                getline(instream, line);
+                var line = lines[i];
                 var idx = line.IndexOf('=');
                 var text = line.Substring(idx + 2);
                 textureNames[i] = text;
-            }
-            instream.close();
+            };
         }
 
         public static void InitTextures ()
@@ -554,19 +551,16 @@ namespace P3Net.Arx
             // We could directly use a sf::Image as an OpenGL texture (with its Bind() member function),
             // but here we want more control on it (generate mipmaps, ...) so we create a new one
 
-            var Image = new sf.Image();
-            string tempfilename;
+            var imagePath = (graphicMode == 0) ? "data/images/textures_original/" : "data/images/textures_alternate/";
+
             glGenTextures(numberOfTextures, texture[0]); // problem line - don't include in loop. Always 0???
-            for (int i = 0; i < numberOfTextures; i++)
+            for (var i = 0; i < numberOfTextures; i++)
             {
                 var filename = textureNames[i];
-                if (graphicMode == 0)
-                    tempfilename = String.Format("{0}{1}.png", "data/images/textures_original/", filename);
-                else
-                    tempfilename = String.Format("{0}{1}.png", "data/images/textures_alternate/", filename);
-                Image.loadFromFile(tempfilename);
+
+                var img = new Image($"{imagePath}{filename}.png");
                 glBindTexture(GL_TEXTURE_2D, texture[i]);
-                gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, Image.getSize().x, Image.getSize().y, GL_RGBA, GL_UNSIGNED_BYTE, Image.getPixelsPtr());
+                gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, img.Size.X, img.Size.Y, GL_RGBA, GL_UNSIGNED_BYTE, img.Pixels);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)8.0f);
@@ -577,34 +571,29 @@ namespace P3Net.Arx
 
         public static void LoadBackgroundNames ()
         {
-            string filename;
-            for (int i = 0; i < numberOfBackgrounds; i++)
+            for (var i = 0; i < numberOfBackgrounds; i++)
                 backgroundNames[i] = "";
 
-            if (graphicMode == 0)
-                filename = "data/map/backgrounds.txt";
-            else
-                filename = "data/map/backgroundsUpdated.txt";
-            var instream = new ifstream();
-            string line;
-            instream.open(filename);
+            var filename = (graphicMode == 0) ? "data/map/backgrounds.txt" : "data/map/backgroundsUpdated.txt";
 
-            for (int i = 0; i < numberOfBackgrounds; i++)
+            //TODO: Ignoring # of backgrounds - numberOfBackgrounds
+            var lines = File.ReadAllLines(filename);            
+            for (var i = 0; i < lines.Length; i++)
             {
-                getline(instream, line);
+                var line = lines[i];
                 var idx = line.IndexOf('=');
                 var text = line.Substring(idx + 2);
+
                 backgroundNames[i] = text;
-                background[i].loadFromFile("data/images/backgrounds/" + text + ".png");
-            }
-            instream.close();
+                background[i] = new Texture("data/images/backgrounds/" + text + ".png");
+            };
         }
 
         // Storage for textures
         public static readonly int numberOfTextures = 68;
         public static readonly int numberOfBackgrounds = 49; //was 46
         public static GLuint[] texture = Arrays.InitializeWithDefaultInstances<GLuint>(numberOfTextures);
-        public static sf.Texture[] background = Arrays.InitializeWithDefaultInstances<Texture>(numberOfBackgrounds);
+        public static Texture[] background = new Texture[numberOfBackgrounds];
         public static string[] textureNames = new string[numberOfTextures];
         public static string[] backgroundNames = new string[numberOfBackgrounds];
 

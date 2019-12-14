@@ -96,7 +96,7 @@ namespace P3Net.Arx
         {
             var healerMenu = 1; // high level menu
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             // Both healers have the same base prices
             HealerUpdatePrices();

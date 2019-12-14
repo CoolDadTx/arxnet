@@ -8,40 +8,43 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+using SFML.Audio;
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static sf.Sound cityDoorSound = new sf.Sound();
-        public static sf.Sound citySecretSound = new sf.Sound();
-        public static sf.Music deathMusic = new sf.Music();
+        public static Sound cityDoorSound = new Sound();
+        public static Sound citySecretSound = new Sound();
+        public static Music deathMusic;
 
-        public static sf.SoundBuffer doorCityBuffer = new sf.SoundBuffer();
-        public static sf.SoundBuffer doorDungeonBuffer = new sf.SoundBuffer();
+        public static SoundBuffer doorCityBuffer;
+        public static SoundBuffer doorDungeonBuffer;
 
-        public static sf.Time dt = new sf.Time();
-        public static sf.Sound dungeonDoorSound = new sf.Sound();
-        public static sf.Sound dungeonSecretSound = new sf.Sound();
-        public static sf.Time encounterCheckTime = new sf.Time();
+        //TODO: Use regular time
+        public static Time dt = new Time();
+        public static Sound dungeonDoorSound = new Sound();
+        public static Sound dungeonSecretSound = new Sound();
+        public static Time encounterCheckTime = new Time();
         public static float Framerate;
         public static bool gameQuit;
 
-        public static sf.Clock myclock = new sf.Clock();
+        public static Clock myclock = new Clock();
 
         public static bool Running;
-        public static sf.SoundBuffer secretCityBuffer = new sf.SoundBuffer();
-        public static sf.SoundBuffer secretDungeonBuffer = new sf.SoundBuffer();
+        public static SoundBuffer secretCityBuffer;
+        public static SoundBuffer secretDungeonBuffer;
 
-        public static sf.SoundBuffer smithyBuffer = new sf.SoundBuffer();
+        public static SoundBuffer smithyBuffer;
         public static bool smithyPlaying;
-        public static sf.Sound smithySound = new sf.Sound();
-        public static sf.Sprite tBackground = new sf.Sprite();
-        public static sf.Texture teleBlack = new sf.Texture();
+        public static Sound smithySound = new Sound();
+        public static Sprite tBackground = new Sprite();
+        public static Texture teleBlack;
 
         public static int teleColour = 1;
-        public static sf.Texture teleGold = new sf.Texture();
+        public static Texture teleGold;
 
         public static void BarredDoor ()
         {
@@ -201,8 +204,9 @@ namespace P3Net.Arx
             // Assume moving forward for now
             var doorAlreadyOpened = false;
             int doorFacing = 0;
+            
             if (plyr.movingForward)
-                doorFacing = plyr.facing;
+                doorFacing = (int)plyr.facing;
             else
             {
                 if (plyr.facing == Directions.West)
@@ -319,39 +323,39 @@ namespace P3Net.Arx
                 ShopUndeadKing();
                 break;
                 case 0x1D: // rathskeller
-                RunModule(0x1D);
+                RunModule(Modules.RATHSKELLER);
                 break;
                 case 21: // dwarvenSmithy
-                RunModule(21);
+                RunModule(Modules.DwarvenSmithy);
                 break;
                 case 0x50: // City Bank
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopBank();
                 break;
                 case 0x90: // City Smithy
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopSmithy();
                 break;
                 case 0x70: // City Shop
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopShop();
                 break;
                 case 0x10: // City Inn
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopInn();
-                if (plyr.scenario == 1)
+                if (plyr.scenario == Scenarios.Dungeon)
                     ShopOracle();
                 break;
                 case 0x30: // City Tavern
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopTavern();
                 break;
                 case 0xF0: // City Guild
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopGuild();
                 break;
                 case 208: // City Healer
-                if (plyr.scenario == 0)
+                if (plyr.scenario == Scenarios.City)
                     ShopHealer();
                 break;
                 case 3:
@@ -364,7 +368,7 @@ namespace P3Net.Arx
                 Staircase();
                 break;
                 case 6:
-                RunModule(0x06); // Vault
+                RunModule(Modules.VAULT); // Vault
                 break;
                 case 7:
                 if ((plyr.x == 2) && (plyr.y == 14) && (plyr.map == 1))
@@ -425,7 +429,8 @@ namespace P3Net.Arx
                             plyr.x = (teleports[i].new_x) + 32;
                             plyr.y = (teleports[i].new_y) + 32;
                         }
-                        int new_map;
+
+                        int new_map = 0;
                         // Change map level to new_map value accounting for level 1 now being single 64x64 map
                         if (teleports[i].new_map == 0)
                             new_map = 1;
@@ -477,7 +482,7 @@ namespace P3Net.Arx
             DrawConsoleBackground();
             CyText(1, str);
             UpdateDisplay();
-            sf.sleep(sf.milliseconds(4000));
+            Sleep(TimeSpan.FromSeconds(4));
         }
 
         // Main game loop (excluding main menu)
@@ -493,9 +498,9 @@ namespace P3Net.Arx
             {
                 while ((Running) && (plyr.alive))
                 {
-                    dt = myclock.restart();
+                    dt = myclock.Restart();
 
-                    if (plyr.scenario == 1)
+                    if (plyr.scenario == Scenarios.Dungeon)
                         CheckTeleport();
 
                     if (plyr.hp < 0)
@@ -508,16 +513,17 @@ namespace P3Net.Arx
                     /* Update player loc details */
 
                     var ind = GetMapIndex(plyr.x, plyr.y);
-                    autoMapExplored[plyr.map][ind] = true;
+                    autoMapExplored[plyr.map, ind] = true;
                     TransMapIndex(ind);
                     plyr.special = levelmap[ind].special;
                     plyr.location = levelmap[ind].location;
                     SetCurrentZone();
 
-                    if (plyr.scenario == 1)
+                    if (plyr.scenario == Scenarios.Dungeon)
+                    {
                         CheckFixedEncounters();
-                    if (plyr.scenario == 1)
                         CheckFixedTreasures();
+                    };
                     CheckForItemsHere();
 
                     DispMain();
@@ -525,21 +531,21 @@ namespace P3Net.Arx
                     UpdateDisplay();
 
                     encounterCheckTime += dt;
-                    if (encounterCheckTime >= sf.seconds(4.8f)) // was 0.8f
+                    if (encounterCheckTime >= Time.FromSeconds(4.8f)) // was 0.8f
                     {
                         CheckEncounter();
-                        encounterCheckTime = sf.Time.Zero;
+                        encounterCheckTime = Time.Zero;
                         AddMinute();
                     }
 
                     if ((plyr.special == 1000) && (!smithyPlaying))
                     {
-                        smithySound.play();
+                        smithySound.Play();
                         smithyPlaying = true;
                     }
                     if ((smithyPlaying) && (plyr.special != 1000))
                     {
-                        smithySound.stop();
+                        smithySound.Stop();
                         smithyPlaying = false;
                     }
 
@@ -577,12 +583,7 @@ namespace P3Net.Arx
                     if (key == ".")
                         TogglePanelsForward();
                     if (key == "F12")
-                    {
-                        if (plyr.diagOn)
-                            plyr.diagOn = false;
-                        else
-                            plyr.diagOn = true;
-                    }
+                        plyr.diagOn = !plyr.diagOn;
                     if (key == "F11")
                         TidyObjectBuffer();
                     if (key == "F1")
@@ -603,12 +604,7 @@ namespace P3Net.Arx
                         plyr.infoPanel = 8;
 
                     if (key == "F")
-                    {
-                        if (plyr.fpsOn)
-                            plyr.fpsOn = false;
-                        else
-                            plyr.fpsOn = true;
-                    }
+                        plyr.fpsOn = !plyr.fpsOn;
                     if (key == "A")
                     {
                         if (plyr.miniMapOn)
@@ -624,7 +620,7 @@ namespace P3Net.Arx
 
                     if (key == "T")
                     {
-                        if (AR_DEV.TELEPORT_OPTION)
+                        if (AR_DEV.TELEPORT_OPTION == OnOff.On)
                             Teleport();
                     }
 
@@ -636,7 +632,7 @@ namespace P3Net.Arx
                 // Check smithy sounds and encounter music not playing
                 if (!gameQuit)
                 {
-                    smithySound.stop();
+                    smithySound.Stop();
                     PlayerDies();
                 }
                 Running = false;
@@ -645,30 +641,31 @@ namespace P3Net.Arx
 
         public static void InitialiseNewGame ()
         {
-            // COPY FROM ARX.CPP - Prepare shop stock etc...
-            doorCityBuffer.loadFromFile("data/audio/cityDoor.wav");
-            secretCityBuffer.loadFromFile("data/audio/citySecretDoor.wav");
-            citySecretSound.setBuffer(secretCityBuffer);
-            cityDoorSound.setBuffer(doorCityBuffer);
+            //TODO: Lazy load
+            // Prepare shop stock etc...
+            doorCityBuffer = new SoundBuffer("data/audio/cityDoor.wav");
+            secretCityBuffer = new SoundBuffer("data/audio/citySecretDoor.wav");
+            citySecretSound.SoundBuffer = secretCityBuffer;
+            cityDoorSound.SoundBuffer = doorCityBuffer;
 
-            doorDungeonBuffer.loadFromFile("data/audio/dungeonDoor.wav");
-            secretDungeonBuffer.loadFromFile("data/audio/dungeonSecretDoor.wav");
-            dungeonSecretSound.setBuffer(secretDungeonBuffer);
-            dungeonDoorSound.setBuffer(doorDungeonBuffer);
+            doorDungeonBuffer = new SoundBuffer("data/audio/dungeonDoor.wav");
+            secretDungeonBuffer = new SoundBuffer("data/audio/dungeonSecretDoor.wav");
+            dungeonSecretSound.SoundBuffer = secretDungeonBuffer;
+            dungeonDoorSound.SoundBuffer = doorDungeonBuffer;
 
-            smithyBuffer.loadFromFile("data/audio/smithyHammer3.wav");
-            smithySound.setBuffer(smithyBuffer);
-            smithySound.setLoop(true);
+            smithyBuffer = new SoundBuffer("data/audio/smithyHammer3.wav");
+            smithySound.SoundBuffer = smithyBuffer;
+            smithySound.Loop = true;
 
-            teleBlack.loadFromFile("data/images/teleport_black.png");
-            teleGold.loadFromFile("data/images/teleport_gold.png");
+            //TODO: Consider registering resources with a resource manager and then having it lazy load stuff on demand
+            teleBlack = new Texture("data/images/teleport_black.png");
+            teleGold = new Texture("data/images/teleport_gold.png");
 
             InitMap();
         }
 
         public static void LeaveShop ()
         {
-            //lyricstexture.clear(sf::Color::Black); // wipe the lyric strip
             if (plyr.facing == Directions.West)
                 plyr.x = plyr.oldx;
             if (plyr.facing == Directions.East)
@@ -688,30 +685,19 @@ namespace P3Net.Arx
             plyr.movingForward = false;
             var encText = CheckEncumbrance();
             if (encText == "Encumbered")
-                sf.sleep(sf.milliseconds(50));
+                Sleep(TimeSpan.FromMilliseconds(50));
             if (encText == "Immobilized!")
-                sf.sleep(sf.milliseconds(200));
+                Sleep(TimeSpan.FromMilliseconds(200));
 
             if (((plyr.back != 13) && (plyr.back != 14) && (plyr.back != 37)) || (plyr.z_offset > 0.2))
             {
                 switch (plyr.facing)
                 {
-                    case 1: // facing west
-                    MoveEast(); // opposite of west
-                    break;
-
-                    case 2: // facing north
-                    MoveSouth(); // opposite of north
-                    break;
-
-                    case 3: // facing east
-                    MoveWest();
-                    break;
-
-                    case 4: // facing south
-                    MoveNorth();
-                    break;
-                }
+                    case Directions.West: MoveEast(); break;
+                    case Directions.North: MoveSouth(); break;
+                    case Directions.East: MoveWest(); break;
+                    case Directions.South: MoveNorth(); break;
+                };
 
                 // Barred door
                 if (((plyr.back == 8) || (plyr.back == 9) || (plyr.back == 10)) && (plyr.z_offset < 0.3)) // barred door
@@ -735,30 +721,31 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y++;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
-                        case 4:
+
+                        case Directions.South:
                         plyr.oldy = plyr.y;
-                        plyr.y--; // s
+                        plyr.y--; 
                         break;
                     }
 
                     if (plyr.scenario == 0)
-                        citySecretSound.play();
+                        citySecretSound.Play();
                     else
-                        dungeonSecretSound.play();
+                        dungeonSecretSound.Play();
                 }
 
                 if (((plyr.back == 3) || (plyr.back == 4)) && (plyr.z_offset < 0.3)) // door
@@ -767,30 +754,30 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y++;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
 
-                        case 4:
+                        case Directions.South:
                         plyr.oldy = plyr.y;
-                        plyr.y--; // s
+                        plyr.y--; 
                         break;
                     }
                     if (plyr.scenario == 0)
-                        cityDoorSound.play();
+                        cityDoorSound.Play();
                     else
-                        dungeonDoorSound.play();
+                        dungeonDoorSound.Play();
                 }
 
                 if ((plyr.back > 25) && (plyr.back < 50) && (plyr.z_offset < 0.3)) // City doors with signs
@@ -799,30 +786,30 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y++;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
 
-                        case 4:
+                        case Directions.South:
                         plyr.oldy = plyr.y;
-                        plyr.y--; // s
+                        plyr.y--; 
                         break;
                     }
                     if (plyr.scenario == 0)
-                        cityDoorSound.play();
+                        cityDoorSound.Play();
                     else
-                        dungeonDoorSound.play();
+                        dungeonDoorSound.Play();
                 }
             }
         }
@@ -861,27 +848,27 @@ namespace P3Net.Arx
             plyr.movingForward = true;
             var encText = CheckEncumbrance();
             if (encText == "Encumbered")
-                sf.sleep(sf.milliseconds(50));
+                Sleep(TimeSpan.FromMilliseconds(50));
             if (encText == "Immobilized!")
-                sf.sleep(sf.milliseconds(200));
+                Sleep(TimeSpan.FromMilliseconds(200));
 
             if (((plyr.front != 13) && (plyr.front != 14) && (plyr.front != 37)) || (plyr.z_offset < 1.7))
             {
                 switch (plyr.facing)
                 {
-                    case 1: // w
+                    case Directions.West:
                     MoveWest();
                     break;
 
-                    case 2: // n
+                    case Directions.North:
                     MoveNorth();
                     break;
 
-                    case 3: // e
+                    case Directions.East:
                     MoveEast();
                     break;
 
-                    case 4: // s
+                    case Directions.South:
                     MoveSouth();
                     break;
                 }
@@ -908,30 +895,31 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y--;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
-                        case 4:
+
+                        case Directions.South:
                         plyr.oldy = plyr.y;
                         plyr.y++; // s
                         break;
                     }
 
                     if (plyr.scenario == 0)
-                        citySecretSound.play();
+                        citySecretSound.Play();
                     else
-                        dungeonSecretSound.play();
+                        dungeonSecretSound.Play();
                 }
 
                 if (((plyr.front == 3) || (plyr.front == 4)) && (plyr.z_offset > 1.8)) // door
@@ -940,30 +928,30 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y--;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
 
-                        case 4:
+                        case Directions.South:
                         plyr.oldy = plyr.y;
-                        plyr.y++; // s
+                        plyr.y++; 
                         break;
                     }
                     if (plyr.scenario == 0)
-                        cityDoorSound.play();
+                        cityDoorSound.Play();
                     else
-                        dungeonDoorSound.play();
+                        dungeonDoorSound.Play();
                 }
 
                 if ((plyr.front > 25) && (plyr.front < 50) && (plyr.z_offset > 1.8)) // City doors with signs
@@ -972,30 +960,30 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case 1: // w
+                        case Directions.West:
                         plyr.oldx = plyr.x;
                         plyr.x--;
                         break;
 
-                        case 2: // n
+                        case Directions.North:
                         plyr.oldy = plyr.y;
                         plyr.y--;
                         break;
 
-                        case 3: // e
+                        case Directions.East:
                         plyr.oldx = plyr.x;
                         plyr.x++;
                         break;
 
-                        case 4:
+                        case Directions.South:
                         plyr.oldy = plyr.y;
                         plyr.y++; // s
                         break;
                     }
                     if (plyr.scenario == 0)
-                        cityDoorSound.play();
+                        cityDoorSound.Play();
                     else
-                        dungeonDoorSound.play();
+                        dungeonDoorSound.Play();
                 }
             }
 
@@ -1063,25 +1051,22 @@ namespace P3Net.Arx
 
         public static void MoveThroughBarredDoor ()
         {
-            if (plyr.movingForward)
-                plyr.z_offset = 2.0F;
-            else
-                plyr.z_offset = 0.0F;
-            if ((plyr.facing == Directions.West) && (plyr.movingForward))
+            plyr.z_offset = plyr.movingForward ? 2 : 0;
+            if ((plyr.facing == Directions.West) && plyr.movingForward)
                 MoveWest();
-            if ((plyr.facing == Directions.North) && (plyr.movingForward))
+            if ((plyr.facing == Directions.North) && plyr.movingForward)
                 MoveNorth();
-            if ((plyr.facing == Directions.East) && (plyr.movingForward))
+            if ((plyr.facing == Directions.East) && plyr.movingForward)
                 MoveEast();
-            if ((plyr.facing == Directions.South) && (plyr.movingForward))
+            if ((plyr.facing == Directions.South) && plyr.movingForward)
                 MoveSouth();
-            if ((plyr.facing == Directions.West) && (!plyr.movingForward))
+            if ((plyr.facing == Directions.West) && !plyr.movingForward)
                 MoveEast();
-            if ((plyr.facing == Directions.North) && (!plyr.movingForward))
+            if ((plyr.facing == Directions.North) && !plyr.movingForward)
                 MoveSouth();
-            if ((plyr.facing == Directions.East) && (!plyr.movingForward))
+            if ((plyr.facing == Directions.East) && !plyr.movingForward)
                 MoveWest();
-            if ((plyr.facing == Directions.South) && (!plyr.movingForward))
+            if ((plyr.facing == Directions.South) && !plyr.movingForward)
                 MoveNorth();
         }
 
@@ -1129,7 +1114,7 @@ namespace P3Net.Arx
                 if (key_value == "ESC")
                 {
                     keypressed = true;
-                    plyr.status = 1;
+                    plyr.status = GameStates.Explore;
                 }
                 if (key_value == "S")
                 {
@@ -1159,21 +1144,23 @@ namespace P3Net.Arx
             var musicPlaying = false;
             plyr.fixedEncounter = false;
             plyr.miniMapOn = false;
-            plyr.status = 5; // Dead
 
-            if (plyr.musicStyle == 0)
-                deathMusic.openFromFile("data/audio/death.ogg");
-            else
-                deathMusic.openFromFile("data/audio/B/death.ogg");
+            //TODO: What is state 5 because it doesn't line up with GameStates
+            plyr.status = (GameStates)5; // Dead
+
+            var filename = plyr.musicStyle ? "data/audio/B/death.ogg" : "data/audio/death.ogg";
+            deathMusic = new Music(filename);
+
             if (!musicPlaying)
             {
-                deathMusic.play();
+                deathMusic.Play();
                 musicPlaying = true;
             }
+
             LoadLyrics("death.txt");
             while (deathLooping)
             {
-                clock1.restart();
+                clock1.Restart();
 
                 ClearDisplay();
                 DrawStatsPanel();
@@ -1189,13 +1176,13 @@ namespace P3Net.Arx
                     deathLooping = false;
                 if (key == "F1")
                 {
-                    deathMusic.stop();
+                    deathMusic.Stop();
                     LoadLyrics("death.txt");
-                    deathMusic.play();
+                    deathMusic.Play();
                 }
             }
             if (musicPlaying)
-                deathMusic.stop();
+                deathMusic.Stop();
         }
 
         public static void QuitMenu ()
@@ -1229,7 +1216,7 @@ namespace P3Net.Arx
                 ClearDisplay();
 
                 var str = "";
-                plyr.status = 2; // shopping
+                plyr.status = GameStates.Module; // shopping
                 switch (scenarioNumber)
                 {
                     case 300:
@@ -1263,7 +1250,7 @@ namespace P3Net.Arx
             {
                 ClearDisplay();
 
-                plyr.status = 2; // shopping
+                plyr.status = GameStates.Module; // shopping
                 DrawStatsPanel();
                 CyText(0, "Closed by@@Order of the Palace@@@@@@( Press space to continue )");
                 UpdateDisplay();
@@ -1364,25 +1351,25 @@ namespace P3Net.Arx
         {
             switch (plyr.facing)
             {
-                case 2: // n
+                case Directions.North:
 
                 plyr.facing = Directions.West;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 1: //  facing w before turning
+                case Directions.West:
 
                 plyr.facing = Directions.South;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 3: // e
+                case Directions.East:
 
                 plyr.facing = Directions.North;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 4: // s
+                case Directions.South:
 
                 plyr.facing = Directions.East;
                 plyr.z_offset = 1.0f;
@@ -1394,25 +1381,25 @@ namespace P3Net.Arx
         {
             switch (plyr.facing)
             {
-                case 2: // n
+                case Directions.North:
 
                 plyr.facing = Directions.East;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 1: // w
+                case Directions.West:
 
                 plyr.facing = Directions.North;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 3: // e
+                case Directions.East:
 
                 plyr.facing = Directions.South;
                 plyr.z_offset = 1.0f;
                 break;
 
-                case 4: // s
+                case Directions.South:
                 plyr.facing = Directions.West;
                 plyr.z_offset = 1.0f;
                 break;
@@ -1422,19 +1409,17 @@ namespace P3Net.Arx
         public static void UpdateDoorDetails ()
         {
             // Adds an entry about a door that has been successfully opened. The 1st entry is overwritten after 20 door openings.
-            if (plyr.movingForward)
-                plyr.z_offset = 2.0f;
-            else
-                plyr.z_offset = 0.0f;
+            plyr.z_offset = plyr.movingForward ? 2 : 0;
 
             if (plyr.doorDetailIndex == 19)
                 plyr.doorDetailIndex = 0;
+
             plyr.doorDetails[plyr.doorDetailIndex].x = plyr.x;
             plyr.doorDetails[plyr.doorDetailIndex].y = plyr.y;
             plyr.doorDetails[plyr.doorDetailIndex].level = plyr.map;
 
             if (plyr.movingForward)
-                plyr.doorDetails[plyr.doorDetailIndex].direction = plyr.facing;
+                plyr.doorDetails[plyr.doorDetailIndex].direction = (int)plyr.facing;
             if (!plyr.movingForward)
             {
                 if (plyr.facing == Directions.West)

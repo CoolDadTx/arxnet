@@ -36,8 +36,8 @@ namespace P3Net.Arx
 
         public static void DisplayModuleImage ( int module )
         {
-            App.clear();
-            App.pushGLStates();
+            App.Clear();
+            App.PushGLStates();
             DrawStatsPanel();
         }
 
@@ -48,7 +48,6 @@ namespace P3Net.Arx
             var noMenuSelection = true;
 
             var itemRef = 255; // Selected nothing / option 0 to go back
-            var currentItem = 0;
             var menuPage = 0;
             var maximumMenuPage = CalculateMaximumMenuPage(totalItems);
             var minimumMenuPage = 0;
@@ -63,23 +62,18 @@ namespace P3Net.Arx
 
                 for (var i = 0; i < MAX_MENU_ITEMS; i++)
                 {
-                    currentItem = (menuPage * 6) + i;
+                    var currentItem = (menuPage * 6) + i;
                     if (currentItem >= totalItems)
                     {
                         // Menu slot without an item
                         currentItemRefs[i] = 256; // No item to select
-                        var str = $"({Itos(i + 1)})";
-                        BText(1, (2 + i), str);
+                        BText(1, (2 + i), $"({Itos(i + 1)})");
                     } else
                     {
                         // Menu slot showing an item
                         currentItemRefs[i] = menuItems[currentItem].objRef;
-                        var str = $"({Itos(i + 1)}) {menuItems[currentItem].menuName}";
-                        BText(1, (2 + i), str);
-                        if (GameStates.Module == Modules.DwarvenSmithy)
-                            BText(27, (2 + i), menuItems[currentItem].menuPrice);
-                        else
-                            BText(27, (2 + i), menuItems[currentItem].menuPrice); // was 31
+                        BText(1, (2 + i), $"({Itos(i + 1)}) {menuItems[currentItem].menuName}");
+                        BText(27, (2 + i), menuItems[currentItem].menuPrice);
                     };
                 };
 
@@ -231,7 +225,7 @@ namespace P3Net.Arx
             return inputText;
         }
 
-        public static void RunModule ( int module )
+        public static void RunModule ( Modules module )
         {
             plyr.status = GameStates.Module;
             UpdateModule(module);
@@ -249,13 +243,13 @@ namespace P3Net.Arx
             plyr.status = GameStates.Explore;
         }
 
-        public static void UpdateModule ( int module )
+        public static void UpdateModule ( Modules module )
         {
-            if (module == (int)Modules.Rathskeller)
+            if (module == Modules.RATHSKELLER)
                 RunRathskeller();
-            if (module == (int)Modules.DwarvenSmithy)
+            if (module == Modules.DwarvenSmithy)
                 RunDwarvenSmithy();
-            if (module == (int)Modules.Vault)
+            if (module == Modules.VAULT)
                 RunVault();
         }
 

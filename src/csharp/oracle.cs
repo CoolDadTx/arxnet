@@ -34,7 +34,7 @@ namespace P3Net.Arx
             var oracleFailedOfferings = 0;
             var oracleMenu = 1; // high level menu
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             LoadShopImage(20);
 

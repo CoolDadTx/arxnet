@@ -25,7 +25,7 @@ namespace P3Net.Arx
             SetAutoMapFlag(plyr.map, 57, 57);
             SetAutoMapFlag(plyr.map, 57, 58);
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
             var trollsMenu = 1; // high level menu
             LoadShopImage(16); // trolls
             if (CheckForQuestItem(1))
@@ -72,28 +72,25 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    if (plyr.musicStyle == 0)
-                    {
-                        PlayShopMusic(1);
-                        trollLyricsFilename = "trolls.txt";
-                    }
-                    if (plyr.musicStyle == 1)
-                    {
-                        PlayShopMusic(4);
-                        trollLyricsFilename = "trolls.txt";
-                    }
+                    var music = plyr.musicStyle ? 4 : 1;                    
+                    PlayShopMusic(music);
+                    
+                    trollLyricsFilename = "trolls.txt";
                     LoadLyrics(trollLyricsFilename);
 
                     var key = GetSingleKey();
 
-                    if ((key == "SPACE") && (plyr.trollsDefeated))
+                    if (key == "SPACE")
                     {
-                        trollsMenu = 0;
-                        plyr.trollsCombat = true;
+                        if (plyr.trollsDefeated)
+                        {
+                            trollsMenu = 0;
+                            plyr.trollsCombat = true;
+                        } else
+                        {
+                            trollsMenu = 2;
+                        };
                     } // leave shop and start combat!
-
-                    if ((key == "SPACE") && (plyr.trollsDefeated == false))
-                        trollsMenu = 2;
                 }
 
                 while (trollsMenu == 2) // secondary menu
@@ -183,7 +180,7 @@ namespace P3Net.Arx
                     {
                         trollsMenu = 2;
                         plyr.trollsReforged = true;
-                        int ringRef = GetQuestItemRef(1);
+                        var ringRef = GetQuestItemRef(1);
                         itemBuffer[ringRef].location = 0; // move this item to the void
                     }
                 }

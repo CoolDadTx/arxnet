@@ -8,7 +8,9 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.IO;
 using System.Linq;
+using SFML.Audio;
 
 namespace P3Net.Arx
 {
@@ -90,7 +92,7 @@ namespace P3Net.Arx
             }
         };
 
-        public static sf.Music smithyMusic = new sf.Music();
+        public static Music smithyMusic;
         public static int smithyNo;
 
         public static SmithyItem[] smithyWares =
@@ -296,31 +298,12 @@ namespace P3Net.Arx
 
         public static void LoadCitySmithyBinary ()
         {
+            //TODO: Ignoring fixed length - citySmithyFileSize
             // Loads armour and weapons binary data into the "citySmithyBinary" array
-            var tempString = $"{"data/map/"}{"smithyItems.bin"}";
-            var fp = fopen(tempString, "rb");
-            if (fp != null)
-            {
-                for (var i = 0; i < citySmithyFileSize; i++)
-                    citySmithyBinary[i] = fgetc(fp);
-            }
-            fclose(fp);
+            citySmithyBinary = File.ReadAllBytes($"data/map/smithyItems.bin");            
         }
 
-        public static string ReadSmithyItemString ( int stringOffset )
-        {
-            var ss = new stringstream();
-            var z = stringOffset; // current location in the binary
-
-            while (!(citySmithyBinary[z] == 0))
-            {
-                var c = citySmithyBinary[z];
-                ss << (char)c;
-                z++;
-            }
-
-            return ss.str();
-        }
+        public static string ReadSmithyItemString ( int stringOffset ) => ReadBinaryString(citySmithyBinary, stringOffset);
 
         public static void ShopSmithy ()
         {
@@ -343,7 +326,7 @@ namespace P3Net.Arx
             var musicPlaying = false;
             var smithyMenu = 1; // high level menu
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
             menuStartItem = 0; // menu starts at item 0
             if ((Smithies[smithyNo].closingHour <= plyr.hours) || (Smithies[smithyNo].openingHour > plyr.hours))
                 smithyMenu = 5;
@@ -354,9 +337,9 @@ namespace P3Net.Arx
                 {
                     SmithyDisplayUpdate();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    var str = $"We are open from {Itos(Smithies[smithyNo].openingHour)}:00 in the morning@to {Itos(Smithies[smithyNo].closingHour)}:00 in the evening.";
+                    var str = $"We are open from {Smithies[smithyNo].openingHour}:00 in the morning@to {Smithies[smithyNo].closingHour}:00 in the evening.";
                     if (Smithies[smithyNo].closingHour == 15)
-                        str = $"We are open from {Itos(Smithies[smithyNo].openingHour)}:00 in the morning@to {Itos(Smithies[smithyNo].closingHour)}:00 in the afternoon.";
+                        str = $"We are open from {Smithies[smithyNo].openingHour}:00 in the morning@to {Smithies[smithyNo].closingHour}:00 in the afternoon.";
                     CyText(4, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
@@ -380,12 +363,11 @@ namespace P3Net.Arx
 
                     if (!musicPlaying)
                     {
-                        if (plyr.musicStyle == 0)
-                            smithyMusic.openFromFile("data/audio/armor.ogg");
-                        else
-                            smithyMusic.openFromFile("data/audio/B/armor.ogg");
+                        var file = plyr.musicStyle ? "data/audio/B/armor.ogg" : "data/audio/armor.ogg";
+
+                        smithyMusic = new Music(file);
                         LoadLyrics("armor.txt");
-                        smithyMusic.play();
+                        smithyMusic.Play();
                         musicPlaying = true;
                     }
 
@@ -411,7 +393,7 @@ namespace P3Net.Arx
                     smithyNo = GetSmithyNo();
                     for (var i = 0; i < maxMenuItems; i++)
                     {
-                        var itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
+                        var itemNo = smithyDailyWares[smithyNo, menuStartItem + i];
                         BText(3, (2 + i), $") {smithyWares[itemNo].name}");
                         BText(1, (2 + i), "                                 coppers");
                     }
@@ -420,7 +402,7 @@ namespace P3Net.Arx
                     for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
                         var x = 28;
-                        var itemNo = smithyDailyWares[smithyNo][menuStartItem + i];
+                        var itemNo = smithyDailyWares[smithyNo, menuStartItem + i];
 
                         //MLT: Downcast to int
                         var itemCost = (int)(Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice);
@@ -494,7 +476,7 @@ namespace P3Net.Arx
                 while (smithyMenu == 20) // buy item?
                 {
                     var smithyNo = GetSmithyNo();
-                    var itemNo = smithyDailyWares[smithyNo][menuStartItem + itemChoice];
+                    var itemNo = smithyDailyWares[smithyNo, menuStartItem + itemChoice];
 
                     //MLT: Downcast to int
                     itemCost = (int)(Smithies[smithyNo].initialPriceFactor * smithyWares[itemNo].basePrice);
@@ -734,13 +716,13 @@ namespace P3Net.Arx
                     }
                 }
             }
-            smithyMusic.stop();
+            smithyMusic.Stop();
             LeaveShop();
         }
 
         public static void SmithyDisplayUpdate ()
         {
-            clock1.restart();
+            clock1.Restart();
             ClearShopDisplay();
             UpdateLyrics();
             iCounter++;
@@ -772,7 +754,7 @@ namespace P3Net.Arx
 
                         if (!smithyWaresCheck[smithyNo, itemNo])
                         {
-                            smithyDailyWares[smithyNo][waresNo] = itemNo; // its not a duplicate
+                            smithyDailyWares[smithyNo, waresNo] = itemNo; // its not a duplicate
                             smithyWaresCheck[smithyNo, itemNo] = true;
                             uniqueItem = true;
                         }
@@ -781,16 +763,13 @@ namespace P3Net.Arx
             }
 
             // Simple sort of items in numeric order
-            sort(smithyDailyWares[0], smithyDailyWares[0] + 10);
-            sort(smithyDailyWares[1], smithyDailyWares[1] + 10);
-            sort(smithyDailyWares[2], smithyDailyWares[2] + 10);
-            sort(smithyDailyWares[3], smithyDailyWares[3] + 10);
+            sort(smithyDailyWares);
 
             // Always make sure a stiletto will be available
-            smithyDailyWares[0][0] = 0;
-            smithyDailyWares[1][0] = 0;
-            smithyDailyWares[2][0] = 0;
-            smithyDailyWares[3][0] = 0;
+            smithyDailyWares[0, 0] = 0;
+            smithyDailyWares[1, 0] = 0;
+            smithyDailyWares[2, 0] = 0;
+            smithyDailyWares[3, 0] = 0;
         }
 
         //extern sf::Clock clock1;

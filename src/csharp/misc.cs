@@ -8,20 +8,16 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Globalization;
+using System.Text;
+using System.Threading;
+using SFML.System;
+using SFML.Window;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        //TODO: Unused
-        //public static string Concat ( int n, string str )
-        //{
-        //    var ss = new std::ostringstream();
-        //    ss << n;
-        //    ss << str;
-        //    return ss.str();
-        //}
-
         public static bool CheckCoins ( int gold, int silver, int copper )
         {
             var itemCostInCoppers = (gold * 100) + (silver * 10) + copper;
@@ -34,61 +30,69 @@ namespace P3Net.Arx
         {
             // Assumption 1 - Goods will be paid for using copper coins if possible as they take up the most weight for least value
             // Assumption 2 - Change will be given using higher value coins
-            var deductionCompleted = false;
             var itemCost = (gold * 100) + (silver * 10) + copper;
 
             if (itemCost <= plyr.copper)
             {
                 plyr.copper -= itemCost;
-                deductionCompleted = true;
+                return;
             } else
             {
                 itemCost -= plyr.copper;
                 plyr.copper = 0;
             }
 
-            if (!deductionCompleted)
-            {
-                var copperChange = (itemCost % 10);
-                var numberOfSilversRequired = (itemCost / 10);
-                if (!copperChange == 0)
-                    numberOfSilversRequired++;
-                if (numberOfSilversRequired <= plyr.silver)
-                {
-                    plyr.silver -= numberOfSilversRequired;
-                    if (!copperChange == 0)
-                        plyr.copper += (10 - copperChange);
-                    deductionCompleted = true;
-                } else
-                {
-                    itemCost -= (plyr.silver * 10);
-                    plyr.silver = 0;
-                }
-            }
+            //Use silver next
+            var copperChange = (itemCost % 10);
+            var numberOfSilversRequired = (itemCost / 10);
 
-            if (!deductionCompleted)
+            //TODO: Test this logic - !copperChange == 0
+            //if (!copperChange == 0)
+            if (copperChange != 0)
+                numberOfSilversRequired++;
+            if (numberOfSilversRequired <= plyr.silver)
             {
-                var copperChange = 0;
-                var silverChange = 0;
-                var change = (itemCost % 100);
-                if (!change == 0)
-                {
-                    copperChange = (change % 10);
-                    silverChange = (change / 10);
-                }
-                var numberOfGoldsRequired = (itemCost / 100);
-                if (!copperChange == 0)
-                    silverChange++;
-                if (!silverChange == 0)
-                    numberOfGoldsRequired++;
-
-                plyr.gold -= numberOfGoldsRequired;
-                if (!copperChange == 0)
+                plyr.silver -= numberOfSilversRequired;
+                //if (!copperChange == 0)
+                if (copperChange != 0)
                     plyr.copper += (10 - copperChange);
-                if (!silverChange == 0)
-                    plyr.silver += (10 - silverChange);
-                deductionCompleted = true;
+                return;
+            } else
+            {
+                itemCost -= (plyr.silver * 10);
+                plyr.silver = 0;
+            }            
+
+            copperChange = 0;
+            var silverChange = 0;
+            var change = (itemCost % 100);
+
+            //TODO: Test this logic - !change == 0
+            if (change != 0)
+            //if (!change == 0)
+            {
+                copperChange = (change % 10);
+                silverChange = (change / 10);
             }
+            var numberOfGoldsRequired = (itemCost / 100);
+            //TODO: Test this logic - !copperChange == 0
+            //if (!copperChange == 0)
+            if (copperChange != 0)
+                silverChange++;
+            //TODO: Test this logic - !silverChange == 0
+            //if (!silverChange == 0)
+            if (silverChange != 0)
+                numberOfGoldsRequired++;
+
+            plyr.gold -= numberOfGoldsRequired;
+            //TODO: Test this logic - !copperChange == 0
+            //if (!copperChange == 0)
+            if (copperChange != 0)
+                plyr.copper += (10 - copperChange);
+            //TODO: Test this logic - !silverChange == 0
+            //if (!silverChange == 0)
+            if (silverChange != 0)
+                plyr.silver += (10 - silverChange);
         }
 
         public static void DisplayCoins ()
@@ -107,34 +111,31 @@ namespace P3Net.Arx
 
         public static string GetSingleKey () => ReadKey();
 
+        //TODO: How to switch from polling to event-based input?
         public static string GetTextChar ()
         {
             string keyString = "";
-            var Event = new sf.Event();
-            while (App.pollEvent(Event))
+            var evt = new Event();
+
+            //App.WaitAndDispatchEvents();
+            while (App.pollEvent(evt))
             {
-                if (Event.type == sf.Event.TextEntered)
+                if (evt.Type == EventType.TextEntered)
                 {
-                    if (Event.text.unicode < 128)
-                        keyString = Event.text.unicode;
-                    if (Event.text.unicode == 13)
+                    if (evt.Text.Unicode < 128)
+                        keyString = evt.Text.Unicode.ToString();
+                    if (evt.Text.Unicode == 13)
                         keyString = "RETURN";
-                    if (Event.text.unicode == 32)
+                    if (evt.Text.Unicode == 32)
                         keyString = "SPACE";
-                    if (Event.text.unicode == 8)
+                    if (evt.Text.Unicode == 8)
                         keyString = "BACKSPACE";
                 }
             }
             return keyString;
         }
 
-        public static int Hex2Dec ( string s )
-        {
-            var ss = new stringstream(s);
-            int i;
-            ss >> hex >> i;
-            return i;
-        }
+        public static int Hex2Dec ( string s ) => Int32.Parse(s, NumberStyles.HexNumber);
 
         public static int InputValue ( string message, int shopNo )
         {
@@ -198,13 +199,14 @@ namespace P3Net.Arx
 
         public static void ModuleMessage ( string txt )
         {
+            var key = "";
             do
             {
                 ClearShopDisplay();
                 CText(txt);
                 CyText(9, "( Press SPACE to continue )");
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
 
@@ -224,143 +226,167 @@ namespace P3Net.Arx
             return result;
         }
 
+        [Obsolete("Use Random class")]
         public static int Randn ( int low, int high ) => RandomNumbers.NextNumber() % ((high - low) + 1) + low;
 
+        public static string ReadBinaryString ( byte[] buffer, int offset, byte delimiter = 0 )
+        {
+            var endIndex = Array.IndexOf(buffer, delimiter, offset);
+            if (endIndex < 0)
+                endIndex = buffer.Length - 1;
+
+            //TODO: Check for off by one
+            return Encoding.ASCII.GetString(monstersBinary, offset, endIndex - offset);
+        }
+
+        //TODO: How to change from polling to event-based keyboard input
         public static string ReadKey ()
         {
             var keyString = "";
 
+            //App.WaitAndDispatchEvents();
             // Process events
-            var Event = new sf.Event();
-            while (App.pollEvent(Event))
+            var evt = new Event();
+            while (App.pollEvent(evt))
             {
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Left))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Left))
                     keyString = "left";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Right))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Right))
                     keyString = "right";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Up))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Up))
                     keyString = "up";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Down))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Down))
                     keyString = "down";
 
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F1))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F1))
                     keyString = "F1";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F2))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F2))
                     keyString = "F2";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F3))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F3))
                     keyString = "F3";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F4))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F4))
                     keyString = "F4";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F5))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F5))
                     keyString = "F5";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F6))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F6))
                     keyString = "F6";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F7))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F7))
                     keyString = "F7";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F8))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F8))
                     keyString = "F8";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F10))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F10))
                     keyString = "F10";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F11))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F11))
                     keyString = "F11";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F12))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F12))
                     keyString = "F12";
 
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num0))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num0))
                     keyString = "0";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Comma))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Comma))
                     keyString = ",";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Period))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Period))
                     keyString = ".";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num1))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num1))
                     keyString = "1";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num2))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num2))
                     keyString = "2";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num3))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num3))
                     keyString = "3";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num4))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num4))
                     keyString = "4";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num5))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num5))
                     keyString = "5";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num6))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num6))
                     keyString = "6";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num7))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num7))
                     keyString = "7";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num8))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num8))
                     keyString = "8";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Num9))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num9))
                     keyString = "9";
 
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.A))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.A))
                     keyString = "A";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.B))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.B))
                     keyString = "B";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.C))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.C))
                     keyString = "C";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.D))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.D))
                     keyString = "D"; // diag info
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.E))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.E))
                     keyString = "E"; // force encounter
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.F))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F))
                     keyString = "F";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.G))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.G))
                     keyString = "G";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.H))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.H))
                     keyString = "H";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.I))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.I))
                     keyString = "I";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.J))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.J))
                     keyString = "J";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.K))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.K))
                     keyString = "K";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.L))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.L))
                     keyString = "L";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.M))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.M))
                     keyString = "M";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.N))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.N))
                     keyString = "N";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.O))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.O))
                     keyString = "O";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.P))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.P))
                     keyString = "P";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Q))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Q))
                     keyString = "Q";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.R))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.R))
                     keyString = "R";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.S))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.S))
                     keyString = "S";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.T))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.T))
                     keyString = "T";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.U))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.U))
                     keyString = "U";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.V))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.V))
                     keyString = "V";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.W))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.W))
                     keyString = "W";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.X))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.X))
                     keyString = "X";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Y))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Y))
                     keyString = "Y";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Z))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Z))
                     keyString = "Z";
 
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Space))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Space))
                     keyString = "SPACE";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Return))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Enter))
                     keyString = "RETURN";
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.BackSpace))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Backspace))
                     keyString = "BACKSPACE";
 
                 // Close window : exit
-                if (Event.type == sf.Event.Closed)
+                if (evt.Type == EventType.Closed)
                     keyString = "QUIT";
 
                 // Escape key : exit
-                if ((Event.type == sf.Event.KeyPressed) && (Event.key.code == sf.Keyboard.Escape))
+                if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Escape))
                     keyString = "ESC";
             }
 
             return (keyString);
+        }
+
+        //TODO: What do we do here?
+        public static void Sleep ( Time time ) => Thread.Sleep(time.AsMilliseconds());
+
+        //TODO: What do we do here?
+        public static void Sleep ( TimeSpan time ) => Thread.Sleep(time);
+
+        //TODO: This method does nothing, sorting rectangular arrays requires a reasonable amount of code and we honestly are going to remove the arrays anyway
+        public static void sort ( int[,] values )
+        {            
         }
 
         public static int RollDice ( int rolls, int dice )
@@ -373,39 +399,10 @@ namespace P3Net.Arx
                 Console.Write("\nDice roll 0 error!\n");
             return result;
         }
-
-        public static string ToCurrency ( int i )
-        {
-            var formatedNumber = "";
-
-            var s = new stringstream();
-            s << i;
-            var temp = s.str();
-
-            if (i < 1000)
-                formatedNumber = temp;
-            if (i > 999)
-            {
-                var c = 0;
-                var zLength = temp.Length;
-                var low = temp.Substring(zLength - 3, 3);
-                if (zLength == 6)
-                    c = 3;
-                if (zLength == 5)
-                    c = 2;
-                if (zLength == 4)
-                    c = 1;
-
-                var high = temp.Substring(0, c);
-                formatedNumber = $"{high},{low}";
-            }
-
-            return formatedNumber;
-        }
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //string Itos(int i);
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //string Ftos(float i);
+        
+        /// <summary>Formats with thousands separator.</summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public static string ToCurrency ( int i ) => i.ToString("N0");        
     }
 }

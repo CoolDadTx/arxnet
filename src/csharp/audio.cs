@@ -8,77 +8,80 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+
+using SFML.Audio;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
-        public static sf.SoundBuffer spellSoundBuffer = new sf.SoundBuffer();
-        public static sf.Sound spellSound = new sf.Sound();
+    {        
+        public static SoundBuffer spellSoundBuffer;
+        public static Sound spellSound = new Sound();
 
-        public static sf.SoundBuffer dungeonGate1Buffer = new sf.SoundBuffer();
-        public static sf.SoundBuffer dungeonGate2Buffer = new sf.SoundBuffer();
-        public static sf.Sound dungeonGate1Sound = new sf.Sound();
-        public static sf.Sound dungeonGate2Sound = new sf.Sound();
+        public static SoundBuffer dungeonGate1Buffer;
+        public static SoundBuffer dungeonGate2Buffer;
+        public static Sound dungeonGate1Sound = new Sound();
+        public static Sound dungeonGate2Sound = new Sound();
 
-        public static sf.SoundBuffer cityGate1Buffer = new sf.SoundBuffer();
-        public static sf.SoundBuffer cityGate2Buffer = new sf.SoundBuffer();
-        public static sf.SoundBuffer cityGate3Buffer = new sf.SoundBuffer();
-        public static sf.Sound cityGate1Sound = new sf.Sound();
-        public static sf.Sound cityGate2Sound = new sf.Sound();
-        public static sf.Sound cityGate3Sound = new sf.Sound();
+        public static SoundBuffer cityGate1Buffer;
+        public static SoundBuffer cityGate2Buffer;
+        public static SoundBuffer cityGate3Buffer;
+        public static Sound cityGate1Sound = new Sound();
+        public static Sound cityGate2Sound = new Sound();
+        public static Sound cityGate3Sound = new Sound();
 
-        public static sf.SoundBuffer[] encounterBuffers = Arrays.InitializeWithDefaultInstances<SoundBuffer>(5);
+        public static SoundBuffer[] encounterBuffers = new SoundBuffer[5];
 
-        public static sf.Sound encounterThemeSound = new sf.Sound();
+        public static Sound encounterThemeSound = new Sound();
 
-        public static sf.Music shopMusic = new sf.Music();
+        public static Music shopMusic;
 
-        public static sf.SoundSource.Status encounterThemeStatus = new sf.SoundSource.Status();
+        public static SoundStatus encounterThemeStatus;
 
         public static bool musicPlaying = false;
 
         public static void InitEncounterThemes ()
         {
-            encounterBuffers[0].loadFromFile("data/audio/cityEncounter2.ogg");
-            encounterBuffers[1].loadFromFile("data/audio/cityEncounter1.ogg");
-            encounterBuffers[2].loadFromFile("data/audio/e1.ogg");
-            encounterBuffers[3].loadFromFile("data/audio/e2.ogg");
-            encounterBuffers[4].loadFromFile("data/audio/e3.ogg");
+            //Lazy load sound
+            encounterBuffers[0] = new SoundBuffer("data/audio/cityEncounter2.ogg");
+            encounterBuffers[1] = new SoundBuffer("data/audio/cityEncounter1.ogg");
+            encounterBuffers[2] = new SoundBuffer("data/audio/e1.ogg");
+            encounterBuffers[3] = new SoundBuffer("data/audio/e2.ogg");
+            encounterBuffers[4] = new SoundBuffer("data/audio/e3.ogg");
         }
 
         public static void PlayEncounterTheme ( int number )
         {
-            encounterThemeSound.setBuffer(encounterBuffers[number]);
-            encounterThemeSound.play();
+            encounterThemeSound.SoundBuffer = encounterBuffers[number];
+            encounterThemeSound.Play();
         }
 
         public static bool EncounterThemeNotPlaying ()
         {
-            encounterThemeStatus = encounterThemeSound.getStatus();
+            encounterThemeStatus = encounterThemeSound.Status;
 
-            return encounterThemeStatus == sf.Sound.Stopped;
+            return encounterThemeStatus == SoundStatus.Stopped;
         }
 
         public static void PlayShopMusic ( int musicNo )
         {
             if (!musicPlaying)
             {
-                if (musicNo == 1)
-                    shopMusic.openFromFile("data/audio/trolls.ogg");
-                if (musicNo == 2)
-                    shopMusic.openFromFile("data/audio/goblins.ogg");
-                if (musicNo == 3)
-                    shopMusic.openFromFile("data/audio/chapel.ogg");
-                if (musicNo == 4)
-                    shopMusic.openFromFile("data/audio/B/trolls.ogg");
-                if (musicNo == 5)
-                    shopMusic.openFromFile("data/audio/B/goblins.ogg");
-                if (musicNo == 6)
-                    shopMusic.openFromFile("data/audio/B/chapel.ogg");
-                shopMusic.play();
+                string filename;
+                switch (musicNo)
+                {
+                    case 1: filename = "data/audio/trolls.ogg"; break;
+                    case 2: filename = "data/audio/goblins.ogg"; break;
+                    case 3: filename = "data/audio/chapel.ogg"; break;
+                    case 4: filename = "data/audio/B/trolls.ogg"; break;
+                    case 5: filename = "data/audio/B/goblins.ogg"; break;
+                    case 6: filename = "data/audio/B/chapel.ogg"; break;
+
+                    default: throw new InvalidOperationException("Unknown music");
+                };
+
+                shopMusic = new Music(filename);
+                shopMusic.Play();
                 musicPlaying = true;
             }
         }
@@ -86,86 +89,86 @@ namespace P3Net.Arx
         public static void StopShopMusic ()
         {
             musicPlaying = false;
-            shopMusic.stop();
+            shopMusic.Stop();
         }
 
         public static void InitCityGateSounds ()
         {
-            cityGate1Buffer.loadFromFile("data/audio/cityGate1.ogg");
-            cityGate1Sound.setBuffer(cityGate1Buffer);
+            cityGate1Buffer = new SoundBuffer("data/audio/cityGate1.ogg");
+            cityGate1Sound.SoundBuffer = cityGate1Buffer;
 
-            cityGate2Buffer.loadFromFile("data/audio/cityGate3v2.ogg");
-            cityGate2Sound.setBuffer(cityGate2Buffer);
+            cityGate2Buffer =  new SoundBuffer("data/audio/cityGate3v2.ogg");
+            cityGate2Sound.SoundBuffer = cityGate2Buffer;
 
-            cityGate3Buffer.loadFromFile("data/audio/cityGate4.ogg");
-            cityGate3Sound.setBuffer(cityGate3Buffer);
+            cityGate3Buffer = new SoundBuffer("data/audio/cityGate4.ogg");
+            cityGate3Sound.SoundBuffer = cityGate3Buffer;
         }
 
         public static void InitDungeonGateSounds ()
         {
-            dungeonGate1Buffer.loadFromFile("data/audio/gate1.wav");
-            dungeonGate1Sound.setBuffer(dungeonGate1Buffer);
-            dungeonGate1Sound.setLoop(true);
+            dungeonGate1Buffer = new SoundBuffer("data/audio/gate1.wav");
+            dungeonGate1Sound.SoundBuffer = dungeonGate1Buffer;
+            dungeonGate1Sound.Loop = true;
 
-            dungeonGate2Buffer.loadFromFile("data/audio/gate2.wav");
-            dungeonGate2Sound.setBuffer(dungeonGate2Buffer);
+            dungeonGate2Buffer = new SoundBuffer("data/audio/gate2.wav");
+            dungeonGate2Sound.SoundBuffer = dungeonGate2Buffer;
         }
 
         public static void PlayDungeonGateSound1 ()
         {
-            dungeonGate1Sound.play();
+            dungeonGate1Sound.Play();
         }
 
         public static void PlayDungeonGateSound2 ()
         {
-            dungeonGate2Sound.play();
+            dungeonGate2Sound.Play();
         }
 
         public static void StopDungeonGateSound1 ()
         {
-            dungeonGate1Sound.stop();
+            dungeonGate1Sound.Stop();
         }
 
         public static void StopDungeonGateSound2 ()
         {
-            dungeonGate2Sound.stop();
+            dungeonGate2Sound.Stop();
         }
 
         public static void PlayCityGateSound1 ()
         {
-            cityGate1Sound.play();
+            cityGate1Sound.Play();
         }
 
         public static void PlayCityGateSound2 ()
         {
-            cityGate2Sound.play();
+            cityGate2Sound.Play();
         }
 
         public static void PlayCityGateSound3 ()
         {
-            cityGate3Sound.play();
+            cityGate3Sound.Play();
         }
 
         public static void StopCityGateSound1 ()
         {
-            cityGate1Sound.stop();
+            cityGate1Sound.Stop();
         }
 
         public static void StopCityGateSound2 ()
         {
-            cityGate2Sound.stop();
+            cityGate2Sound.Stop();
         }
 
         public static void StopCityGateSound3 ()
         {
-            cityGate3Sound.stop();
+            cityGate3Sound.Stop();
         }
 
         public static void PlaySpellSound ()
         {
-            spellSoundBuffer.loadFromFile("data/audio/spell.wav");
-            spellSound.setBuffer(spellSoundBuffer);
-            spellSound.play();
+            spellSoundBuffer = new SoundBuffer("data/audio/spell.wav");
+            spellSound.SoundBuffer = spellSoundBuffer;
+            spellSound.Play();
         }
 
         //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:

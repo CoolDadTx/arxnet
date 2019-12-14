@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using SFML.Audio;
 
 namespace P3Net.Arx
 {
@@ -234,7 +235,7 @@ namespace P3Net.Arx
             }
         };
 
-        public static sf.Music tavernMusic = new sf.Music();
+        public static Music tavernMusic;
         public static int tavernNo;
 
         //MLT: Double to float, int to boolean
@@ -463,7 +464,7 @@ namespace P3Net.Arx
 
             int workingHours = 0;
             int hourlyRate;
-            int jobIncome;
+            int jobIncome = 0;
             descriptionPointer = 0;
             eatDrinkDescriptions[0] = "";
             eatDrinkDescriptions[1] = "";
@@ -472,12 +473,12 @@ namespace P3Net.Arx
 
             tavernNo = GetTavernNo();
 
-            tavernMusic.setLoop(false);
+            tavernMusic.Loop = false;
             var musicPlaying = false;
             var tavernMenu = 1; // high level menu
             var tavernLoc = 0; // bar, table or booth
 
-            plyr.status = 2; // shopping
+            plyr.status = GameStates.Module; // shopping
 
             if ((Taverns[tavernNo].closingHour <= plyr.hours) || (Taverns[tavernNo].openingHour > plyr.hours))
                 tavernMenu = 20;
@@ -505,8 +506,7 @@ namespace P3Net.Arx
 
                     TavernDisplayUpdate();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    var str = $"We are open from {Itos(Taverns[tavernNo].openingHour)}:00 in the {openingText}@to {Itos(Taverns[tavernNo].closingHour)}:00 in the {closingText}.";
-                    CyText(4, str);
+                    CyText(4, $"We are open from {Itos(Taverns[tavernNo].openingHour)}:00 in the {openingText}@to {Itos(Taverns[tavernNo].closingHour)}:00 in the {closingText}.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
 
@@ -603,66 +603,36 @@ namespace P3Net.Arx
 
                     if (!musicPlaying)
                     {
-                        var Random = Randn(1, 5);
-                        if (plyr.musicStyle == 0)
-                        {
-                            if (Random == 1)
-                            {
-                                tavernMusic.openFromFile("data/audio/dwarfdance.ogg");
-                                lyricsFilename = "dwarfdance.txt";
-                            }
-                            if (Random == 2)
-                            {
-                                tavernMusic.openFromFile("data/audio/thoreandan.ogg");
-                                lyricsFilename = "thoreandan.txt";
-                            }
-                            if (Random == 3)
-                            {
-                                tavernMusic.openFromFile("data/audio/waves.ogg");
-                                lyricsFilename = "waves.txt";
-                            }
-                            if (Random == 4)
-                            {
-                                tavernMusic.openFromFile("data/audio/moments.ogg");
-                                lyricsFilename = "moments.txt";
-                            }
-                            if (Random == 5)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/TheNightstalker.ogg");
-                                lyricsFilename = "TheNightstalker.txt";
-                            }
-                        }
-                        if (plyr.musicStyle == 1)
-                        {
-                            if (Random == 1)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/dwarfdance.ogg");
-                                lyricsFilename = "dwarfdance.txt";
-                            }
-                            if (Random == 2)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/thoreandan.ogg");
-                                lyricsFilename = "thoreandan.txt";
-                            }
-                            if (Random == 3)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/waves.ogg");
-                                lyricsFilename = "waves.txt";
-                            }
-                            if (Random == 4)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/LetInTheLight.ogg");
-                                lyricsFilename = "LetInTheLight.txt";
-                            }
-                            if (Random == 5)
-                            {
-                                tavernMusic.openFromFile("data/audio/B/TheNightstalker.ogg");
-                                lyricsFilename = "TheNightstalker.txt";
-                            }
-                        }
+                        var newMusic = plyr.musicStyle;
 
+
+                        //TODO: Normalize file system
+                        var musicPath = newMusic ? "data/audio/B/" : "data/audio";
+                        string musicFile;
+
+                        switch(Randn(1, 5))
+                        {
+                            case 1: musicFile = "dwarfdance.ogg"; break;
+                            case 2: musicFile = "thoreandan.ogg"; break;
+                            case 3: musicFile = "waves.ogg"; break;
+                            case 4:
+                            {
+                                //TODO: Fix the differences
+                                musicPath = "data/audio/B/";
+                                musicFile = newMusic ? "LetInTheLight.ogg" : "moments.ogg"; 
+                                break;
+                            };
+                            case 5: musicFile = "TheNightstalker.ogg"; break;
+
+                            default: throw new InvalidOperationException("Unknown music");                         
+                        };
+
+                        var lyricsFilename = System.IO.Path.ChangeExtension(musicFile, ".txt");
+
+                        tavernMusic = new Music(musicPath + musicFile);                        
                         LoadLyrics(lyricsFilename);
-                        tavernMusic.play();
+
+                        tavernMusic.Play();
                         musicPlaying = true;
                     }
 
@@ -691,9 +661,9 @@ namespace P3Net.Arx
                         tavernMenu = 0;
                     if (key == "F1")
                     {
-                        tavernMusic.stop();
+                        tavernMusic.Stop();
                         LoadLyrics(lyricsFilename);
-                        tavernMusic.play();
+                        tavernMusic.Play();
                     }
                 }
 
@@ -714,7 +684,7 @@ namespace P3Net.Arx
                     {
                         BText(7, 0, "You are in a private booth.");
                         BText(7, 3, "A smokey torch  A few nuts");
-                        tavernMusic.stop();
+                        tavernMusic.Stop();
                         musicPlaying = false;
                     }
                     BText(7, 4, " ) Hail the Barkeeper");
@@ -760,7 +730,7 @@ namespace P3Net.Arx
                     tavernNo = GetTavernNo();
                     for (var i = 0; i < 6; i++)
                     {
-                        var itemNo = tavernDailyDrinks[tavernNo][i];
+                        var itemNo = tavernDailyDrinks[tavernNo, i];
                         str = $") {tavernDrinks[itemNo].name}";
                         BText(3, (2 + i), str); //was 4
                         BText(1, (2 + i), "                                 coppers");
@@ -770,7 +740,7 @@ namespace P3Net.Arx
                     for (var i = 0; i < 6; i++) // Max 6 drink items on menu each day
                     {
                         var x = 33;
-                        int itemNo = tavernDailyDrinks[tavernNo][i];
+                        int itemNo = tavernDailyDrinks[tavernNo, i];
 
                         //MLT: Downcast to int
                         var itemCost = (int)(Taverns[tavernNo].priceFactor * tavernDrinks[itemNo].basePrice);
@@ -836,7 +806,7 @@ namespace P3Net.Arx
                 while (tavernMenu == 4) // Attempt to buy a drink
                 {
                     tavernNo = GetTavernNo();
-                    drinkNo = tavernDailyDrinks[tavernNo][drinkChoice];
+                    drinkNo = tavernDailyDrinks[tavernNo, drinkChoice];
 
                     //MLT: Downcast to int
                     drinkCost = (int)(Taverns[tavernNo].priceFactor * tavernDrinks[drinkNo].basePrice);
@@ -890,7 +860,7 @@ namespace P3Net.Arx
                     tavernNo = GetTavernNo();
                     for (var i = 0; i < 6; i++)
                     {
-                        var itemNo = tavernDailyFoods[tavernNo][i];
+                        var itemNo = tavernDailyFoods[tavernNo, i];
                         BText(3, (2 + i), $") {tavernFoods[itemNo].name}");
                         BText(1, (2 + i), "                                 coppers");
                     }
@@ -899,7 +869,7 @@ namespace P3Net.Arx
                     for (var i = 0; i < 6; i++) // Max 6 drink items on menu each day
                     {
                         var x = 33;
-                        var itemNo = tavernDailyFoods[tavernNo][i];
+                        var itemNo = tavernDailyFoods[tavernNo, i];
 
                         //MLT: Downcast to int
                         var itemCost = (int)(Taverns[tavernNo].priceFactor * tavernFoods[itemNo].basePrice);
@@ -966,7 +936,7 @@ namespace P3Net.Arx
                 while (tavernMenu == 8) // Attempt to buy food
                 {
                     tavernNo = GetTavernNo();
-                    foodNo = tavernDailyFoods[tavernNo][foodChoice];
+                    foodNo = tavernDailyFoods[tavernNo, foodChoice];
 
                     //MLT: Downcast to int
                     foodCost = (int)(Taverns[tavernNo].priceFactor * tavernFoods[foodNo].basePrice);
@@ -1085,7 +1055,7 @@ namespace P3Net.Arx
                         TavernDisplayUpdate();
                         CyText(2, "WORKING");
                         UpdateDisplay();
-                        sf.sleep(sf.seconds(1));
+                        Sleep(TimeSpan.FromSeconds(1));
                         for (var i = 0; i < 60; i++) // 60 minutes
                         {
                             //sf::sleep(0.01f);
@@ -1159,7 +1129,7 @@ namespace P3Net.Arx
                 }
             }
             if (musicPlaying)
-                tavernMusic.stop();
+                tavernMusic.Stop();
             LeaveShop();
         }
 
@@ -1187,7 +1157,7 @@ namespace P3Net.Arx
 
                         if (!tavernDrinksCheck[tavernNo, itemNo])
                         {
-                            tavernDailyDrinks[tavernNo][waresNo] = itemNo; // its not a duplicate
+                            tavernDailyDrinks[tavernNo, waresNo] = itemNo; // its not a duplicate
                             tavernDrinksCheck[tavernNo, itemNo] = true;
                             uniqueItem = true;
                         }
@@ -1220,7 +1190,7 @@ namespace P3Net.Arx
 
                         if (!tavernFoodsCheck[tavernNo, itemNo])
                         {
-                            tavernDailyFoods[tavernNo][waresNo] = itemNo; // its not a duplicate
+                            tavernDailyFoods[tavernNo, waresNo] = itemNo; // its not a duplicate
                             tavernFoodsCheck[tavernNo, itemNo] = true;
                             uniqueItem = true;
                         }
@@ -1231,7 +1201,7 @@ namespace P3Net.Arx
 
         public static void TavernDisplayUpdate ()
         {
-            clock1.restart();
+            clock1.Restart();
             ClearShopDisplay();
             UpdateLyrics();
             iCounter++;
