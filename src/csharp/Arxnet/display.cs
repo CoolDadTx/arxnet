@@ -8,10 +8,15 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using SFML;
+
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
+using OpenTK;
+using Arxnet.OpenTK.Compatibility;
 
 namespace P3Net.Arx
 {
@@ -32,7 +37,7 @@ namespace P3Net.Arx
             var styles = windowMode == 0 ? Styles.Close : Styles.Fullscreen;
 
             App = new RenderWindow(new VideoMode((uint)windowWidth, (uint)windowHeight), title, styles);
-            
+
             // Print OpenGL settings to game console for information
             var settings = App.Settings;
             Console.Write("Welcome to Alternate Reality X ");
@@ -63,9 +68,12 @@ namespace P3Net.Arx
             Console.Write("\n");
             Console.Write("\n");
             Console.Write("\n");
-
+            
             // Limit the framerate to 60 frames per second (this step is optional)
             App.SetFramerateLimit(60);
+
+            //Initialize OpenTK
+            OpenTKContext.Initialize(App.SystemHandle);
         }
 
         public static void SetTileImage ( int tile_no )
@@ -263,35 +271,35 @@ namespace P3Net.Arx
         {
             SetScreenValues();
             /* Set up window based on choice of display option NOT screen resolution */
-            glEnable(GL_TEXTURE_2D); // enable texture mapping
-            glShadeModel(GL_SMOOTH); // Enable Smooth Shading
-            glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+            GL.Enable(EnableCap.Texture2D);         // enable texture mapping
+            GL.ShadeModel(ShadingModel.Smooth);     // Enable Smooth Shading
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
 
             // Set color and depth clear value
-            glClearDepth(1.0f);
+            GL.ClearDepth(1);
 
             // Enable Z-buffer read and write
-            glEnable(GL_DEPTH_TEST);
-            glDepthMask(GL_TRUE);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthMask(true);
 
             // Setup a perspective projection
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
 
             /* Original small 3D view */
+            Glu.Perspective(45, (float)viewWidth / viewHeight, 0.1, 100);
             if (graphicMode < 2)
-            {
-                gluPerspective(45.0f, (GLfloat)viewWidth / (GLfloat)viewHeight, 0.1f, 100.0f);
+            {                                
                 var z = windowHeight - (viewPortY + viewHeight);
-                glViewport(viewPortX, z, viewWidth, viewHeight);
-                glTranslatef(0.0f, 0.0f, -1.0f); // -2.4f  - move x units into the screen. was 1.0
+
+                GL.Viewport(viewPortX, z, viewWidth, viewHeight);
+                GL.Translate(0.0, 0.0, -1.0); 
             } else
             {
-                gluPerspective(45.0f, (GLfloat)viewWidth / (GLfloat)viewHeight, 0.1f, 100.0f);
-                glTranslatef(0.0f, 0.0f, -1.2f); // -2.4f  - move x units into the screen. was 1.0
+                GL.Translate(0.0, 0.0, -1.2);
             }
 
-            glMatrixMode(GL_MODELVIEW);
+            GL.MatrixMode(MatrixMode.Modelview);
         }
 
         public static void DrawConsoleBackground ()
@@ -432,7 +440,7 @@ namespace P3Net.Arx
 
         public static void ClearDisplay ()
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             App.PushGLStates();
         }
 

@@ -8,20 +8,23 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+
 using SFML.Graphics;
 using SFML.System;
+
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+
+using PrimitiveType = OpenTK.Graphics.OpenGL.PrimitiveType;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
         public static void Draw3DView ()
-        {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {            
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             App.PushGLStates();
             Draw3DBackground(); // Draw SFML 2D item
             App.PopGLStates();
@@ -58,7 +61,7 @@ namespace P3Net.Arx
             }
 
             //TODO: Encapsulate this
-            var texture = (plyr.scenario == 2) ? background[44] : null;
+            var texture = (plyr.scenario == Scenarios.Arena) ? background[44] : null;
 
             switch (plyr.zoneSet)
             {
@@ -252,23 +255,27 @@ namespace P3Net.Arx
         }
 
         public static void BuildLevelView ()
-        {
-            glFogi(GL_FOG_MODE, fogMode[fogfilter]); // Fog Mode
-            glFogfv(GL_FOG_COLOR, fogColor); // Set Fog Color
-            glFogf(GL_FOG_DENSITY, 0.2f); // How Dense Will The Fog Be
-            glHint(GL_FOG_HINT, GL_DONT_CARE); // Fog Hint Value
-            glFogf(GL_FOG_START, 1.0f); // Fog Start Depth
-            glFogf(GL_FOG_END, 5.0f); // Fog End Depth
+        {                           
+            GL.Fog(FogParameter.FogMode, (int)fogMode[fogfilter]); // Fog Mode
+            GL.Fog(FogParameter.FogColor, fogColor); // Set Fog Color
+            GL.Fog(FogParameter.FogDensity, 0.2f); // How Dense Will The Fog Be            
+            
+            GL.Hint(HintTarget.FogHint, HintMode.DontCare);
+
+            GL.Fog(FogParameter.FogStart, 1F); // Fog Start Depth
+            GL.Fog(FogParameter.FogEnd, 5F); // Fog End Depth
 
             // Enable and disable fog based on area and could adjust fog properties here for zones
-            if ((plyr.scenario == 1) && (graphicMode == 2))
-                glEnable(GL_FOG); // Enables GL_FOG for the Dungeon
-            if ((plyr.scenario == 1) && (graphicMode == 1))
-                glEnable(GL_FOG); // Enables GL_FOG for the Dungeon
-            if ((plyr.scenario == 1) && (graphicMode == 0))
-                glDisable(GL_FOG); // Disables GL_FOG for the Dungeon
-            if (plyr.scenario == 0)
-                glDisable(GL_FOG); // Disable GL_FOG for City
+            if (plyr.scenario == Scenarios.Dungeon)
+            {
+                switch (graphicMode)
+                {
+                    case 0: GL.Disable(EnableCap.Fog); break;
+                    case 1: 
+                    case 2: GL.Enable(EnableCap.Fog); break;
+                };
+            } else if (plyr.scenario == Scenarios.City)
+                GL.Disable(EnableCap.Fog);
 
             // Start with 5 variables - columns, depth, plyr.x, plyr.y, plyr.facing
             // c and d hold current column and current depth value
@@ -323,26 +330,22 @@ namespace P3Net.Arx
                 texture_no = 52;
 
             if (plyr.zone != 99)
-            {
-                if (plyr.ceiling == 0)
-                    texture_no = zones[plyr.zoneSet].ceiling;
-                else
-                    texture_no = plyr.ceiling;
-            }
+                texture_no = (plyr.ceiling == 0) ? zones[plyr.zoneSet].ceiling : plyr.ceiling;
 
             if (texture_no != 0) // 0 = no ceiling texture
-            {
-                glBindTexture(GL_TEXTURE_2D, texture[texture_no]);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex3f(-25.0f + xm, 0.5, depthdistantfar + zm); // Bottom Left
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex3f(-23.0f + xm, 0.5, depthdistantfar + zm); // Bottom Right
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex3f(-23.0f + xm, 0.5, depthdistantnear + zm); // Top Right
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex3f(-25.0f + xm, 0.5, depthdistantnear + zm); // Top Left
-                glEnd();
+            {                
+                GL.BindTexture(TextureTarget.Texture2D, texture[texture_no]);
+
+                GL.Begin(PrimitiveType.Quads);
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(-25.0f + xm, 0.5, depthdistantfar + zm); // Bottom Left                
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(-23.0f + xm, 0.5, depthdistantfar + zm); // Bottom Right
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(-23.0f + xm, 0.5, depthdistantnear + zm); // Top Right
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(-25.0f + xm, 0.5, depthdistantnear + zm); // Top Left
+                GL.End();
             }
 
             // Draw floor
@@ -358,17 +361,17 @@ namespace P3Net.Arx
 
             if (texture_no != 0) // 0 = no floor texture
             {
-                glBindTexture(GL_TEXTURE_2D, texture[texture_no]);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex3f(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex3f(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex3f(-23.0f + xm, -0.5, depthdistantnear + zm); // Top Right
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex3f(-25.0f + xm, -0.5, depthdistantnear + zm); // Top Left
-                glEnd();
+                GL.BindTexture(TextureTarget.Texture2D, texture[texture_no]);
+                GL.Begin(PrimitiveType.Quads);
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(-23.0f + xm, -0.5, depthdistantnear + zm); // Top Right
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(-25.0f + xm, -0.5, depthdistantnear + zm); // Top Left
+                GL.End();
             }
 
             var midcol = ((columns - 1) / 2);
@@ -379,27 +382,30 @@ namespace P3Net.Arx
                 wall_type = leftwall;
                 if ((wall_type == 1) || (wall_type == 2))
                 {
-                    glEnable(GL_BLEND); // Enable Blending
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                }
+                    GL.Enable(EnableCap.Blend);
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                };
+
                 texture_no = GetTextureIndex(wall_type);
-                glBindTexture(GL_TEXTURE_2D, texture[texture_no]);
-                glBegin(GL_QUADS); // begin drawing walls
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex3f(-25.0f + xm, -0.5, depthdistantnear + zm); // Bottom Left
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex3f(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
+                GL.BindTexture(TextureTarget.Texture2D, texture[texture_no]);
+
+                GL.Begin(PrimitiveType.Quads); // begin drawing walls
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(-25.0f + xm, -0.5, depthdistantnear + zm); // Bottom Left
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
 
                 //MLT: Fix double to float conversion
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex3f(-25.0f + xm, -0.5F + leftheight, depthdistantfar + zm); // Top Right
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex3f(-25.0f + xm, -0.5F + leftheight, depthdistantnear + zm); // Top Left
-                glEnd();
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(-25.0f + xm, -0.5F + leftheight, depthdistantfar + zm); // Top Right
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(-25.0f + xm, -0.5F + leftheight, depthdistantnear + zm); // Top Left
+                GL.End();
+
                 if (((wall_type == 1) || (wall_type == 2))) // was 1
                 {
-                    glEnable(GL_DEPTH_TEST); // Enable Depth Testing
-                    glDisable(GL_BLEND);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Disable(EnableCap.Blend);
                 }
             }
 
@@ -408,28 +414,31 @@ namespace P3Net.Arx
                 wall_type = rightwall;
                 if ((wall_type == 1) || (wall_type == 2))
                 {
-                    glEnable(GL_BLEND); // Enable Blending
-                    glDisable(GL_DEPTH_TEST); // Disable Depth Testing
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                }
+                    GL.Enable(EnableCap.Blend);
+                    GL.Disable(EnableCap.DepthTest);
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                };
+
                 texture_no = GetTextureIndex(wall_type);
-                glBindTexture(GL_TEXTURE_2D, texture[texture_no]);
-                glBegin(GL_QUADS); // begin drawing walls
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex3f(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex3f(-23.0f + xm, -0.5, depthdistantnear + zm); // Bottom Right
+                GL.BindTexture(TextureTarget.Texture2D, texture[texture_no]);
+
+                GL.Begin(PrimitiveType.Quads); // begin drawing walls
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(-23.0f + xm, -0.5, depthdistantnear + zm); // Bottom Right
 
                 //MLT: Fix double to float conversion
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex3f(-23.0f + xm, -0.5F + rightheight, depthdistantnear + zm); // Top Right
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex3f(-23.0f + xm, -0.5F + rightheight, depthdistantfar + zm); // Top Left
-                glEnd();
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(-23.0f + xm, -0.5F + rightheight, depthdistantnear + zm); // Top Right
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(-23.0f + xm, -0.5F + rightheight, depthdistantfar + zm); // Top Left
+                GL.End();
+
                 if ((wall_type == 1) || (wall_type == 2))
                 {
-                    glEnable(GL_DEPTH_TEST); // Enable Depth Testing
-                    glDisable(GL_BLEND);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Disable(EnableCap.Blend);
                 }
             }
 
@@ -438,32 +447,34 @@ namespace P3Net.Arx
                 wall_type = frontwall;
                 if ((wall_type == 1) || (wall_type == 2))
                 {
-                    glEnable(GL_BLEND); // Enable Blending
-                    glDisable(GL_DEPTH_TEST); // Disable Depth Testing
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    GL.Enable(EnableCap.Blend);
+                    GL.Disable(EnableCap.DepthTest);                    
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                 }
                 texture_no = 0;
                 if (wall_type == 3)
                     texture_no = CheckCityDoors();
                 if (texture_no == 0)
                     texture_no = GetTextureIndex(wall_type);
-                glBindTexture(GL_TEXTURE_2D, texture[texture_no]);
-                glBegin(GL_QUADS); // begin drawing walls
-                glTexCoord2f(0.0f, 1.0f);
-                glVertex3f(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
-                glTexCoord2f(1.0f, 1.0f);
-                glVertex3f(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
+
+                GL.BindTexture(TextureTarget.Texture2D, texture[texture_no]);
+                GL.Begin(PrimitiveType.Quads); // begin drawing walls
+                GL.TexCoord2(0.0f, 1.0f);
+                GL.Vertex3(-25.0f + xm, -0.5, depthdistantfar + zm); // Bottom Left
+                GL.TexCoord2(1.0f, 1.0f);
+                GL.Vertex3(-23.0f + xm, -0.5, depthdistantfar + zm); // Bottom Right
 
                 //MLT: Fix double to float conversion
-                glTexCoord2f(1.0f, 0.0f);
-                glVertex3f(-23.0f + xm, -0.5F + frontheight, depthdistantfar + zm); // Top Right
-                glTexCoord2f(0.0f, 0.0f);
-                glVertex3f(-25.0f + xm, -0.5F + frontheight, depthdistantfar + zm); // Top Left
-                glEnd();
+                GL.TexCoord2(1.0f, 0.0f);
+                GL.Vertex3(-23.0f + xm, -0.5F + frontheight, depthdistantfar + zm); // Top Right
+                GL.TexCoord2(0.0f, 0.0f);
+                GL.Vertex3(-25.0f + xm, -0.5F + frontheight, depthdistantfar + zm); // Top Left
+                GL.End();
+
                 if ((wall_type == 1) || (wall_type == 2))
                 {
-                    glEnable(GL_DEPTH_TEST); // Enable Depth Testing
-                    glDisable(GL_BLEND);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Disable(EnableCap.Blend);                    
                 }
             }
         }
@@ -552,18 +563,22 @@ namespace P3Net.Arx
             // but here we want more control on it (generate mipmaps, ...) so we create a new one
 
             var imagePath = (graphicMode == 0) ? "data/images/textures_original/" : "data/images/textures_alternate/";
+            GL.GenTextures(numberOfTextures, out texture[0]);  // problem line - don't include in loop. Always 0???
 
-            glGenTextures(numberOfTextures, texture[0]); // problem line - don't include in loop. Always 0???
             for (var i = 0; i < numberOfTextures; i++)
             {
                 var filename = textureNames[i];
 
                 var img = new Image($"{imagePath}{filename}.png");
-                glBindTexture(GL_TEXTURE_2D, texture[i]);
-                gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, img.Size.X, img.Size.Y, GL_RGBA, GL_UNSIGNED_BYTE, img.Pixels);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLint)8.0f);
+                GL.BindTexture(TextureTarget.Texture2D, texture[i]);
+
+                //TODO: Does this work, X/Y are uints?
+                Glu.Build2DMipmap(TextureTarget.Texture2D, (int)All.Rgba, (int)img.Size.X, (int)img.Size.Y, PixelFormat.Rgba, PixelType.UnsignedByte, img.Pixels);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+
+                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)All.TextureMaxAnisotropyExt, 8);
             }
 
             // Need to delete SFML image...
@@ -592,13 +607,13 @@ namespace P3Net.Arx
         // Storage for textures
         public static readonly int numberOfTextures = 68;
         public static readonly int numberOfBackgrounds = 49; //was 46
-        public static GLuint[] texture = Arrays.InitializeWithDefaultInstances<GLuint>(numberOfTextures);
+        public static uint[] texture = new uint[numberOfTextures];
         public static Texture[] background = new Texture[numberOfBackgrounds];
         public static string[] textureNames = new string[numberOfTextures];
         public static string[] backgroundNames = new string[numberOfBackgrounds];
 
         public static int filter; // Which Filter To Use
-        public static int[] fogMode = { GL_EXP, GL_EXP2, GL_LINEAR }; // Storage For Three Types Of Fog
+        public static FogMode[] fogMode = new FogMode[] { FogMode.Exp, FogMode.Exp2, FogMode.Linear }; // Storage For Three Types Of Fog
         public static int fogfilter = 1; // Which Fog To Use
         public static float[] fogColor = { 0.0f, 0.0f, 0.0f, 1.0f }; // Fog Color
 

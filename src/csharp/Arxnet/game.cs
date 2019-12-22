@@ -492,7 +492,6 @@ namespace P3Net.Arx
             gameQuit = false;
 
             var smithyPlaying = false;
-            var timer = 0;
 
             while (Running)
             {
