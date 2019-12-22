@@ -3,13 +3,14 @@
 ## Must Haves
 
 - [X] Add SFML support
-- [ ] Add Glex support
-- [ ] Replace C++ file logic 
-- [ ] Replace iostream logic
-- [ ] Compile cleanly
+- [X] Add Glu support
+- [X] Replace C++ file logic 
+- [X] Replace iostream logic
+- [X] Compile cleanly (minus obsoletes and styling warnings)
 
 ## Architecture
 
+- [ ] Break out `GlobalMembers` in each file (and child types) into separate types based upon area
 - [ ] Create interface for sound so it can be replaced
 - [ ] Create interface for graphics so it can be replaced
 - [ ] Create a logging interface to allow logging info/warning/debug messages to console
@@ -33,7 +34,7 @@
 - [ ] Support unlimited # of items, spells, etc
 - [ ] Add extensibility points for adding new stuff (items, spells, etc)
 - [ ] Normalize music/graphics files so the various filename/path logic can be simplified
-- [ ] DirectX support
+- [ ] DirectX or Vulkan support?
 - [ ] Expand support for resolutions
 - [ ] Move all hard coded lists of stuff to data files
 - [ ] Make menu logic a standalone class that can be instantiated and used via delegates on demand

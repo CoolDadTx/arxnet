@@ -188,11 +188,11 @@ namespace P3Net.Arx
                         str = "Bank Policy - High Risk Account";
                     BText(2, 0, str);
 
-                    str = "1. Average interest " + Ftos(banks[bankNo].accounts[accountType].interest) + "% per day.";
+                    str = $"1. Average interest {banks[bankNo].accounts[accountType].interest}% per day.";
                     BText(2, 3, str);
                     str = "2. Has a mean failure rate of";
                     BText(2, 5, str);
-                    str = "approximately " + Ftos(banks[bankNo].accounts[accountType].failProb) + "% per day.";
+                    str = $"approximately {banks[bankNo].accounts[accountType].failProb}% per day.";
                     BText(5, 6, str);
 
                     UpdateDisplay();
@@ -351,7 +351,7 @@ namespace P3Net.Arx
                     {
                         var str = "We have an opening for a " + bankJobs[jobNumber].name;
                         CyText(0, str);
-                        str = "for " + Itos(bankJobOpenings[bankNo].jobHoursRequired) + " hours at " + Itos(bankJobOpenings[bankNo].jobHourlyIncome) + " coppers per hour.";
+                        str = $"for {bankJobOpenings[bankNo].jobHoursRequired} hours at {bankJobOpenings[bankNo].jobHourlyIncome} coppers per hour.";
                         CyText(1, str);
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
@@ -431,7 +431,7 @@ namespace P3Net.Arx
 
                     // CHECK FOR INJURY
                     CyText(2, "The job is completed.");
-                    var str = "You have earned " + Itos(jobIncome) + " coppers.";
+                    var str = $"You have earned {jobIncome} coppers.";
                     CyText(3, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
@@ -449,11 +449,11 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     BText(2, 0, "Account failures at our bank");
-                    var str = "Low Risk Account Failures:    " + Itos(banks[bankNo].accounts[0].failures);
+                    var str = $"Low Risk Account Failures:    {banks[bankNo].accounts[0].failures}";
                     BText(2, 2, str);
-                    str = "Medium Risk Account Failures: " + Itos(banks[bankNo].accounts[1].failures);
+                    str = $"Medium Risk Account Failures: {banks[bankNo].accounts[1].failures}";
                     BText(2, 4, str);
-                    str = "High Risk Account Failures:   " + Itos(banks[bankNo].accounts[2].failures);
+                    str = $"High Risk Account Failures:   {banks[bankNo].accounts[2].failures}";
                     BText(2, 6, str);
                     CyText(9, "(Press SPACE to continue)");
 
@@ -470,15 +470,15 @@ namespace P3Net.Arx
 
                     BText(2, 0, "Account Balances");
 
-                    var str = "Low Risk Account:    " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = $"Low Risk Account:    {plyr.bankAccountBalances[accountRef]}";
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "Low Risk Account:    Closed";
                     BText(2, 2, str);
-                    str = "Medium Risk Account: " + Itos(plyr.bankAccountBalances[accountRef + 1]);
+                    str = $"Medium Risk Account: {plyr.bankAccountBalances[accountRef + 1]}";
                     if (plyr.bankAccountStatuses[accountRef + 1] == 0)
                         str = "Medium Risk Account: Closed";
                     BText(2, 4, str);
-                    str = "High Risk Account:   " + Itos(plyr.bankAccountBalances[accountRef + 2]);
+                    str = $"High Risk Account:   {plyr.bankAccountBalances[accountRef + 2]}";
                     if (plyr.bankAccountStatuses[accountRef + 2] == 0)
                         str = "High Risk Account:   Closed";
                     BText(2, 6, str);
@@ -497,15 +497,15 @@ namespace P3Net.Arx
 
                     CyText(0, "Deposit in which account?");
 
-                    var str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = $"(1) Low Risk Account    : {plyr.bankAccountBalances[accountRef]}";
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "(1) Low Risk Account    : No account";
                     BText(2, 2, str);
-                    str = "(2) Medium Risk Account : " + Itos(plyr.bankAccountBalances[accountRef + 1]);
+                    str = $"(2) Medium Risk Account : {plyr.bankAccountBalances[accountRef + 1]}";
                     if (plyr.bankAccountStatuses[accountRef + 1] == 0)
                         str = "(2) Medium Risk Account : No account";
                     BText(2, 3, str);
-                    str = "(3) High Risk Account   : " + Itos(plyr.bankAccountBalances[accountRef + 2]);
+                    str = $"(3) High Risk Account   : {plyr.bankAccountBalances[accountRef + 2]}";
                     if (plyr.bankAccountStatuses[accountRef + 2] == 0)
                         str = "(3) High Risk Account   : No account";
                     BText(2, 4, str);
@@ -579,15 +579,15 @@ namespace P3Net.Arx
 
                     CyText(0, "Withdraw from which account?");
 
-                    var str = "(1) Low Risk Account    : " + Itos(plyr.bankAccountBalances[accountRef]);
+                    var str = $"(1) Low Risk Account    : {plyr.bankAccountBalances[accountRef]}";
                     if (plyr.bankAccountStatuses[accountRef] == 0)
                         str = "(1) Low Risk Account    : No account";
                     BText(2, 2, str);
-                    str = "(2) Medium Risk Account : " + Itos(plyr.bankAccountBalances[accountRef + 1]);
+                    str = $"(2) Medium Risk Account : {plyr.bankAccountBalances[accountRef + 1]}";
                     if (plyr.bankAccountStatuses[accountRef + 1] == 0)
                         str = "(2) Medium Risk Account : No account";
                     BText(2, 3, str);
-                    str = "(3) High Risk Account   : " + Itos(plyr.bankAccountBalances[accountRef + 2]);
+                    str = $"(3) High Risk Account   : {plyr.bankAccountBalances[accountRef + 2]}";
                     if (plyr.bankAccountStatuses[accountRef + 2] == 0)
                         str = "(3) High Risk Account   :  No account";
                     BText(2, 4, str);
@@ -692,7 +692,7 @@ namespace P3Net.Arx
 
                     BText(2, 0, "The expert carefully examines");
                     BText(2, 2, "your find and informs you that");
-                    var str = "it is worth " + Itos(findValue) + " in gold pieces.";
+                    var str = $"it is worth {findValue} in gold pieces.";
                     BText(2, 4, str);
                     UpdateDisplay();
 

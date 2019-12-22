@@ -736,7 +736,7 @@ namespace P3Net.Arx
                 while (guildMenu == 3) // Join guild full membership menu
                 {
                     ClearGuildDisplay();
-                    var str = $"Dues are {Itos(guilds[guildNo].fullDues)} silvers.";
+                    var str = $"Dues are {guilds[guildNo].fullDues} silvers.";
                     CyText(2, str);
                     CyText(4, "Do you still wish to join? (Y or N)");
                     DisplaySilverCoins();
@@ -985,7 +985,7 @@ namespace P3Net.Arx
                 while (guildMenu == 101)
                 {
                     ClearGuildDisplay();
-                    var str = $"That will cost {Itos(itemQuantity)} silvers.";
+                    var str = $"That will cost {itemQuantity} silvers.";
                     CyText(2, str);
                     CyText(4, "Are you sure? (Y or N)");
                     DisplaySilverCoins();
@@ -1032,7 +1032,7 @@ namespace P3Net.Arx
                 while (guildMenu == 12) // Join guild associate membership menu
                 {
                     ClearGuildDisplay();
-                    var str = $"Dues are {Itos(guilds[guildNo].associateDues)} silvers.";
+                    var str = $"Dues are {guilds[guildNo].associateDues} silvers.";
                     CyText(2, str);
                     CyText(4, "Do you still wish to join? (Y or N)");
                     DisplaySilverCoins();

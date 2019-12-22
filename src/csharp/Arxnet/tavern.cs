@@ -506,7 +506,7 @@ namespace P3Net.Arx
 
                     TavernDisplayUpdate();
                     CyText(1, "Sorry, we are closed. Come back@during our working hours.");
-                    CyText(4, $"We are open from {Itos(Taverns[tavernNo].openingHour)}:00 in the {openingText}@to {Itos(Taverns[tavernNo].closingHour)}:00 in the {closingText}.");
+                    CyText(4, $"We are open from {Taverns[tavernNo].openingHour}:00 in the {openingText}@to {Taverns[tavernNo].closingHour}:00 in the {closingText}.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
 
@@ -994,7 +994,7 @@ namespace P3Net.Arx
                     } else
                     {
                         CyText(0, $"We have an opening for a {tavernJobs[jobNumber].name}");
-                        var str = $"for {Itos(tavernJobOpenings[tavernNo].JobHoursRequired)} hours at {Itos(tavernJobOpenings[tavernNo].jobHourlyIncome)} coppers per hour.";
+                        var str = $"for {tavernJobOpenings[tavernNo].JobHoursRequired} hours at {tavernJobOpenings[tavernNo].jobHourlyIncome} coppers per hour.";
                         CyText(1, str);
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
@@ -1018,6 +1018,7 @@ namespace P3Net.Arx
                     var statRequirement = tavernJobs[jobNumber].statRequirementValue;
                     var jobStatMet = false;
 
+                    //TODO: Don't use magic strings
                     // Check stat requirement met
                     if ((statRequirementName == "Strength") && (statRequirement <= plyr.str))
                         jobStatMet = true;
@@ -1073,7 +1074,7 @@ namespace P3Net.Arx
 
                     // CHECK FOR INJURY
                     CyText(2, "The job is completed.");
-                    CyText(3, $"You have earned {Itos(jobIncome)} coppers.");
+                    CyText(3, $"You have earned {jobIncome} coppers.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
                     var key = GetSingleKey();
@@ -1090,7 +1091,7 @@ namespace P3Net.Arx
                     //MLT: Downcast to int
                     var roundCost = (int)(80 * Taverns[tavernNo].priceFactor);
                     TavernDisplayUpdate();
-                    CyText(0, $"A round for the house will cost@@{Itos(roundCost)} coppers.@@@Dost thou still wish to buy? (Y or N)");
+                    CyText(0, $"A round for the house will cost@@{roundCost} coppers.@@@Dost thou still wish to buy? (Y or N)");
                     UpdateDisplay();
                     var key = GetSingleKey();
                     if (key == "Y")
@@ -1209,21 +1210,14 @@ namespace P3Net.Arx
 
         public static void TavernMessage ( string txt )
         {
+            var key = "";
             do
             {
                 ClearShopDisplay();
                 CText(txt);
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
-
-        //extern Player           plyr;
-        // extern sf::RenderWindow App;
-        //extern int tavernDailyFoods[14][6];
-        //extern int tavernDailyDrinks[14][6];
-        //extern sf::Clock clock1;
-
-        //extern int iCounter;
     }
 }

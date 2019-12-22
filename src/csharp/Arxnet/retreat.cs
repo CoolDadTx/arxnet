@@ -268,13 +268,13 @@ namespace P3Net.Arx
                     }
 
                     ClearShopDisplay();
-                    var str = $"Thou hast slept for {Itos(hoursSlept)} hours.";
+                    var str = $"Thou hast slept for {hoursSlept} hours.";
                     CyText(1, str);
-                    str = $"It is day {Itos(plyr.days)}";
+                    str = $"It is day {plyr.days}";
                     CyText(3, str);
                     str = $"in the month of {monthDesc}";
                     CyText(4, str);
-                    str = $"year {Itos(plyr.years)} since abduction.";
+                    str = $"year {plyr.years} since abduction.";
                     CyText(5, str);
                     UpdateDisplay();
                     var key = GetSingleKey();
@@ -286,8 +286,5 @@ namespace P3Net.Arx
                 plyr.retreatFriendship = 2;
             LeaveShop();
         }
-
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
     }
 }

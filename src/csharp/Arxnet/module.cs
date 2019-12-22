@@ -67,12 +67,12 @@ namespace P3Net.Arx
                     {
                         // Menu slot without an item
                         currentItemRefs[i] = 256; // No item to select
-                        BText(1, (2 + i), $"({Itos(i + 1)})");
+                        BText(1, (2 + i), $"({i + 1})");
                     } else
                     {
                         // Menu slot showing an item
                         currentItemRefs[i] = menuItems[currentItem].objRef;
-                        BText(1, (2 + i), $"({Itos(i + 1)}) {menuItems[currentItem].menuName}");
+                        BText(1, (2 + i), $"({i + 1}) {menuItems[currentItem].menuName}");
                         BText(27, (2 + i), menuItems[currentItem].menuPrice);
                     };
                 };

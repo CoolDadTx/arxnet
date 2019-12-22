@@ -97,9 +97,6 @@ namespace P3Net.Arx
             }
         }
 
-        [Obsolete("Use ToString")]
-        public static string Ftos ( float i ) => i.ToString();
-
         public static void Initcharacter ()
         {
             for (var i = 0; i < saveGameSize; i++)
@@ -111,9 +108,6 @@ namespace P3Net.Arx
             //TODO: Ignoring fixed saved game slots 0-9
             saveGameDescriptions = File.ReadAllLines("data/saves/saveGames.txt");
         }
-
-        [Obsolete("Use ToString")]
-        public static string Itos ( int i ) => i.ToString();
 
         public static bool LoadCharacter ( int saveSlot )
         {
@@ -748,7 +742,7 @@ namespace P3Net.Arx
             }
 
             character[28538] = plyr.name;
-            character[28539] = Ftos(plyr.z_offset);
+            character[28539] = plyr.z_offset.ToString();
             character[28540] = "Release 0.80";
 
             File.WriteAllLines($"data/saves/save{saveSlot}.txt", character);            

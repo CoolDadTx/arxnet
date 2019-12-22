@@ -212,8 +212,8 @@ namespace P3Net.Arx
                     }
 
                     // add look up prov cost here
-                    provMessage = "How many " + provisionDescription + " do you want@@at " + Itos(provisionCost) + " silvers each?";
-                    var atHandMessage = "I only have " + Itos(provisionStock) + " to hand.";
+                    provMessage = $"How many {provisionDescription} do you want@@at {provisionCost} silvers each?";
+                    var atHandMessage = $"I only have {provisionStock} to hand.";
                     quantity = InputNumber(provMessage);
                     if (quantity > provisionStock)
                     {
@@ -228,9 +228,9 @@ namespace P3Net.Arx
                     }
                     total = quantity * provisionCost;
                     if (quantity == 1)
-                        provMessage = "That will be " + Itos(provisionCost) + " silvers for one of@my fine " + provisionDescription + ".";
+                        provMessage = $"That will be {provisionCost} silvers for one of@my fine {provisionDescription}.";
                     if (quantity > 1)
-                        provMessage = "Let's see..." + Itos(quantity) + " " + provisionDescription + " at@" + Itos(provisionCost) + " silvers each comes to a total@of " + Itos(total) + " silvers.";
+                        provMessage = $"Let's see...{quantity} {provisionDescription} at@{provisionCost} silvers each comes to a total@of {total} silvers.";
                     bool keyNotPressed = true;
                     while (keyNotPressed)
                     {
@@ -874,7 +874,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 9) // Insufficient gems!
                 {
-                    var str = "You have only " + Itos(plyr.gems) + "!";
+                    var str = $"You have only {plyr.gems}!";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
@@ -889,7 +889,7 @@ namespace P3Net.Arx
                     var silverFromGems = totalSilvers % 10;
                     var goldFromGems = (totalSilvers - silverFromGems) / 10;
 
-                    var str = "Here is " + Itos(goldFromGems) + " gold and " + Itos(silverFromGems) + " silver coins.";
+                    var str = $"Here is {goldFromGems} gold and {silverFromGems} silver coins.";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
@@ -917,7 +917,7 @@ namespace P3Net.Arx
 
                 while (damonMenu == 12) // Insufficient jewels!
                 {
-                    var str = "You have only " + Itos(plyr.jewels) + "!";
+                    var str = $"You have only {plyr.jewels}!";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();
@@ -931,7 +931,7 @@ namespace P3Net.Arx
                     var totalSilvers = 32 * jewelsToSell;
                     var silverFromjewels = totalSilvers % 10;
                     var goldFromjewels = (totalSilvers - silverFromjewels) / 10;
-                    var str = "Here is " + Itos(goldFromjewels) + " gold and " + Itos(silverFromjewels) + " silver coins.";
+                    var str = $"Here is {goldFromjewels} gold and {silverFromjewels} silver coins.";
                     ClearShopDisplay();
                     CyText(2, str);
                     UpdateDisplay();

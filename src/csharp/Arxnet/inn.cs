@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -568,7 +567,7 @@ namespace P3Net.Arx
                 while (InnMenu == 7) // Check time menu
                 {
                     ClearShopDisplay();
-                    var str = $"Hour {Itos(plyr.hours)} of day {Itos(plyr.days)}";
+                    var str = $"Hour {plyr.hours} of day {plyr.days}";
                     BText(7, 2, str);
 
                     var monthDesc = "";
@@ -613,7 +612,7 @@ namespace P3Net.Arx
                     }
                     str = $"In the month of {monthDesc}";
                     BText(7, 4, str);
-                    str = $"In year {Itos(plyr.years)} since abduction";
+                    str = $"In year {plyr.years} since abduction";
                     BText(7, 6, str);
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
@@ -641,7 +640,7 @@ namespace P3Net.Arx
                     } else
                     {
                         CyText(0, $"We have an opening for a {innJobs[jobNumber].name}");
-                        CyText(1, $"for {Itos(innJobOpenings[InnNo].JobHoursRequired)} hours at {Itos(innJobOpenings[InnNo].jobHourlyIncome)} coppers per hour.");
+                        CyText(1, $"for {innJobOpenings[InnNo].JobHoursRequired} hours at {innJobOpenings[InnNo].jobHourlyIncome} coppers per hour.");
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
                         SetFontColour(40, 96, 244, 255);
@@ -716,7 +715,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
                     // CHECK FOR INJURY
                     CyText(2, "The job is completed.");
-                    CyText(3, $"You have earned {Itos(jobIncome)} coppers.");
+                    CyText(3, $"You have earned {jobIncome} coppers.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
                     var key = GetSingleKey();
@@ -730,8 +729,5 @@ namespace P3Net.Arx
             }
             LeaveShop();
         }
-
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
     }
 }

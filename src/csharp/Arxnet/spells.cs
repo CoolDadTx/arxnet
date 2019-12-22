@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -180,7 +179,7 @@ namespace P3Net.Arx
                         {
                             case GameStates.Encounter: DrawEncounterView(); break;
                             case GameStates.Explore:
-                            case (GameStates)0: DispMain(); break;
+                            case 0: DispMain(); break;
                         };
                         
                         CyText(1, selectDesc);
@@ -202,7 +201,7 @@ namespace P3Net.Arx
 
                         while ((cur_idx < plyr.spellIndex) && (page_item < 5))
                         {
-                            var str = $"{spells[(spellBuffer[cur_idx].no)].name} {Itos(spellBuffer[cur_idx].percentage)}%";
+                            var str = $"{spells[(spellBuffer[cur_idx].no)].name} {spellBuffer[cur_idx].percentage}%";
                             BText(9, (page_item + 2), str);
                             switch (page_item)
                             {
@@ -295,7 +294,7 @@ namespace P3Net.Arx
                     case (GameStates)0: DispMain(); break;
                 };
                 
-                CyText(3, $"The spell failed@@and backfired for {Itos(spellPoints)}!");
+                CyText(3, $"The spell failed@@and backfired for {spellPoints}!");
                 UpdateDisplay();
                 var key = GetSingleKey();
                 if (key != "")
@@ -303,8 +302,5 @@ namespace P3Net.Arx
             }
             // update ring charges and hp
         }
-
-        //extern spellRecord spells[35];
-        //extern spellItem spellBuffer[35]; // learnt spells that can be cast
     }
 }

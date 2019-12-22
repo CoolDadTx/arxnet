@@ -98,7 +98,7 @@ namespace P3Net.Arx
             for (var waresNo = 0; waresNo < 11; waresNo++)
             {
                 menuItems[waresNo].menuName = itemNames[waresNo];
-                var str = $"{Itos(itemPrices[waresNo])}  ";
+                var str = $"{itemPrices[waresNo]}  ";
                 str = str.Remove(3, 7).Insert(3, "gems/jewels");
                 menuItems[waresNo].menuPrice = str;
                 menuItems[waresNo].objRef = waresNo;
@@ -475,7 +475,7 @@ namespace P3Net.Arx
                 CyText(1, $"@@Sorry, but I'm not interested in your@@{itemDesc}.");
             } else if (dmenu == DwarvenSmithyMenus.MenuSmithyMakesOffer)
             {
-                CyText(1, $"@@I will give you {Itos(itemValue)} silvers for@@your {itemDesc}.@@Okay? (Y or N)");
+                CyText(1, $"@@I will give you {itemValue} silvers for@@your {itemDesc}.@@Okay? (Y or N)");
             } else if (dmenu == DwarvenSmithyMenus.MenuNoFunds)
             {
                 CyText(1, "@@That's more than you have.");
@@ -503,7 +503,7 @@ namespace P3Net.Arx
                 CyText(1, $"Return in four days for your {customWeaponDesc}.@@It will be forged by then.");
             } else if (dmenu == DwarvenSmithyMenus.MenuBusyForging)
             {
-                var dayText = $"{Itos(plyr.forgeDays)} days";
+                var dayText = $"{plyr.forgeDays} days";
                 if (plyr.forgeDays == 1)
                     dayText = "1 day";
 
@@ -549,7 +549,7 @@ namespace P3Net.Arx
                 custonWeaponMinimum = 90;
             }
 
-            var gemsJewelsOffer = InputNumber($"I ask at least {Itos(custonWeaponMinimum)} gems or jewels for a@high-quality custom made {customWeaponDesc}.@How much are you prepared to offer?");
+            var gemsJewelsOffer = InputNumber($"I ask at least {custonWeaponMinimum} gems or jewels for a@high-quality custom made {customWeaponDesc}.@How much are you prepared to offer?");
 
             var playerGems = CalculateGemsAndJewelsTotal();
             if (gemsJewelsOffer < custonWeaponMinimum)

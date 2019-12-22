@@ -1094,7 +1094,7 @@ namespace P3Net.Arx
                                 // Display guild ring name and charges
                                 if (itemBuffer[cur_idx].type == 201)
                                     //str = questItems[(itemBuffer[cur_idx].index)].name;
-                                    str = (questItems[(itemBuffer[cur_idx].index)].name) + " [" + Itos(plyr.ringCharges) + "]";
+                                    str = (questItems[(itemBuffer[cur_idx].index)].name) + $" [{plyr.ringCharges}]";
 
                                 // Indicate items worn or in use as primary or secondary weapons
                                 if (cur_idx == plyr.priWeapon)

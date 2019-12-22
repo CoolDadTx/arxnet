@@ -11,7 +11,7 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Threading;
-using SFML.System;
+
 using SFML.Window;
 
 namespace P3Net.Arx
@@ -158,8 +158,6 @@ namespace P3Net.Arx
 
         public static int InputValue ( string message, int shopNo )
         {
-            var itemQuantity = 0;
-
             var inputText = "";
             var maxNumberSize = 6;
             var enterKeyNotPressed = true;
@@ -202,14 +200,11 @@ namespace P3Net.Arx
                 if (key == "RETURN")
                     enterKeyNotPressed = false;
                 if (key == "ESC")
-                {
-                    itemQuantity = 0;
                     enterKeyNotPressed = false;
-                }
             }
 
             //TODO: Does this work with RETURN, ESC
-            itemQuantity = Convert.ToInt32(inputText);
+            var itemQuantity = Convert.ToInt32(inputText);
 
             return itemQuantity;
         }
@@ -218,7 +213,7 @@ namespace P3Net.Arx
 
         public static void ModuleMessage ( string txt )
         {
-            var key = "";
+            string key;
             do
             {
                 ClearShopDisplay();
@@ -227,22 +222,6 @@ namespace P3Net.Arx
                 UpdateDisplay();
                 key = GetSingleKey();
             } while (key != "SPACE");
-        }
-
-        public static int OldRollDice ( int x, int y )
-        {
-            var result = 0;
-            if (x != 0)
-            {
-                var i = 1;
-                while (i <= x)
-                {
-                    int roll = Randn(0, y);
-                    result = result + roll;
-                    i++;
-                }
-            }
-            return result;
         }
 
         [Obsolete("Use Random class")]
@@ -419,10 +398,6 @@ namespace P3Net.Arx
             return keyString;
         }
 
-        //TODO: What do we do here?
-        public static void Sleep ( Time time ) => Thread.Sleep(time.AsMilliseconds());
-
-        //TODO: What do we do here?
         public static void Sleep ( TimeSpan time ) => Thread.Sleep(time);
 
         //TODO: This method does nothing, sorting rectangular arrays requires a reasonable amount of code and we honestly are going to remove the arrays anyway
@@ -441,6 +416,7 @@ namespace P3Net.Arx
             return result;
         }
         
+        //TODO: Create format providers for currency, time, percentage, currency in copper, etc
         /// <summary>Formats with thousands separator.</summary>
         /// <param name="i"></param>
         /// <returns></returns>

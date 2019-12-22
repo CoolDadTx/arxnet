@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -35,7 +34,7 @@ namespace P3Net.Arx
 
         public static void HealerShopHealWounds ()
         {
-            var str = $"Cure how many hits at@@ {Itos(healPrice)} coppers each?";
+            var str = $"Cure how many hits at@@ {healPrice} coppers each?";
             var hpToHealInput = InputValue(str, 14);
 
             var hpToHeal = hpToHealInput * healPrice;
@@ -204,9 +203,9 @@ namespace P3Net.Arx
                     BText(1, 5, "(3) Remove Alcohol");
                     BText(1, 6, "(0) None");
 
-                    BText(24, 3, $"{Itos(poisonsPrice)} coppers");
-                    BText(24, 4, $"{Itos(diseasesPrice)} coppers");
-                    BText(24, 5, $"{Itos(alcoholPrice)} coppers");
+                    BText(24, 3, $"{poisonsPrice} coppers");
+                    BText(24, 4, $"{diseasesPrice} coppers");
+                    BText(24, 5, $"{alcoholPrice} coppers");
 
                     DisplayCoins();
                     UpdateDisplay();
@@ -272,7 +271,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     CyText(1, "Shall I remove your delusions");
-                    CyText(2, $"for {Itos(clarityPrice)} coppers?");
+                    CyText(2, $"for {clarityPrice} coppers?");
                     CyText(5, "(Yes or No)");
                     DisplayCoins();
                     UpdateDisplay();
@@ -302,7 +301,7 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     CyText(1, "Shall I check for and diagnose disease");
-                    CyText(2, $"for {Itos(diagnosePrice)} coppers?");
+                    CyText(2, $"for {diagnosePrice} coppers?");
                     CyText(5, "(Yes or No)");
                     DisplayCoins();
                     UpdateDisplay();
@@ -331,8 +330,5 @@ namespace P3Net.Arx
             }
             LeaveShop();
         }
-
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
     }
 }

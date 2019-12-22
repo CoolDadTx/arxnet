@@ -237,6 +237,8 @@ namespace P3Net.Arx
         public static int flashCount;
         public static bool flashTextOn;
         public static int groundTurnsRemaining;
+
+        //TODO: Remove global variables
         public static string key;
         public static readonly int MAX_CONSOLE_MESSAGES = 10;
 
