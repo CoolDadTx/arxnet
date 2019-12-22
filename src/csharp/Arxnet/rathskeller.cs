@@ -330,7 +330,7 @@ namespace P3Net.Arx
                 var uniqueItem = false;
                 while (!uniqueItem)
                 {
-                    var itemNo = Randn(0, 40); // was 12
+                    var itemNo = Random(0, 40); // was 12
 
                     if (!rathskellerFoodDrinkCheck[itemNo])
                     {
@@ -350,14 +350,14 @@ namespace P3Net.Arx
         {
             if ((npcNotPresent) && (menu == RathSkellerMenus.MenuSeated))
             {
-                var npcCheck = Randn(1, 1000);
+                var npcCheck = Random(1, 1000);
                 if (npcCheck == 1)
                 {
-                    npcDescription = npcDescriptions[Randn(1, 4)];
-                    npcOpener = npcOpeners[Randn(1, 4)];
-                    npcRumour = npcRumours[Randn(1, 98)];
-                    npcDrinkCost = Randn(1, 8);
-                    npcMealCost = Randn(1, 18);
+                    npcDescription = npcDescriptions[Random(1, 4)];
+                    npcOpener = npcOpeners[Random(1, 4)];
+                    npcRumour = npcRumours[Random(1, 98)];
+                    npcDrinkCost = Random(1, 8);
+                    npcMealCost = Random(1, 18);
                     menu = RathSkellerMenus.MenuNpcEnters;
                     npcNotPresent = false;
                 }
@@ -492,7 +492,7 @@ namespace P3Net.Arx
         {
             if (!rathMusicPlaying)
             {
-                var randomSong = Randn(0, 2);
+                var randomSong = Random(0, 2);
                 if (randomSong == 1)
                     rathskellerMusic = new Music("data/audio/rathskeller.ogg");
                 else
@@ -657,7 +657,7 @@ namespace P3Net.Arx
             stillEating = 0;
             bar = true;
             npcNotPresent = true;
-            roundCost = Randn(5, 20);
+            roundCost = Random(5, 20);
             rathMusicPlaying = false;
 
             BuildFoodDrinkMenuOptions(); // Each visit currently

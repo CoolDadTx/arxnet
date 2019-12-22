@@ -194,10 +194,10 @@ namespace P3Net.Arx
                             roomProb = 60;
                         if (roomChoice == 2)
                             roomProb = 80;
-                        var actualSleepProb = Randn(0, 100);
+                        var actualSleepProb = Random(0, 100);
                         if (actualSleepProb <= roomProb)
                         {
-                            plyr.hp = plyr.hp + Randn(1, 5);
+                            plyr.hp = plyr.hp + Random(1, 5);
                             if (plyr.hp > plyr.maxhp)
                                 plyr.hp = plyr.maxhp;
                         }

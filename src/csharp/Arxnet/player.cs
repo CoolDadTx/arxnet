@@ -635,16 +635,16 @@ namespace P3Net.Arx
                 statBonuses[x] = 0;
 
             // Increase hit points
-            var hpIncrease = Randn(0, plyr.sta);
+            var hpIncrease = Random(0, plyr.sta);
             plyr.hp += hpIncrease;
             plyr.maxhp += hpIncrease;
 
             // Increase stats
             for (var x = 0; x < 7; ++x)
             {
-                var statBonus = Randn(1, 100); // roll to see if this stat will receive a bonus
+                var statBonus = Random(1, 100); // roll to see if this stat will receive a bonus
                 if (statBonus > 30)
-                    statBonuses[x] = Randn(0, 3);
+                    statBonuses[x] = Random(0, 3);
             }
 
             // Add the bonuses (which might be 0)

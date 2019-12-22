@@ -580,7 +580,7 @@ namespace P3Net.Arx
         {
             if (EncounterThemeNotPlaying())
             {
-                var encounter_check = Randn(0, plyr.stealth);
+                var encounter_check = Random(0, plyr.stealth);
                 if (encounter_check == 0)
                     ChooseEncounter();
             }
@@ -780,8 +780,8 @@ namespace P3Net.Arx
             // Determines whether the player or opponent have element of surprise
             // If player then go to encounterMenu 3
 
-            var playerStealth = Randn(1, plyr.stealth);
-            var opponentStealth = Randn(0, Opponents[0].stealth);
+            var playerStealth = Random(1, plyr.stealth);
+            var opponentStealth = Random(0, Opponents[0].stealth);
 
             var surpriseValue = -opponentStealth + playerStealth;
 
@@ -810,105 +810,105 @@ namespace P3Net.Arx
 
             var upperRange = 75;
 
-            var no_found = Randn(0, Opponents[0].tFood);
-            var found = Randn(0, upperRange); // Adjusted from upperRange to reduce volume item drops
+            var no_found = Random(0, Opponents[0].tFood);
+            var found = Random(0, upperRange); // Adjusted from upperRange to reduce volume item drops
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(1, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tWater);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tWater);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(2, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tTorches);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tTorches);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(3, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tTimepieces);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tTimepieces);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(4, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tCompasses);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tCompasses);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(5, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tKeys);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tKeys);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(6, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tCrystals);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tCrystals);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(7, no_found);
                 foundTreasure = true;
             }
 
-            no_found = Randn(0, Opponents[0].tGems);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tGems);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(8, no_found);
                 foundTreasure = true;
             }
-            no_found = Randn(0, Opponents[0].tJewels);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tJewels);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(9, no_found);
                 foundTreasure = true;
             }
-            no_found = Randn(0, Opponents[0].tGold);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tGold);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(10, no_found);
                 foundTreasure = true;
             }
-            no_found = Randn(0, Opponents[0].tSilver);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tSilver);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(11, no_found);
                 foundTreasure = true;
             }
-            no_found = Randn(0, Opponents[0].tCopper);
-            found = Randn(0, upperRange);
+            no_found = Random(0, Opponents[0].tCopper);
+            found = Random(0, upperRange);
             if ((no_found > 0) && (found <= plyr.treasureFinding))
             {
                 CreateGenericItem(12, no_found);
                 foundTreasure = true;
             }
 
-            found = Randn(0, 20);
+            found = Random(0, 20);
             if (found > 17)
             {
                 // No checking for suitability of encounter to be carrying potions yet
                 foundTreasure = true;
-                var potionType = Randn(0, 43);
-                var potionKnown = Randn(0, 100);
+                var potionType = Random(0, 43);
+                var potionKnown = Random(0, 100);
                 var potionRef = CreatePotion(potionType);
                 if (potionKnown > 90)
                     itemBuffer[potionRef].hp = 1; // Potion identified or labelled
@@ -983,7 +983,7 @@ namespace P3Net.Arx
             if ((plyr.timeOfDay != 1) && (plyr.scenario == Scenarios.City))
             {
                 var encCount = 0;
-                var monsterProb = Randn(0, 255);
+                var monsterProb = Random(0, 255);
                 for (var i = 0; i < 29; ++i) // 28???
                 {
                     if ((monsterProb >= encCount) && (monsterProb < dayEncTable[i].encProb + encCount))
@@ -996,7 +996,7 @@ namespace P3Net.Arx
             if ((plyr.timeOfDay == 1) && (plyr.scenario == Scenarios.City))
             {
                 var encCount = 0;
-                var monsterProb = Randn(0, 255);
+                var monsterProb = Random(0, 255);
                 for (var i = 0; i < 48; ++i)
                 {
                     if ((monsterProb >= encCount) && (monsterProb < nightEncTable[i].encProb + encCount))
@@ -1008,7 +1008,7 @@ namespace P3Net.Arx
             if ((plyr.scenario == Scenarios.Dungeon) && ((plyr.zone == 17) || (plyr.zone == 16))) // Dungeon - Well Lit Area
             {
                 var encCount = 0;
-                var monsterProb = Randn(0, 255);
+                var monsterProb = Random(0, 255);
                 for (var i = 0; i < 11; ++i)
                 {
                     if ((monsterProb >= encCount) && (monsterProb < wellLitEncTable[i].encProb + encCount))
@@ -1026,7 +1026,7 @@ namespace P3Net.Arx
             if ((plyr.scenario == Scenarios.Dungeon) && !((plyr.zone == 17) || (plyr.zone == 16)))
             {
                 var encCount = 0;
-                var monsterProb = Randn(0, 255);
+                var monsterProb = Random(0, 255);
                 for (var i = 0; i < DUNGEON_TABLE_ENCOUNTERS; ++i)
                 {
                     if ((monsterProb >= encCount) && (monsterProb < dungeonTable[i].encProb + encCount))
@@ -1549,7 +1549,7 @@ namespace P3Net.Arx
 
         public static void OpponentAttack ()
         {            
-            var bPart = Randn(0, 5);
+            var bPart = Random(0, 5);
             var bPartText = "you";
             var weaponName = "ERROR";
             var attackDesc = "ERROR";
@@ -1601,7 +1601,7 @@ namespace P3Net.Arx
                 hitProbability = 100;
 
             var str = "";
-            var hitRoll = Randn(1, 100);
+            var hitRoll = Random(1, 100);
             var hitSuccess = hitRoll <= hitProbability;
 
             if (!hitSuccess)
@@ -1639,7 +1639,7 @@ namespace P3Net.Arx
             // Check if player is knocked down and PLAYER STILL ALIVE
             if ((hitSuccess) && (!(playerOnGround)) && (plyr.hp >= 0))
             {
-                var grounded = Randn(0, 12);
+                var grounded = Random(0, 12);
                 if (grounded < 1)
                 {
                     playerOnGround = true;
@@ -1676,7 +1676,7 @@ namespace P3Net.Arx
             weaponReferences[5] = Opponents[0].w6;
 
             var chosenWeaponNo = 255;
-            var weaponProbability = Randn(1, 100);
+            var weaponProbability = Random(1, 100);
             var weaponProbabilityTotal = 0;
             var weaponIndex = 0;
             while (chosenWeaponNo == 255)
@@ -1723,7 +1723,7 @@ namespace P3Net.Arx
 
             if (attackType == 3)
             {
-                if (Randn(1, 5) > 3)
+                if (Random(1, 5) > 3)
                 {
                     str = "You wait for an opening.";
                     hitAttempt = false;
@@ -1788,7 +1788,7 @@ namespace P3Net.Arx
             if (attackType == 3)
                 hitProbability -= 5;
             
-            var hitRoll = Randn(1, 100);
+            var hitRoll = Random(1, 100);
             var hitSuccess = hitRoll <= hitProbability;
 
             if ((!hitSuccess) && (hitAttempt))
@@ -1864,7 +1864,7 @@ namespace P3Net.Arx
                 if (chrIntDifference >= 192)
                     charmProbability = 80;
 
-                var hitRoll = Randn(1, 100);
+                var hitRoll = Random(1, 100);
                 if (hitRoll <= charmProbability)
                     charmSuccess = true;
             }
@@ -1899,7 +1899,7 @@ namespace P3Net.Arx
         {
             var str = "";
 
-            var response = Randn(1, 15);
+            var response = Random(1, 15);
             if (response == 1)
                 str = "\"Run! The Devourer comes!\"";
             if (response == 2)
@@ -2114,7 +2114,7 @@ namespace P3Net.Arx
             if ((offermade) && (plyr.encounterRef == Encounters.Pauper))
             {
                 // Paupers see items 1000 - 1011 as postive offers
-                var pauperAcceptance = Randn(0, 6);
+                var pauperAcceptance = Random(0, 6);
                 if (pauperAcceptance > 1)
                 {
                     if (plyr.gender == 1)
@@ -2188,7 +2188,7 @@ namespace P3Net.Arx
                 if (intelligenceDifference >= 192)
                     trickProbability = 90;
 
-                var hitRoll = Randn(1, 100);
+                var hitRoll = Random(1, 100);
                 if (hitRoll <= trickProbability)
                     trickSuccess = true;
             }

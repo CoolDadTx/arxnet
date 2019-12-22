@@ -61,7 +61,7 @@ namespace P3Net.Arx
 
         public static void CheckForGuard ()
         {
-            var x = Randn(0, 100);
+            var x = Random(0, 100);
             if (x < 5)
             {
                 if (plyr.stolenFromVault == 1)
@@ -96,7 +96,7 @@ namespace P3Net.Arx
 
         public static void GrabBag ()
         {
-            var amount = Randn(0, 10) + 40;
+            var amount = Random(0, 10) + 40;
             if (bagType == 0)
                 plyr.copper += amount;
             if (bagType == 1)
@@ -178,7 +178,7 @@ namespace P3Net.Arx
         public static void SetBagType ()
         {
             // Copper, Silver, Gold, Gems or Jewels
-            var x = Randn(0, 4);
+            var x = Random(0, 4);
 
             switch (x)
             {

@@ -508,7 +508,7 @@ namespace P3Net.Arx
                             damonMenu = 27;
                         } else
                         {
-                            damonOffer = Randn(silvers, itemCost);
+                            damonOffer = Random(silvers, itemCost);
                             itemLowestCost = silvers;
                             damonMenu = 23;
                         }
@@ -734,7 +734,7 @@ namespace P3Net.Arx
                             damonMenu = 20;
                         } else
                         {
-                            damonOffer = Randn(silvers, itemCost);
+                            damonOffer = Random(silvers, itemCost);
                             itemLowestCost = silvers;
                             damonMenu = 18;
                         }
@@ -998,7 +998,7 @@ namespace P3Net.Arx
         public static void StockDamon ()
         {
             for (var i = 0; i < 5; i++)
-                damonStock[i] = Randn(1, 5) + 8;
+                damonStock[i] = Random(1, 5) + 8;
         }
 
         public static void LoadDamonBinary ()

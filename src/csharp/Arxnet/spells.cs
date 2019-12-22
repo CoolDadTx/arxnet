@@ -88,9 +88,9 @@ namespace P3Net.Arx
             var spellNo = spellBuffer[spellRef].no;
             var spellPercentage = spellBuffer[spellRef].percentage;
             var spellDesc = spells[spellBuffer[spellRef].no].name;
-            var spellPoints = Randn(1, 5);
+            var spellPoints = Random(1, 5);
 
-            var castProb = Randn(0, 100);
+            var castProb = Random(0, 100);
             if (castProb < spellPercentage)
             {
                 CastSpellMessage(spellDesc);
@@ -105,7 +105,7 @@ namespace P3Net.Arx
                     plyr.keys++;
                 if (spellNo == 13)
                 {
-                    plyr.hp += Randn(1, 10);
+                    plyr.hp += Random(1, 10);
                     if (plyr.hp > plyr.maxhp)
                         plyr.hp = plyr.maxhp;
                 }

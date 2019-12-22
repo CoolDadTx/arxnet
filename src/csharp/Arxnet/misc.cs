@@ -224,8 +224,13 @@ namespace P3Net.Arx
             } while (key != "SPACE");
         }
 
-        [Obsolete("Use Random class")]
-        public static int Randn ( int low, int high ) => RandomNumbers.NextNumber() % ((high - low) + 1) + low;
+        /// <summary>Generates a random number.</summary>
+        /// <param name="low">The lowest number to generate, inclusive.</param>
+        /// <param name="high">The highest number to generate, inclusive.</param>
+        /// <returns>A number in the given range.</returns>
+        public static int Random ( int low, int high ) => s_random.Next(low, high + 1);        
+
+        private static readonly Random s_random = new Random();
 
         public static string ReadBinaryString ( byte[] buffer, int offset, byte delimiter = 0 )
         {
@@ -410,7 +415,7 @@ namespace P3Net.Arx
             var result = 0;
 
             for (var r = 0; r < rolls; r++)
-                result = result + Randn(1, dice);
+                result = result + Random(1, dice);
             if (result == 0)
                 Console.Write("\nDice roll 0 error!\n");
             return result;

@@ -166,7 +166,7 @@ namespace P3Net.Arx
                     dwarvenItemOffset = dwarvenItemOffsets[smithyChoice];
                     CreateDwarvenInventoryItem(dwarvenItemOffset);
 
-                    var test = Randn(0, 4);
+                    var test = Random(0, 4);
                     if (test < 3)
                         dmenu = DwarvenSmithyMenus.MenuAnythingElse;
                     else

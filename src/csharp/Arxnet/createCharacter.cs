@@ -61,13 +61,13 @@ namespace P3Net.Arx
                         if (counters[counter].y == 82) // 32
                         {
                             counters[counter].value1 = counters[counter].value2;
-                            counters[counter].value2 = Randn(0, 13) + 10;
+                            counters[counter].value2 = Random(0, 13) + 10;
                             counters[counter].y = 98; // 40
                         }
                         if ((counter == 7) && (counters[counter].y == 320)) // silver
                         {
                             counters[counter].value1 = counters[counter].value2;
-                            counters[counter].value2 = Randn(0, 30) + 50; // silver is 40 + random number between 1 and 30
+                            counters[counter].value2 = Random(0, 30) + 50; // silver is 40 + random number between 1 and 30
                             counters[counter].y = 336;
                         }
                     } else
@@ -169,13 +169,13 @@ namespace P3Net.Arx
                         if (counters[counter].y == 82) // 32
                         {
                             counters[counter].value1 = counters[counter].value2;
-                            counters[counter].value2 = Randn(0, 12) + 10;
+                            counters[counter].value2 = Random(0, 12) + 10;
                             counters[counter].y = 96; // 40
                         }
                         if ((counter == 7) && (counters[counter].y == 356)) // copper
                         {
                             counters[counter].value1 = counters[counter].value2;
-                            counters[counter].value2 = Randn(0, 50) + 49; // copper is 0-50 + 49 (giving max of 99 coppers)
+                            counters[counter].value2 = Random(0, 50) + 49; // copper is 0-50 + 49 (giving max of 99 coppers)
                             counters[counter].y = 370;
                         }
                     } else

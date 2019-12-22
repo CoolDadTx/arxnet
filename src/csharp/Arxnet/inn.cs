@@ -151,14 +151,14 @@ namespace P3Net.Arx
             var jobOpeningProbability = 0;
             for (var i = 0; i < 7; i++)
             {
-                jobOpeningProbability = Randn(0, 255);
+                jobOpeningProbability = Random(0, 255);
                 if (jobOpeningProbability <= Inns[i].jobProbability)
                 {
                     // Create a new job entry for the day
-                    int newJobNumber = Randn(0, 2);
+                    int newJobNumber = Random(0, 2);
                     innJobOpenings[i].jobNumber = newJobNumber;
-                    innJobOpenings[i].JobHoursRequired = Randn(0, 5) + 3;
-                    innJobOpenings[i].jobHourlyIncome = Randn(innJobs[newJobNumber].minIncome,
+                    innJobOpenings[i].JobHoursRequired = Random(0, 5) + 3;
+                    innJobOpenings[i].jobHourlyIncome = Random(innJobs[newJobNumber].minIncome,
                                                               innJobs[newJobNumber].maxIncome);
                 } else
                 {
@@ -538,7 +538,7 @@ namespace P3Net.Arx
                             roomProb = 240;
                         if (roomChoice == 9)
                             roomProb = 255;
-                        var actualSleepProb = Randn(0, 255);
+                        var actualSleepProb = Random(0, 255);
                         if (actualSleepProb <= roomProb)
                         {
                             plyr.hp = plyr.hp + 6;

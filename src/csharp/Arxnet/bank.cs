@@ -708,14 +708,14 @@ namespace P3Net.Arx
                 while (bankMenu == 24) // Sell jewel success
                 {
                     plyr.jewels--;
-                    var worthless = Randn(0, 20);
+                    var worthless = Random(0, 20);
                     if (worthless < 2)
                     {
                         findValue = 0;
                         bankMenu = 25;
                     } else
                     {
-                        findValue = (Randn(1, 23)) + 16;
+                        findValue = (Random(1, 23)) + 16;
                         bankMenu = 23;
                     }
                 }
@@ -737,14 +737,14 @@ namespace P3Net.Arx
                 while (bankMenu == 26) // calculate gem value
                 {
                     plyr.gems--;
-                    var  worthless = Randn(0, 20);
+                    var  worthless = Random(0, 20);
                     if (worthless < 2)
                     {
                         findValue = 0;
                         bankMenu = 25;
                     } else
                     {
-                        findValue = Randn(1, 13);
+                        findValue = Random(1, 13);
                         bankMenu = 23;
                     }
                 }
@@ -770,14 +770,14 @@ namespace P3Net.Arx
             var jobOpeningProbability = 0;
             for (var i = 0; i < 3; i++) // 3 banks in total
             {
-                jobOpeningProbability = Randn(0, 255);
+                jobOpeningProbability = Random(0, 255);
                 if (jobOpeningProbability <= banks[i].jobProbability)
                 {
                     // Create a new job entry for the day
-                    var newJobNumber = Randn(0, 2);
+                    var newJobNumber = Random(0, 2);
                     bankJobOpenings[i].jobNumber = newJobNumber;
-                    bankJobOpenings[i].jobHoursRequired = Randn(0, 5) + 3;
-                    bankJobOpenings[i].jobHourlyIncome = Randn(bankJobs[newJobNumber].minIncome, bankJobs[newJobNumber].maxIncome);
+                    bankJobOpenings[i].jobHoursRequired = Random(0, 5) + 3;
+                    bankJobOpenings[i].jobHourlyIncome = Random(bankJobs[newJobNumber].minIncome, bankJobs[newJobNumber].maxIncome);
                 } else
                 {
                     // No job available today

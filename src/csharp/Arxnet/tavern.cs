@@ -403,14 +403,14 @@ namespace P3Net.Arx
             var jobOpeningProbability = 0;
             for (var i = 0; i < 14; i++) // 14 taverns in total
             {
-                jobOpeningProbability = Randn(0, 255);
+                jobOpeningProbability = Random(0, 255);
                 if (jobOpeningProbability <= Taverns[i].jobProbability)
                 {
                     // Create a new job entry for the day
-                    var newJobNumber = Randn(0, 2);
+                    var newJobNumber = Random(0, 2);
                     tavernJobOpenings[i].jobNumber = newJobNumber;
-                    tavernJobOpenings[i].JobHoursRequired = Randn(0, 5) + 3;
-                    tavernJobOpenings[i].jobHourlyIncome = Randn(tavernJobs[newJobNumber].minIncome,
+                    tavernJobOpenings[i].JobHoursRequired = Random(0, 5) + 3;
+                    tavernJobOpenings[i].jobHourlyIncome = Random(tavernJobs[newJobNumber].minIncome,
                                                                  tavernJobs[newJobNumber].maxIncome);
                 } else
                 {
@@ -610,7 +610,7 @@ namespace P3Net.Arx
                         var musicPath = newMusic ? "data/audio/B/" : "data/audio";
                         string musicFile;
 
-                        switch(Randn(1, 5))
+                        switch(Random(1, 5))
                         {
                             case 1: musicFile = "dwarfdance.ogg"; break;
                             case 2: musicFile = "thoreandan.ogg"; break;
@@ -1154,7 +1154,7 @@ namespace P3Net.Arx
                     var uniqueItem = false;
                     while (!uniqueItem)
                     {
-                        var itemNo = Randn(0, 11); // was 12
+                        var itemNo = Random(0, 11); // was 12
 
                         if (!tavernDrinksCheck[tavernNo, itemNo])
                         {
@@ -1187,7 +1187,7 @@ namespace P3Net.Arx
                     var uniqueItem = false;
                     while (!uniqueItem)
                     {
-                        var itemNo = Randn(0, 31); // was 32
+                        var itemNo = Random(0, 31); // was 32
 
                         if (!tavernFoodsCheck[tavernNo, itemNo])
                         {

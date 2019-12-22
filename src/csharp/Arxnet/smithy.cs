@@ -561,7 +561,7 @@ namespace P3Net.Arx
                             smithyMenu = 20;
                         } else
                         {
-                            smithyOffer = Randn(coppers, itemCost);
+                            smithyOffer = Random(coppers, itemCost);
                             itemLowestCost = coppers;
                             smithyMenu = 3;
                         }
@@ -750,7 +750,7 @@ namespace P3Net.Arx
                     var uniqueItem = false;
                     while (!uniqueItem)
                     {
-                        itemNo = Randn(0, 22);
+                        itemNo = Random(0, 22);
 
                         if (!smithyWaresCheck[smithyNo, itemNo])
                         {

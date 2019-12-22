@@ -524,7 +524,7 @@ namespace P3Net.Arx
                             shopMenu = 27;
                         } else
                         {
-                            shopOffer = Randn(coppers, itemCost);
+                            shopOffer = Random(coppers, itemCost);
                             itemLowestCost = coppers;
                             shopMenu = 23;
                         }
@@ -611,7 +611,7 @@ namespace P3Net.Arx
                     var uniqueItem = false;
                     while (!uniqueItem)
                     {
-                        var itemNo = Randn(0, 15); // to exclude damon clothing items
+                        var itemNo = Random(0, 15); // to exclude damon clothing items
                         var itemIndex = 12 + itemNo; // to exclude the Damon items
                         if (itemIndex == 12)
                             itemIndex = 13;
