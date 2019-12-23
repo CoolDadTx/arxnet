@@ -11,16 +11,17 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum Scenarios
     {
-        public float costMultiplier { get; set; }
+        City,
+        Dungeon,
+        Arena,
+        Palace,
+        Wilderness,
+        Revelation,
+        Destiny,
 
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        //TODO: Change to init value to eliminate this 
+        Unknown = 255,
     }
 }

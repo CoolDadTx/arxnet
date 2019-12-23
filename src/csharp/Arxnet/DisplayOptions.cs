@@ -11,16 +11,10 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum DisplayOptions
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        AtariSmall,
+        AlternateSmall,
+        AlternateLarge
     }
 }

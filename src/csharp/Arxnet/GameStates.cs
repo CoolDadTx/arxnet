@@ -11,16 +11,15 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum GameStates
     {
-        public float costMultiplier { get; set; }
+        Explore = 1,
 
-        public int jobProbability { get; set; }
+        //TODO: Defined as Shopping in most references
+        Module = 2,
+        Encounter = 3,
+        Dead = 4
 
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        //TODO: State 5 is called Dead but doesn't line up with this value
     }
 }

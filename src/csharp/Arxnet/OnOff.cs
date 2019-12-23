@@ -8,19 +8,21 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Linq;
+
+// dev.cpp
+// Developer Settings for use during development and testing
+// All flags are 0 = Off, 1 = On
+
+/* dev.h
+ * Developer Settings to speed up development and testing
+ */
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum OnOff
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        Off,
+        On
     }
 }

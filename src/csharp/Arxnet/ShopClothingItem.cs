@@ -11,16 +11,12 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class ShopClothingItem
     {
-        public float costMultiplier { get; set; }
+        public int itemRef { get; set; }
 
-        public int jobProbability { get; set; }
+        public int price { get; set; }
 
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public int type { get; set; } // 180 - clothing?
     }
 }

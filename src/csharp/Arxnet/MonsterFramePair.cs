@@ -11,16 +11,9 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class MonsterFramePair
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public int startFrame { get; set; }
+        public int endFrame { get; set; }
     }
 }

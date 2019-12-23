@@ -11,16 +11,14 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class EffectItem
     {
-        public float costMultiplier { get; set; }
+        public int duration { get; set; }
 
-        public int jobProbability { get; set; }
+        public int effect { get; set; }
 
-        public string name { get; set; }
+        public int negativeValue { get; set; }
 
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public int positiveValue { get; set; }
     }
 }

@@ -11,16 +11,11 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class BankAccount
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public float interest { get; set; }
+        public float failProb { get; set; }
+        public int minBalance { get; set; }
+        public int failures { get; set; }
     }
 }

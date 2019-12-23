@@ -11,16 +11,11 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum Modules
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        //TODO: Fix case
+        VAULT = 0x06,
+        RATHSKELLER = 0x1D, //29
+        DwarvenSmithy = 21
     }
 }

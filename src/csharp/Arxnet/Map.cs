@@ -8,19 +8,20 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Linq;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class Map
     {
-        public float costMultiplier { get; set; }
+        public int background { get; set; }
 
-        public int jobProbability { get; set; }
+        public string description { get; set; }
 
-        public string name { get; set; }
+        public string filename { get; set; }
 
-        public int x { get; set; }
+        public int height { get; set; }
 
-        public int y { get; set; }
+        public int width { get; set; }
     }
 }

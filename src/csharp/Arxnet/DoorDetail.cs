@@ -11,13 +11,12 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class DoorDetail
     {
-        public float costMultiplier { get; set; }
+        //TODO: Make Directions
+        public int direction { get; set; }
 
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
+        public int level { get; set; }
 
         public int x { get; set; }
 

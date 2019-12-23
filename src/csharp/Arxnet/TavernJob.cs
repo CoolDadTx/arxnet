@@ -8,24 +8,25 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.IO;
-using System.Linq;
-using SFML.Audio;
 
 namespace P3Net.Arx
 {
-    public class Smithy
+    public class TavernJob
     {
-        public int closingHour { get; set; }
+        public float fatigueRate { get; set; }
 
-        public float initialPriceFactor { get; set; }
+        public float majorWoundProbability { get; set; }
 
-        public int location { get; set; } // match with location text description number
+        public int maxIncome { get; set; }
 
-        public float minimumPriceFactor { get; set; }
+        public int minIncome { get; set; }
+
+        public float minorWoundProbability { get; set; }
 
         public string name { get; set; }
 
-        public int openingHour { get; set; }
+        public string statRequirementName { get; set; }
+
+        public int statRequirementValue { get; set; }
     }
 }

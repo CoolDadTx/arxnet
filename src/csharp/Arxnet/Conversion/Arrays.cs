@@ -4,8 +4,20 @@
 //
 //	This class provides the ability to initialize and delete array elements.
 //----------------------------------------------------------------------------------------
+using System;
+using System.IO;
+
 internal static class Arrays
 {
+    public static T[] CreateAndInitialize<T> ( int length, T initialValue ) where T: new()
+    {
+        var array = new T[length];
+        for (var index = 0; index < length; ++index)
+            array[index] = initialValue;
+
+        return array;
+    }
+
 	public static T[] InitializeWithDefaultInstances<T>(int length) where T : new()
 	{
 		T[] array = new T[length];

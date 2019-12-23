@@ -11,16 +11,10 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class SpellItem
     {
-        public float costMultiplier { get; set; }
+        public int no { get; set; } = 255;  //??
 
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public int percentage { get; set; }
     }
 }

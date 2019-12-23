@@ -18,7 +18,6 @@
 - [ ] Convert public fields to properties
 - [ ] Get rid of global functions
 - [ ] Remove reliance on converter array logic
-- [ ] Normalize binary file handling so it can be reused
 
 ## Enhancements
 
@@ -27,7 +26,9 @@
 - [ ] Make Spells a standalone type
 - [ ] Make Encounters a standalone type
 - [ ] Make Modules a standalone type
-- [ ] Make Guilds a standalone type
+- [ ] Make Guilds/Factions a standalone type
+- [ ] Make an Effect class and allow adding to player
+- [ ] Create a game clock to handle timing logic
 - [ ] Implement game loop with hooks so we can separate logic out as needed
 - [ ] Make load/save flexible to support versioned data (perhaps JSON because files aren't too big)
 - [ ] Implement event-style system for reacting to important events to decouple the code
@@ -39,3 +40,4 @@
 - [ ] Move all hard coded lists of stuff to data files
 - [ ] Make menu logic a standalone class that can be instantiated and used via delegates on demand
 - [ ] Lazy load data such as items so we can speed up the game (use a cache to prevent it from growing out of control)
+- [ ] Add JSON support for files to make it easier to manage

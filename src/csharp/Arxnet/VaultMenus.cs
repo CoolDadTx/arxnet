@@ -8,19 +8,25 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Linq;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    /* VAULTS.CPP
+		 *
+		 * TODO:
+		 *
+		 *  Choose random item
+		 *  Check for guards
+		 *
+		 */
+
+    public enum VaultMenus
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        MenuLeft,
+        MenuDraggedOutside,
+        MenuMain,
+        MenuGrabABag,
+        MenuSearching
     }
 }

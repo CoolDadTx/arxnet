@@ -11,16 +11,12 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public enum SelectStates
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        Use = 1,
+        Drop = 2,
+        Offer = 3,
+        Deposit = 4,
+        Withdrawal = 5
     }
 }

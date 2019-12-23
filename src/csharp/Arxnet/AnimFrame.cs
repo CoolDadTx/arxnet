@@ -11,16 +11,11 @@ using System;
 
 namespace P3Net.Arx
 {
-    public class Inn
+    public class AnimFrame
     {
-        public float costMultiplier { get; set; }
-
-        public int jobProbability { get; set; }
-
-        public string name { get; set; }
-
-        public int x { get; set; }
-
-        public int y { get; set; }
+        public int xOffset { get; set; } // 0 for most animations
+        public int yOffset { get; set; } // 0 for most animations
+        public int image { get; set; }
+        public int duration { get; set; }
     }
 }

@@ -8,24 +8,19 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.IO;
-using System.Linq;
-using SFML.Audio;
 
 namespace P3Net.Arx
 {
-    public class Smithy
+    public class ClothingItem
     {
-        public int closingHour { get; set; }
-
-        public float initialPriceFactor { get; set; }
-
-        public int location { get; set; } // match with location text description number
-
-        public float minimumPriceFactor { get; set; }
-
+        // Description is created from values below if name blank
+        // Clothing items have no body location
+        // 4 items can be worn at same time
         public string name { get; set; }
-
-        public int openingHour { get; set; }
+        public int quality { get; set; }
+        public int colour { get; set; }
+        public int fabric { get; set; }
+        public int type { get; set; }
+        public int weight { get; set; }
     }
 }
