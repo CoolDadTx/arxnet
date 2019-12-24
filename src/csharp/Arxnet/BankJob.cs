@@ -11,14 +11,20 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: Use base Job class
     public class BankJob
     {
         public string name { get; set; }
+
+        //TODO: Use Range
         public int minIncome { get; set; }
         public int maxIncome { get; set; }
+
+        //TODO: Use reqs class
         public string statRequirementName { get; set; }
         public int statRequirementValue { get; set; }
         public float fatigueRate { get; set; }
+        
         public float minorWoundProbability { get; set; }
         public float majorWoundProbability { get; set; }
     }

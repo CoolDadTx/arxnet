@@ -9,20 +9,15 @@
  */
 using System;
 
-// dev.cpp
-// Developer Settings for use during development and testing
-// All flags are 0 = Off, 1 = On
-
-/* dev.h
- * Developer Settings to speed up development and testing
- */
-
 namespace P3Net.Arx
-{
-    //TODO: Move to configuration
+{ 
+    /// <summary>Provides developer settings.</summary>
     public class DevSettings
-    {        
-        public OnOff CHARACTER_CREATION { get; set; } // Skip the full character creation sequence for the City and the Dungeon
-        public OnOff TELEPORT_OPTION { get; set; } // Option for teleporting around map
+    {
+        /// <summary>Gets or sets whether to support character creation sequence.</summary>
+        public bool EnableCharacterCreation { get; set; } = true;
+
+        /// <summary>Gets or sets whether teleporting is allowed.</summary>
+        public bool EnableTeleporting { get; set; }
     }
 }

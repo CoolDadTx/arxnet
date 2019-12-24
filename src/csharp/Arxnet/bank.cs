@@ -14,8 +14,11 @@ namespace P3Net.Arx
     public class Bank
     {
         public string name { get; set; }
+
         public BankAccount[] accounts { get; set; } = Arrays.InitializeWithDefaultInstances<BankAccount>(3);
         public int location { get; set; } // match with location text description number
+
+        //TODO: Use TimeRange
         public int openingHour { get; set; }
         public int closingHour { get; set; }
         public int jobProbability { get; set; }

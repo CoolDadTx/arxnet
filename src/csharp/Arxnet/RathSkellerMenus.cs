@@ -8,18 +8,9 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
-{
-    /* RATHSKELLER.CPP
-		 *
-		 * TODO:
-		 * carrying corpse message once corpses implemented, dragon/wyrm corpse gold offer,
-		 * enclosed booth???
-		 * all music and on screen lyrics
-		 *
-		 */
+{    
     public enum RathSkellerMenus
     {
         MenuLeft,

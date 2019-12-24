@@ -25,8 +25,10 @@ namespace P3Net.Arx
 
         public int positiveValue { get; set; }
 
+        //TODO: Use TimeSpan
         public int duration { get; set; }
 
+        //TODO: Should this be handled by Guild class instead, how should it work if we add a new spell - don't want to update guilds
         public bool[] guilds { get; set; } = new bool[14];
     }
 }

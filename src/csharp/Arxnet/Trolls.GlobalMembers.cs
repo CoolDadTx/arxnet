@@ -14,8 +14,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static string trollLyricsFilename;
-
         public static void ShopTrolls ()
         {
             SetAutoMapFlag(plyr.map, 56, 56);
@@ -189,5 +187,10 @@ namespace P3Net.Arx
             StopShopMusic();
             LeaveShop();
         }
+
+        #region Review Data
+
+        public static string trollLyricsFilename;
+        #endregion
     }
 }

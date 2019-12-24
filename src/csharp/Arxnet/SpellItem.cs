@@ -11,6 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: Used for SpellBuffer, should it be a struct?
     public class SpellItem
     {
         public int no { get; set; } = 255;  //??

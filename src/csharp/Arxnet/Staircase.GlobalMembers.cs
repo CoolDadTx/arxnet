@@ -8,7 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -53,9 +52,9 @@ namespace P3Net.Arx
                     else
                         CyText(1, "A stairway leads down, do you take it?");
                     CyText(3, "( es or  o)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(3, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     UpdateDisplay();
 
                     var key = GetSingleKey();
@@ -76,8 +75,5 @@ namespace P3Net.Arx
                 }
             }
         }
-
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
     }
 }

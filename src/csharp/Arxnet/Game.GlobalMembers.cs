@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+
 using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
@@ -16,37 +17,204 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static Sound cityDoorSound = new Sound();
-        public static Sound citySecretSound = new Sound();
-        public static Music deathMusic;
+        // Main game loop (excluding main menu)
+        public static void GameLoop ()
+        {
+            Running = true;
+            gameQuit = false;
 
-        public static SoundBuffer doorCityBuffer;
-        public static SoundBuffer doorDungeonBuffer;
+            var smithyPlaying = false;
 
-        //TODO: Use regular time
-        public static Time dt = new Time();
-        public static Sound dungeonDoorSound = new Sound();
-        public static Sound dungeonSecretSound = new Sound();
-        public static Time encounterCheckTime = new Time();
-        public static float Framerate;
-        public static bool gameQuit;
+            while (Running)
+            {
+                while ((Running) && (plyr.alive))
+                {
+                    dt = myclock.Restart();
 
-        public static Clock myclock = new Clock();
+                    if (plyr.scenario == Scenarios.Dungeon)
+                        CheckTeleport();
 
-        public static bool Running;
-        public static SoundBuffer secretCityBuffer;
-        public static SoundBuffer secretDungeonBuffer;
+                    if (plyr.hp < 0)
+                        plyr.alive = false;
 
-        public static SoundBuffer smithyBuffer;
-        public static bool smithyPlaying;
-        public static Sound smithySound = new Sound();
-        public static Sprite tBackground = new Sprite();
-        public static Texture teleBlack;
+                    CheckShop();
 
-        public static int teleColour = 1;
-        public static Texture teleGold;
+                    plyr.status_text = " ";
 
-        public static void BarredDoor ()
+                    /* Update player loc details */
+
+                    var ind = GetMapIndex(plyr.x, plyr.y);
+                    autoMapExplored[plyr.map, ind] = true;
+                    TransMapIndex(ind);
+                    plyr.special = levelmap[ind].special;
+                    plyr.location = levelmap[ind].location;
+                    SetCurrentZone();
+
+                    if (plyr.scenario == Scenarios.Dungeon)
+                    {
+                        CheckFixedEncounters();
+                        CheckFixedTreasures();
+                    };
+                    CheckForItemsHere();
+
+                    DispMain();
+                    DrawInfoPanels(); // Displayed here so as not to overwrite text from USE or an ENCOUNTER
+                    UpdateDisplay();
+
+                    encounterCheckTime += dt;
+                    if (encounterCheckTime >= Time.FromSeconds(4.8f)) // was 0.8f
+                    {
+                        CheckEncounter();
+                        encounterCheckTime = Time.Zero;
+                        AddMinute();
+                    }
+
+                    if ((plyr.special == 1000) && (!smithyPlaying))
+                    {
+                        smithySound.Play();
+                        smithyPlaying = true;
+                    }
+                    if ((smithyPlaying) && (plyr.special != 1000))
+                    {
+                        smithySound.Stop();
+                        smithyPlaying = false;
+                    }
+
+                    var key = ReadKey();
+                    if (key == "left")
+                        TurnLeft();
+                    if (key == "right")
+                        TurnRight();
+                    if (key == "up")
+                        MoveForward();
+                    if (key == "down")
+                        MoveBack();
+                    if (key == "J")
+                        TurnLeft();
+                    if (key == "L")
+                        TurnRight();
+                    if (key == "I")
+                        MoveForward();
+                    if (key == "K")
+                        MoveBack();
+                    if (key == "U")
+                        SelectItem(1);
+                    if (key == "D")
+                        SelectItem(2);
+                    if (key == "C")
+                        CastSpells();
+                    if (key == "B")
+                        DisplayObjectBuffer();
+                    if (key == "G")
+                        GetItems();
+                    if (key == "P")
+                        PauseGame();
+                    if (key == ",")
+                        TogglePanelsBackward();
+                    if (key == ".")
+                        TogglePanelsForward();
+                    if (key == "F12")
+                        plyr.diagOn = !plyr.diagOn;
+                    if (key == "F11")
+                        TidyObjectBuffer();
+                    if (key == "F1")
+                        plyr.infoPanel = 1;
+                    if (key == "F2")
+                        plyr.infoPanel = 2;
+                    if (key == "F3")
+                        plyr.infoPanel = 3;
+                    if (key == "F4")
+                        plyr.infoPanel = 4;
+                    if (key == "F5")
+                        plyr.infoPanel = 5;
+                    if (key == "F6")
+                        plyr.infoPanel = 6;
+                    if (key == "F7")
+                        plyr.infoPanel = 7;
+                    if (key == "F8")
+                        plyr.infoPanel = 8;
+
+                    if (key == "F")
+                        plyr.fpsOn = !plyr.fpsOn;
+                    if (key == "A")
+                    {
+                        if (plyr.miniMapOn)
+                            plyr.miniMapOn = false;
+                        else
+                            plyr.miniMapOn = true;
+                    }
+                    if (key == "M")
+                        Automap();
+
+                    if (key == "W")
+                        ChooseEncounter();
+
+                    if (key == "T")
+                    {
+                        if (AR_DEV.EnableTeleporting)
+                            Teleport();
+                    }
+
+                    if (key == "ESC")
+                        OptionsMenu();
+                    if (key == "QUIT")
+                        OptionsMenu();
+                }
+                // Check smithy sounds and encounter music not playing
+                if (!gameQuit)
+                {
+                    smithySound.Stop();
+                    PlayerDies();
+                }
+                Running = false;
+            }
+        }
+
+        public static void InitialiseNewGame ()
+        {
+            //TODO: Lazy load
+            // Prepare shop stock etc...
+            doorCityBuffer = new SoundBuffer("data/audio/cityDoor.wav");
+            secretCityBuffer = new SoundBuffer("data/audio/citySecretDoor.wav");
+            citySecretSound.SoundBuffer = secretCityBuffer;
+            cityDoorSound.SoundBuffer = doorCityBuffer;
+
+            doorDungeonBuffer = new SoundBuffer("data/audio/dungeonDoor.wav");
+            secretDungeonBuffer = new SoundBuffer("data/audio/dungeonSecretDoor.wav");
+            dungeonSecretSound.SoundBuffer = secretDungeonBuffer;
+            dungeonDoorSound.SoundBuffer = doorDungeonBuffer;
+
+            smithyBuffer = new SoundBuffer("data/audio/smithyHammer3.wav");
+            smithySound.SoundBuffer = smithyBuffer;
+            smithySound.Loop = true;
+
+            //TODO: Consider registering resources with a resource manager and then having it lazy load stuff on demand
+            teleBlack = new Texture("data/images/teleport_black.png");
+            teleGold = new Texture("data/images/teleport_gold.png");
+
+            InitMap();
+        }
+
+        public static void LeaveShop ()
+        {
+            if (plyr.facing == Directions.West)
+                plyr.x = plyr.oldx;
+            if (plyr.facing == Directions.East)
+                plyr.x = plyr.oldx;
+            if (plyr.facing == Directions.North)
+                plyr.y = plyr.oldy;
+            if (plyr.facing == Directions.South)
+                plyr.y = plyr.oldy;
+
+            //MLT: Double to float
+            plyr.z_offset = 1.6F; // position player just outside door
+            plyr.status = GameStates.Explore; // explore
+        }
+
+        #region Private Members
+
+        //TODO: Move to Door stuff
+        private static void BarredDoor ()
         {
             var doorType = plyr.movingForward ? plyr.front : plyr.back;
             var doorMenu = 0;
@@ -199,7 +367,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static bool CheckBarredDoor ()
+        //TODO: Move to Door stuff
+        private static bool CheckBarredDoor ()
         {
             // Assume moving forward for now
             var doorAlreadyOpened = false;
@@ -228,8 +397,8 @@ namespace P3Net.Arx
             }
             return doorAlreadyOpened;
         }
-
-        public static void CheckFixedTreasures ()
+        
+        private static void CheckFixedTreasures ()
         {
             int treasureRef;
             switch (plyr.special)
@@ -297,7 +466,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CheckShop ()
+        private static void CheckShop ()
         {
             switch (plyr.special)
             {
@@ -401,7 +570,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CheckTeleport ()
+        private static void CheckTeleport ()
         {
             if ((plyr.special >= 0xE0) && (plyr.special <= 0xFF)) // 224 - 255
             {
@@ -461,7 +630,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DoorMessage ( string str )
+        //TODO: Move to Door stuff
+        private static void DoorMessage ( string str )
         {
             var keyNotPressed = true;
             while (keyNotPressed)
@@ -476,7 +646,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DoorTimedMessage ( string str )
+        //TODO: Move to Door stuff
+        private static void DoorTimedMessage ( string str )
         {
             DispMain();
             DrawConsoleBackground();
@@ -485,201 +656,37 @@ namespace P3Net.Arx
             Sleep(TimeSpan.FromSeconds(4));
         }
 
-        // Main game loop (excluding main menu)
-        public static void GameLoop ()
+        //TODO: Move to Door stuff
+        private static void UpdateDoorDetails ()
         {
-            Running = true;
-            gameQuit = false;
+            // Adds an entry about a door that has been successfully opened. The 1st entry is overwritten after 20 door openings.
+            plyr.z_offset = plyr.movingForward ? 2 : 0;
 
-            var smithyPlaying = false;
+            if (plyr.doorDetailIndex == 19)
+                plyr.doorDetailIndex = 0;
 
-            while (Running)
+            plyr.doorDetails[plyr.doorDetailIndex].x = plyr.x;
+            plyr.doorDetails[plyr.doorDetailIndex].y = plyr.y;
+            plyr.doorDetails[plyr.doorDetailIndex].level = plyr.map;
+
+            if (plyr.movingForward)
+                plyr.doorDetails[plyr.doorDetailIndex].direction = (int)plyr.facing;
+            if (!plyr.movingForward)
             {
-                while ((Running) && (plyr.alive))
-                {
-                    dt = myclock.Restart();
-
-                    if (plyr.scenario == Scenarios.Dungeon)
-                        CheckTeleport();
-
-                    if (plyr.hp < 0)
-                        plyr.alive = false;
-
-                    CheckShop();
-
-                    plyr.status_text = " ";
-
-                    /* Update player loc details */
-
-                    var ind = GetMapIndex(plyr.x, plyr.y);
-                    autoMapExplored[plyr.map, ind] = true;
-                    TransMapIndex(ind);
-                    plyr.special = levelmap[ind].special;
-                    plyr.location = levelmap[ind].location;
-                    SetCurrentZone();
-
-                    if (plyr.scenario == Scenarios.Dungeon)
-                    {
-                        CheckFixedEncounters();
-                        CheckFixedTreasures();
-                    };
-                    CheckForItemsHere();
-
-                    DispMain();
-                    DrawInfoPanels(); // Displayed here so as not to overwrite text from USE or an ENCOUNTER
-                    UpdateDisplay();
-
-                    encounterCheckTime += dt;
-                    if (encounterCheckTime >= Time.FromSeconds(4.8f)) // was 0.8f
-                    {
-                        CheckEncounter();
-                        encounterCheckTime = Time.Zero;
-                        AddMinute();
-                    }
-
-                    if ((plyr.special == 1000) && (!smithyPlaying))
-                    {
-                        smithySound.Play();
-                        smithyPlaying = true;
-                    }
-                    if ((smithyPlaying) && (plyr.special != 1000))
-                    {
-                        smithySound.Stop();
-                        smithyPlaying = false;
-                    }
-
-                    var key = ReadKey();
-                    if (key == "left")
-                        TurnLeft();
-                    if (key == "right")
-                        TurnRight();
-                    if (key == "up")
-                        MoveForward();
-                    if (key == "down")
-                        MoveBack();
-                    if (key == "J")
-                        TurnLeft();
-                    if (key == "L")
-                        TurnRight();
-                    if (key == "I")
-                        MoveForward();
-                    if (key == "K")
-                        MoveBack();
-                    if (key == "U")
-                        SelectItem(1);
-                    if (key == "D")
-                        SelectItem(2);
-                    if (key == "C")
-                        CastSpells();
-                    if (key == "B")
-                        DisplayObjectBuffer();
-                    if (key == "G")
-                        GetItems();
-                    if (key == "P")
-                        PauseGame();
-                    if (key == ",")
-                        TogglePanelsBackward();
-                    if (key == ".")
-                        TogglePanelsForward();
-                    if (key == "F12")
-                        plyr.diagOn = !plyr.diagOn;
-                    if (key == "F11")
-                        TidyObjectBuffer();
-                    if (key == "F1")
-                        plyr.infoPanel = 1;
-                    if (key == "F2")
-                        plyr.infoPanel = 2;
-                    if (key == "F3")
-                        plyr.infoPanel = 3;
-                    if (key == "F4")
-                        plyr.infoPanel = 4;
-                    if (key == "F5")
-                        plyr.infoPanel = 5;
-                    if (key == "F6")
-                        plyr.infoPanel = 6;
-                    if (key == "F7")
-                        plyr.infoPanel = 7;
-                    if (key == "F8")
-                        plyr.infoPanel = 8;
-
-                    if (key == "F")
-                        plyr.fpsOn = !plyr.fpsOn;
-                    if (key == "A")
-                    {
-                        if (plyr.miniMapOn)
-                            plyr.miniMapOn = false;
-                        else
-                            plyr.miniMapOn = true;
-                    }
-                    if (key == "M")
-                        Automap();
-
-                    if (key == "W")
-                        ChooseEncounter();
-
-                    if (key == "T")
-                    {
-                        if (AR_DEV.TELEPORT_OPTION == OnOff.On)
-                            Teleport();
-                    }
-
-                    if (key == "ESC")
-                        OptionsMenu();
-                    if (key == "QUIT")
-                        OptionsMenu();
-                }
-                // Check smithy sounds and encounter music not playing
-                if (!gameQuit)
-                {
-                    smithySound.Stop();
-                    PlayerDies();
-                }
-                Running = false;
+                if (plyr.facing == Directions.West)
+                    plyr.doorDetails[plyr.doorDetailIndex].direction = 3; // actually moving east
+                if (plyr.facing == Directions.North)
+                    plyr.doorDetails[plyr.doorDetailIndex].direction = 4; // actually moving south
+                if (plyr.facing == Directions.East)
+                    plyr.doorDetails[plyr.doorDetailIndex].direction = 1; // actually moving west
+                if (plyr.facing == Directions.South)
+                    plyr.doorDetails[plyr.doorDetailIndex].direction = 2; // actually moving north
             }
+            plyr.doorDetailIndex++;
         }
 
-        public static void InitialiseNewGame ()
-        {
-            //TODO: Lazy load
-            // Prepare shop stock etc...
-            doorCityBuffer = new SoundBuffer("data/audio/cityDoor.wav");
-            secretCityBuffer = new SoundBuffer("data/audio/citySecretDoor.wav");
-            citySecretSound.SoundBuffer = secretCityBuffer;
-            cityDoorSound.SoundBuffer = doorCityBuffer;
-
-            doorDungeonBuffer = new SoundBuffer("data/audio/dungeonDoor.wav");
-            secretDungeonBuffer = new SoundBuffer("data/audio/dungeonSecretDoor.wav");
-            dungeonSecretSound.SoundBuffer = secretDungeonBuffer;
-            dungeonDoorSound.SoundBuffer = doorDungeonBuffer;
-
-            smithyBuffer = new SoundBuffer("data/audio/smithyHammer3.wav");
-            smithySound.SoundBuffer = smithyBuffer;
-            smithySound.Loop = true;
-
-            //TODO: Consider registering resources with a resource manager and then having it lazy load stuff on demand
-            teleBlack = new Texture("data/images/teleport_black.png");
-            teleGold = new Texture("data/images/teleport_gold.png");
-
-            InitMap();
-        }
-
-        public static void LeaveShop ()
-        {
-            if (plyr.facing == Directions.West)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.East)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.North)
-                plyr.y = plyr.oldy;
-            if (plyr.facing == Directions.South)
-                plyr.y = plyr.oldy;
-
-            //MLT: Double to float
-            plyr.z_offset = 1.6F; // position player just outside door
-            plyr.status = GameStates.Explore; // explore
-        }
-
-        public static void MoveBack ()
+        //TODO: Move to navigation
+        private static void MoveBack ()
         {
             plyr.movingForward = false;
             var encText = CheckEncumbrance();
@@ -813,7 +820,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void MoveEast ()
+        //TODO: Move to navigation
+        private static void MoveEast ()
         {
             if (plyr.facing == Directions.East) // east (forward)
             {
@@ -842,7 +850,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void MoveForward ()
+        //TODO: Move to navigation
+        private static void MoveForward ()
         {
             plyr.movingForward = true;
             var encText = CheckEncumbrance();
@@ -990,7 +999,8 @@ namespace P3Net.Arx
                 ScenarioEntrance(300);
         }
 
-        public static void MoveNorth ()
+        //TODO: Move to navigation
+        private static void MoveNorth ()
         {
             if (plyr.facing == Directions.North) // north (forward)
             {
@@ -1019,7 +1029,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void MoveSouth ()
+        //TODO: Move to navigation
+        private static void MoveSouth ()
         {
             if (plyr.facing == Directions.South)
             {
@@ -1048,7 +1059,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void MoveThroughBarredDoor ()
+        //TODO: Move to navigation
+        private static void MoveThroughBarredDoor ()
         {
             plyr.z_offset = plyr.movingForward ? 2 : 0;
             if ((plyr.facing == Directions.West) && plyr.movingForward)
@@ -1069,7 +1081,8 @@ namespace P3Net.Arx
                 MoveNorth();
         }
 
-        public static void MoveWest ()
+        //TODO: Move to navigation
+        private static void MoveWest ()
         {
             if (plyr.facing == Directions.West) // west (forward)
             {
@@ -1097,8 +1110,8 @@ namespace P3Net.Arx
                 }
             }
         }
-
-        public static void OptionsMenu ()
+        
+        private static void OptionsMenu ()
         {
             var keypressed = false;
 
@@ -1125,7 +1138,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void PauseGame ()
+        private static void PauseGame ()
         {
             do
             {
@@ -1137,7 +1150,8 @@ namespace P3Net.Arx
             } while (key != "SPACE");
         }
 
-        public static void PlayerDies ()
+        //TODO: Move to Player
+        private static void PlayerDies ()
         {
             var deathLooping = true;
             var musicPlaying = false;
@@ -1184,7 +1198,7 @@ namespace P3Net.Arx
                 deathMusic.Stop();
         }
 
-        public static void QuitMenu ()
+        private static void QuitMenu ()
         {
             var keypressed = false;
 
@@ -1207,7 +1221,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ScenarioEntrance ( int scenarioNumber )
+        //TODO: Move to Scenario
+        private static void ScenarioEntrance ( int scenarioNumber )
         {
             var keynotpressed = true;
             while (keynotpressed) // closed
@@ -1242,7 +1257,8 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static void ShopClosed ()
+        //TODO: Move to Shop, not currently used but seems implemented
+        private static void ShopClosed ()
         {
             var keynotpressed = true;
             while (keynotpressed) // closed
@@ -1262,7 +1278,8 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static void Teleport ()
+        //TODO: Move to navigation
+        private static void Teleport ()
         {
             var typed_coords = "";
             var teleportComplete = false;
@@ -1320,21 +1337,21 @@ namespace P3Net.Arx
             // validate!
         }
 
-        public static void TogglePanelsBackward ()
+        private static void TogglePanelsBackward ()
         {
             plyr.infoPanel--;
             if (plyr.infoPanel == 0)
                 plyr.infoPanel = 8;
         }
 
-        public static void TogglePanelsForward ()
+        private static void TogglePanelsForward ()
         {
             plyr.infoPanel++;
             if (plyr.infoPanel == 9)
                 plyr.infoPanel = 1;
         }
 
-        public static void TreasureMessage ( string str )
+        private static void TreasureMessage ( string str )
         {
             do
             {
@@ -1346,7 +1363,8 @@ namespace P3Net.Arx
             } while (key != "SPACE");
         }
 
-        public static void TurnLeft ()
+        //TOD: Move to Navigation
+        private static void TurnLeft ()
         {
             switch (plyr.facing)
             {
@@ -1376,7 +1394,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static void TurnRight ()
+        //TODO: Move to Navigation
+        private static void TurnRight ()
         {
             switch (plyr.facing)
             {
@@ -1403,50 +1422,41 @@ namespace P3Net.Arx
                 plyr.z_offset = 1.0f;
                 break;
             }
-        }
+        }        
+        #endregion
 
-        public static void UpdateDoorDetails ()
-        {
-            // Adds an entry about a door that has been successfully opened. The 1st entry is overwritten after 20 door openings.
-            plyr.z_offset = plyr.movingForward ? 2 : 0;
+        #region Review Data
 
-            if (plyr.doorDetailIndex == 19)
-                plyr.doorDetailIndex = 0;
+        public static Sound cityDoorSound = new Sound();
+        public static Sound citySecretSound = new Sound();
+        public static Music deathMusic;
 
-            plyr.doorDetails[plyr.doorDetailIndex].x = plyr.x;
-            plyr.doorDetails[plyr.doorDetailIndex].y = plyr.y;
-            plyr.doorDetails[plyr.doorDetailIndex].level = plyr.map;
+        public static SoundBuffer doorCityBuffer;
+        public static SoundBuffer doorDungeonBuffer;
 
-            if (plyr.movingForward)
-                plyr.doorDetails[plyr.doorDetailIndex].direction = (int)plyr.facing;
-            if (!plyr.movingForward)
-            {
-                if (plyr.facing == Directions.West)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 3; // actually moving east
-                if (plyr.facing == Directions.North)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 4; // actually moving south
-                if (plyr.facing == Directions.East)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 1; // actually moving west
-                if (plyr.facing == Directions.South)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 2; // actually moving north
-            }
-            plyr.doorDetailIndex++;
-        }
+        //TODO: Use regular time
+        public static Time dt = new Time();
+        public static Sound dungeonDoorSound = new Sound();
+        public static Sound dungeonSecretSound = new Sound();
+        public static Time encounterCheckTime = new Time();
+        public static float Framerate;
+        public static bool gameQuit;
 
-        //extern bool autoMapExplored[5][4096];
-        //extern string mess[25];
-        //extern string room_descriptions[203];
-        //extern Mapcell levelmap[4096]; // 12288
+        public static Clock myclock = new Clock();
 
-        //extern Teleport teleports[32];
+        public static bool Running;
+        public static SoundBuffer secretCityBuffer;
+        public static SoundBuffer secretDungeonBuffer;
 
-        //extern sf::Clock clock1;
-        //extern int iCounter;
+        public static SoundBuffer smithyBuffer;
+        public static bool smithyPlaying;
+        public static Sound smithySound = new Sound();
+        public static Sprite tBackground = new Sprite();
+        public static Texture teleBlack;
 
-        //void shopDamon();
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void ShopRetreat();
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void ShopRathskeller();
+        public static int teleColour = 1;
+        public static Texture teleGold;
+
+        #endregion
     }
 }

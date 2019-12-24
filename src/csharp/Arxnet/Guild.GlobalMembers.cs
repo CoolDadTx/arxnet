@@ -15,204 +15,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static string guildLyricsFilename;
-
-        public static int guildNo;
-
-        public static Guild[] guilds =
-        {
-            new Guild()
-            {
-                name = "Thieves Guild",
-                x = 43,
-                y = 29,
-                minAlignment = 64,
-                maxAlignment = 128,
-                minLevel = 2,
-                type = 1,
-                enemyGuild = 8,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Blue Wizards Guild",
-                x = 18,
-                y = 16,
-                minAlignment = 120,
-                maxAlignment = 192,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 6,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Light Wizards Guild",
-                x = 2,
-                y = 59,
-                minAlignment = 144,
-                maxAlignment = 255,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 5,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Green Wizards Academy",
-                x = 11,
-                y = 21,
-                minAlignment = 96,
-                maxAlignment = 160,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 4,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Red Wizards University",
-                x = 47,
-                y = 49,
-                minAlignment = 48,
-                maxAlignment = 127,
-                minLevel = 2,
-                type = 1,
-                enemyGuild = 3,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Dark Wizards Guild",
-                x = 33,
-                y = 42,
-                minAlignment = 0,
-                maxAlignment = 64,
-                minLevel = 2,
-                type = 1,
-                enemyGuild = 2,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Star Wizards Guild",
-                x = 27,
-                y = 52,
-                minAlignment = 120,
-                maxAlignment = 176,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 1,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Wizards of Chaos Guild",
-                x = 50,
-                y = 4,
-                minAlignment = 64,
-                maxAlignment = 128,
-                minLevel = 2,
-                type = 1,
-                enemyGuild = 9,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Wizards of Law Guild",
-                x = 61,
-                y = 14,
-                minAlignment = 132,
-                maxAlignment = 208,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 0,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Guild of Order",
-                x = 57,
-                y = 14,
-                minAlignment = 132,
-                maxAlignment = 255,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 7,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Physicians Guild",
-                x = 5,
-                y = 49,
-                minAlignment = 128,
-                maxAlignment = 224,
-                minLevel = 2,
-                type = 2,
-                enemyGuild = 11,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Assassins Guild",
-                x = 55,
-                y = 61,
-                minAlignment = 16,
-                maxAlignment = 112,
-                minLevel = 2,
-                type = 1,
-                enemyGuild = 10,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Mercenaries' Guild",
-                x = 32,
-                y = 8,
-                minAlignment = 64,
-                maxAlignment = 128,
-                minLevel = 5,
-                type = 1,
-                enemyGuild = 13,
-                fullDues = 150,
-                associateDues = 100
-            },
-            new Guild()
-            {
-                name = "Paladins' Guild",
-                x = 25,
-                y = 19,
-                minAlignment = 152,
-                maxAlignment = 255,
-                minLevel = 5,
-                type = 2,
-                enemyGuild = 12,
-                fullDues = 150,
-                associateDues = 100
-            }
-        };
-
-        public static GuildSpell[] guildSpells = Arrays.InitializeWithDefaultInstances<GuildSpell>(35);
-
-        public static int itemQuantity; // used for number of charges to be paid for
-
-        public static Music Music1;
-
-        public const int numberOfGuilds = 14; // 14 excluding - 2 extras in City
-
         public static void ClearGuildDisplay ()
         {
             clock1.Restart();
@@ -232,179 +34,6 @@ namespace P3Net.Arx
 
             UpdateLyrics();
             iCounter++;
-        }
-
-        public static int GetGuildNo ()
-        {
-            var guild_no = 0;
-
-            if (plyr.scenario == Scenarios.City) // City
-            {
-                for (var i = 0; i < numberOfGuilds; i++) // Max number of guild objects
-                {
-                    if ((guilds[i].x == plyr.x) && (guilds[i].y == plyr.y))
-                        guild_no = i; // The number of the guild you have entered
-                }
-            } else if (plyr.scenario == Scenarios.Dungeon) // Dungeon
-            {
-                if (plyr.location == 49)
-                    guild_no = 7; // chaos
-                if (plyr.location == 50)
-                    guild_no = 9; // order
-                if (plyr.location == 51)
-                    guild_no = 8; // law
-                if (plyr.location == 55)
-                    guild_no = 0; // thieves
-                if (plyr.location == 138)
-                    guild_no = 2; // light
-                if (plyr.location == 181)
-                    guild_no = 5; // dark
-                if (plyr.location == 42)
-                    guild_no = 12; // mercenaries
-                if (plyr.location == 41)
-                    guild_no = 13; // paladins
-            }
-            return guild_no;
-        }
-
-        public static void PracticeSpells ()
-        {
-            // Based on SelectItem code using "pages" of spells hence reference to "pages > 2" etc
-
-            var itemRef = 9999; // Nothing selected
-            var selectDesc = "Would you like to practice your spell of";
-
-            var selectDone = false;
-
-            var no_items = plyr.spellIndex; // Number of spells in players inventory
-            var page = 3;
-
-            var noPages = no_items / 4; // based on 4 oncreen items per page
-            var pages = noPages;
-            var tempRemainder = no_items % 4;
-            if (tempRemainder != 0)
-                pages++;
-
-            while (!selectDone)
-            {
-                if (page > 2) // Variable items
-                {
-                    var keypressed = false;
-                    while (!keypressed)
-                    {
-                        ClearGuildDisplay();
-                        CyText(1, selectDesc);
-                        BText(5, 3, "(1)");
-                        BText(5, 4, "(2)");
-                        BText(5, 5, "(3)");
-                        BText(5, 6, "(4)");
-                        BText(2, 8, "Item #, Forward, Back, or ESC to exit");
-                        SetFontColour(40, 96, 244, 255);
-                        BText(2, 8, "     #  F        B        ESC");
-                        SetFontColour(215, 215, 215, 255);
-
-                        var page_item = 1;
-                        var cur_idx = ((page - 3) * 4);
-                        var menuitem1 = 9999; // 9999 is used as nil
-                        var menuitem2 = 9999;
-                        var menuitem3 = 9999;
-                        var menuitem4 = 9999;
-
-                        while ((cur_idx < plyr.spellIndex) && (page_item < 5))
-                        {
-                            BText(9, (page_item + 2), $"{spells[(spellBuffer[cur_idx].no)].name} {spellBuffer[cur_idx].percentage}%");
-                            switch (page_item)
-                            {
-                                case 1:
-                                menuitem1 = cur_idx;
-                                break;
-                                case 2:
-                                menuitem2 = cur_idx;
-                                break;
-                                case 3:
-                                menuitem3 = cur_idx;
-                                break;
-                                case 4:
-                                menuitem4 = cur_idx;
-                                break;
-                            }
-                            page_item++;
-                            cur_idx++;
-                        }
-                        UpdateDisplay();
-
-                        var key_value = GetSingleKey();
-                        if ((key_value == "1") && (menuitem1 != 9999))
-                        {
-                            itemRef = menuitem1;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "2") && (menuitem2 != 9999))
-                        {
-                            itemRef = menuitem2;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "3") && (menuitem3 != 9999))
-                        {
-                            itemRef = menuitem3;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "4") && (menuitem4 != 9999))
-                        {
-                            itemRef = menuitem4;
-                            keypressed = true;
-                            selectDone = true;
-                        }
-
-                        if (key_value == "ESC")
-                        {
-                            keypressed = true;
-                            selectDone = true;
-                        }
-                        if ((key_value == "B") && (page > 3))
-                        {
-                            keypressed = true;
-                            page--;
-                        }
-                        if ((key_value == "up") && (page > 3))
-                        {
-                            keypressed = true;
-                            page--;
-                        }
-                        if ((key_value == "F") && (pages > (page - 2)))
-                        {
-                            keypressed = true;
-                            page++;
-                        }
-                        if ((key_value == "down") && (pages > (page - 2)))
-                        {
-                            keypressed = true;
-                            page++;
-                        }
-                    }
-                }
-            }
-
-            if (itemRef != 9999)
-            {
-                var practiceHours = 4;
-                while (practiceHours > 0)
-                {
-                    ClearGuildDisplay();
-                    CyText(2, "Practicing the spell of");
-                    var str = spells[(spellBuffer[itemRef].no)].name;
-                    CyText(4, str);
-                    UpdateDisplay();
-                    Sleep(TimeSpan.FromSeconds(1));
-                    AddHour();
-                    practiceHours--;
-                }
-                DeductCoins(0, 100, 0);
-                spellBuffer[itemRef].percentage++; // Add 1% to spell percentage
-            }
         }
 
         public static void ShopGuild ()
@@ -1155,7 +784,7 @@ namespace P3Net.Arx
                         BText(x, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
@@ -1166,7 +795,7 @@ namespace P3Net.Arx
                         BText(2, 1, "}");
                     if (menuStartItem != guildSpellsNo)
                         BText(2, 8, "{");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -1322,10 +951,384 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        //extern sf::Clock clock1;
-        //extern int iCounter;
-        //extern spellItem spellBuffer[35];
-        //extern questItem questItems[4];
+        #region Review Data
 
+        public static string guildLyricsFilename;
+
+        public static int guildNo;
+
+        public static Guild[] guilds =
+        {
+            new Guild()
+            {
+                name = "Thieves Guild",
+                x = 43,
+                y = 29,
+                minAlignment = 64,
+                maxAlignment = 128,
+                minLevel = 2,
+                type = 1,
+                enemyGuild = 8,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Blue Wizards Guild",
+                x = 18,
+                y = 16,
+                minAlignment = 120,
+                maxAlignment = 192,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 6,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Light Wizards Guild",
+                x = 2,
+                y = 59,
+                minAlignment = 144,
+                maxAlignment = 255,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 5,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Green Wizards Academy",
+                x = 11,
+                y = 21,
+                minAlignment = 96,
+                maxAlignment = 160,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 4,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Red Wizards University",
+                x = 47,
+                y = 49,
+                minAlignment = 48,
+                maxAlignment = 127,
+                minLevel = 2,
+                type = 1,
+                enemyGuild = 3,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Dark Wizards Guild",
+                x = 33,
+                y = 42,
+                minAlignment = 0,
+                maxAlignment = 64,
+                minLevel = 2,
+                type = 1,
+                enemyGuild = 2,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Star Wizards Guild",
+                x = 27,
+                y = 52,
+                minAlignment = 120,
+                maxAlignment = 176,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 1,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Wizards of Chaos Guild",
+                x = 50,
+                y = 4,
+                minAlignment = 64,
+                maxAlignment = 128,
+                minLevel = 2,
+                type = 1,
+                enemyGuild = 9,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Wizards of Law Guild",
+                x = 61,
+                y = 14,
+                minAlignment = 132,
+                maxAlignment = 208,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 0,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Guild of Order",
+                x = 57,
+                y = 14,
+                minAlignment = 132,
+                maxAlignment = 255,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 7,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Physicians Guild",
+                x = 5,
+                y = 49,
+                minAlignment = 128,
+                maxAlignment = 224,
+                minLevel = 2,
+                type = 2,
+                enemyGuild = 11,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Assassins Guild",
+                x = 55,
+                y = 61,
+                minAlignment = 16,
+                maxAlignment = 112,
+                minLevel = 2,
+                type = 1,
+                enemyGuild = 10,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Mercenaries' Guild",
+                x = 32,
+                y = 8,
+                minAlignment = 64,
+                maxAlignment = 128,
+                minLevel = 5,
+                type = 1,
+                enemyGuild = 13,
+                fullDues = 150,
+                associateDues = 100
+            },
+            new Guild()
+            {
+                name = "Paladins' Guild",
+                x = 25,
+                y = 19,
+                minAlignment = 152,
+                maxAlignment = 255,
+                minLevel = 5,
+                type = 2,
+                enemyGuild = 12,
+                fullDues = 150,
+                associateDues = 100
+            }
+        };
+
+        public static GuildSpell[] guildSpells = Arrays.InitializeWithDefaultInstances<GuildSpell>(35);
+
+        public static int itemQuantity; // used for number of charges to be paid for
+
+        public static Music Music1;
+
+        public const int numberOfGuilds = 14; // 14 excluding - 2 extras in City
+
+        #endregion
+
+        #region Private Members
+
+        //TODO: Return Guild
+        private static int GetGuildNo ()
+        {
+            var guild_no = 0;
+
+            if (plyr.scenario == Scenarios.City) // City
+            {
+                for (var i = 0; i < numberOfGuilds; i++) // Max number of guild objects
+                {
+                    if ((guilds[i].x == plyr.x) && (guilds[i].y == plyr.y))
+                        guild_no = i; // The number of the guild you have entered
+                }
+            } else if (plyr.scenario == Scenarios.Dungeon) // Dungeon
+            {
+                if (plyr.location == 49)
+                    guild_no = 7; // chaos
+                if (plyr.location == 50)
+                    guild_no = 9; // order
+                if (plyr.location == 51)
+                    guild_no = 8; // law
+                if (plyr.location == 55)
+                    guild_no = 0; // thieves
+                if (plyr.location == 138)
+                    guild_no = 2; // light
+                if (plyr.location == 181)
+                    guild_no = 5; // dark
+                if (plyr.location == 42)
+                    guild_no = 12; // mercenaries
+                if (plyr.location == 41)
+                    guild_no = 13; // paladins
+            }
+            return guild_no;
+        }
+
+        private static void PracticeSpells ()
+        {
+            // Based on SelectItem code using "pages" of spells hence reference to "pages > 2" etc
+
+            var itemRef = 9999; // Nothing selected
+            var selectDesc = "Would you like to practice your spell of";
+
+            var selectDone = false;
+
+            var no_items = plyr.spellIndex; // Number of spells in players inventory
+            var page = 3;
+
+            var noPages = no_items / 4; // based on 4 oncreen items per page
+            var pages = noPages;
+            var tempRemainder = no_items % 4;
+            if (tempRemainder != 0)
+                pages++;
+
+            while (!selectDone)
+            {
+                if (page > 2) // Variable items
+                {
+                    var keypressed = false;
+                    while (!keypressed)
+                    {
+                        ClearGuildDisplay();
+                        CyText(1, selectDesc);
+                        BText(5, 3, "(1)");
+                        BText(5, 4, "(2)");
+                        BText(5, 5, "(3)");
+                        BText(5, 6, "(4)");
+                        BText(2, 8, "Item #, Forward, Back, or ESC to exit");
+                        SetFontColor(40, 96, 244, 255);
+                        BText(2, 8, "     #  F        B        ESC");
+                        SetFontColor(215, 215, 215, 255);
+
+                        var page_item = 1;
+                        var cur_idx = ((page - 3) * 4);
+                        var menuitem1 = 9999; // 9999 is used as nil
+                        var menuitem2 = 9999;
+                        var menuitem3 = 9999;
+                        var menuitem4 = 9999;
+
+                        while ((cur_idx < plyr.spellIndex) && (page_item < 5))
+                        {
+                            BText(9, (page_item + 2), $"{spells[(spellBuffer[cur_idx].no)].name} {spellBuffer[cur_idx].percentage}%");
+                            switch (page_item)
+                            {
+                                case 1:
+                                menuitem1 = cur_idx;
+                                break;
+                                case 2:
+                                menuitem2 = cur_idx;
+                                break;
+                                case 3:
+                                menuitem3 = cur_idx;
+                                break;
+                                case 4:
+                                menuitem4 = cur_idx;
+                                break;
+                            }
+                            page_item++;
+                            cur_idx++;
+                        }
+                        UpdateDisplay();
+
+                        var key_value = GetSingleKey();
+                        if ((key_value == "1") && (menuitem1 != 9999))
+                        {
+                            itemRef = menuitem1;
+                            keypressed = true;
+                            selectDone = true;
+                        }
+                        if ((key_value == "2") && (menuitem2 != 9999))
+                        {
+                            itemRef = menuitem2;
+                            keypressed = true;
+                            selectDone = true;
+                        }
+                        if ((key_value == "3") && (menuitem3 != 9999))
+                        {
+                            itemRef = menuitem3;
+                            keypressed = true;
+                            selectDone = true;
+                        }
+                        if ((key_value == "4") && (menuitem4 != 9999))
+                        {
+                            itemRef = menuitem4;
+                            keypressed = true;
+                            selectDone = true;
+                        }
+
+                        if (key_value == "ESC")
+                        {
+                            keypressed = true;
+                            selectDone = true;
+                        }
+                        if ((key_value == "B") && (page > 3))
+                        {
+                            keypressed = true;
+                            page--;
+                        }
+                        if ((key_value == "up") && (page > 3))
+                        {
+                            keypressed = true;
+                            page--;
+                        }
+                        if ((key_value == "F") && (pages > (page - 2)))
+                        {
+                            keypressed = true;
+                            page++;
+                        }
+                        if ((key_value == "down") && (pages > (page - 2)))
+                        {
+                            keypressed = true;
+                            page++;
+                        }
+                    }
+                }
+            }
+
+            if (itemRef != 9999)
+            {
+                var practiceHours = 4;
+                while (practiceHours > 0)
+                {
+                    ClearGuildDisplay();
+                    CyText(2, "Practicing the spell of");
+                    var str = spells[(spellBuffer[itemRef].no)].name;
+                    CyText(4, str);
+                    UpdateDisplay();
+                    Sleep(TimeSpan.FromSeconds(1));
+                    AddHour();
+                    practiceHours--;
+                }
+                DeductCoins(0, 100, 0);
+                spellBuffer[itemRef].percentage++; // Add 1% to spell percentage
+            }
+        }
+        
+        #endregion
     }
 }

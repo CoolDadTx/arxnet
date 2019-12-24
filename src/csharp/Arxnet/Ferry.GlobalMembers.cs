@@ -148,8 +148,5 @@ namespace P3Net.Arx
                 }
             }
         }
-
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
     }
 }

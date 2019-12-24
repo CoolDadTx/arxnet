@@ -20,6 +20,7 @@ using PrimitiveType = OpenTK.Graphics.OpenGL.PrimitiveType;
 
 namespace P3Net.Arx
 {
+    //TODO: Separate low-level graphics stuff from specifics (e.g. draw texture from draw panel)
     public partial class GlobalMembers
     {
         public static void Draw3DView ()
@@ -32,7 +33,75 @@ namespace P3Net.Arx
             App.PushGLStates();
         }
 
-        public static void Draw3DBackground ()
+        public static void InitTextures ()
+        {
+            // Load an OpenGL texture.
+            // We could directly use a sf::Image as an OpenGL texture (with its Bind() member function),
+            // but here we want more control on it (generate mipmaps, ...) so we create a new one
+
+            var imagePath = (graphicMode == 0) ? "data/images/textures_original/" : "data/images/textures_alternate/";
+            GL.GenTextures(numberOfTextures, out texture[0]);  // problem line - don't include in loop. Always 0???
+
+            for (var i = 0; i < numberOfTextures; i++)
+            {
+                var filename = textureNames[i];
+
+                var img = new Image($"{imagePath}{filename}.png");
+                GL.BindTexture(TextureTarget.Texture2D, texture[i]);
+
+                //TODO: Does this work, X/Y are uints?
+                Glu.Build2DMipmap(TextureTarget.Texture2D, (int)All.Rgba, (int)img.Size.X, (int)img.Size.Y, PixelFormat.Rgba, PixelType.UnsignedByte, img.Pixels);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
+
+                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)All.TextureMaxAnisotropyExt, 8);
+            }
+
+            // Need to delete SFML image...
+        }
+
+        public static void LoadBackgroundNames ()
+        {
+            for (var i = 0; i < numberOfBackgrounds; i++)
+                backgroundNames[i] = "";
+
+            var filename = (graphicMode == 0) ? "data/map/backgrounds.txt" : "data/map/backgroundsUpdated.txt";
+
+            //TODO: Ignoring # of backgrounds - numberOfBackgrounds
+            var lines = File.ReadAllLines(filename);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                var idx = line.IndexOf('=');
+                var text = line.Substring(idx + 2);
+
+                backgroundNames[i] = text;
+                background[i] = new Texture("data/images/backgrounds/" + text + ".png");
+            };
+        }
+
+        public static void LoadTextureNames ()
+        {
+            for (var i = 0; i < numberOfTextures; i++)
+                textureNames[i] = "";
+
+            var filename = graphicMode == 0 ? "data/map/textures.txt" : "data/map/texturesUpdated.txt";
+
+            //TODO: Ignore fixed texture count - numberOfTextures
+            var lines = File.ReadAllLines(filename);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                var idx = line.IndexOf('=');
+                var text = line.Substring(idx + 2);
+                textureNames[i] = text;
+            };
+        }
+
+        #region Private Members
+
+        private static void Draw3DBackground ()
         {
             var Background = new Sprite();
             Background.Scale = new Vector2f(1, 1);
@@ -204,7 +273,7 @@ namespace P3Net.Arx
             App.Draw(Background);
         }
 
-        public static void CalculateWallPositions ( int c, int d )
+        private static void CalculateWallPositions ( int c, int d )
         {
             // Calculates the actual positions within OpenGL space to draw the 3 quads that make up a map cell
             var x = 0;
@@ -254,7 +323,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void BuildLevelView ()
+        private static void BuildLevelView ()
         {                           
             GL.Fog(FogParameter.FogMode, (int)fogMode[fogfilter]); // Fog Mode
             GL.Fog(FogParameter.FogColor, fogColor); // Set Fog Color
@@ -306,7 +375,7 @@ namespace P3Net.Arx
                 CalculateWallPositions(x, d);
         }
 
-        public static void DrawCellWalls ( int c, int d, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
+        private static void DrawCellWalls ( int c, int d, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
         {
             var texture_no = 0;
             int wall_type;
@@ -479,7 +548,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static int GetTextureIndex ( int x )
+        //TODO: Return Zone?
+        private static int GetTextureIndex ( int x )
         {
             int texture_index;
 
@@ -536,73 +606,11 @@ namespace P3Net.Arx
                 break;
             }
             return texture_index;
-        }
+        }        
+        
+        #endregion
 
-        public static void LoadTextureNames ()
-        {
-            for (var i = 0; i < numberOfTextures; i++)
-                textureNames[i] = "";
-            
-            var filename = graphicMode == 0 ? "data/map/textures.txt" : "data/map/texturesUpdated.txt";
-            
-            //TODO: Ignore fixed texture count - numberOfTextures
-            var lines = File.ReadAllLines(filename);
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                var idx = line.IndexOf('=');
-                var text = line.Substring(idx + 2);
-                textureNames[i] = text;
-            };
-        }
-
-        public static void InitTextures ()
-        {
-            // Load an OpenGL texture.
-            // We could directly use a sf::Image as an OpenGL texture (with its Bind() member function),
-            // but here we want more control on it (generate mipmaps, ...) so we create a new one
-
-            var imagePath = (graphicMode == 0) ? "data/images/textures_original/" : "data/images/textures_alternate/";
-            GL.GenTextures(numberOfTextures, out texture[0]);  // problem line - don't include in loop. Always 0???
-
-            for (var i = 0; i < numberOfTextures; i++)
-            {
-                var filename = textureNames[i];
-
-                var img = new Image($"{imagePath}{filename}.png");
-                GL.BindTexture(TextureTarget.Texture2D, texture[i]);
-
-                //TODO: Does this work, X/Y are uints?
-                Glu.Build2DMipmap(TextureTarget.Texture2D, (int)All.Rgba, (int)img.Size.X, (int)img.Size.Y, PixelFormat.Rgba, PixelType.UnsignedByte, img.Pixels);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.LinearMipmapLinear);
-
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)All.TextureMaxAnisotropyExt, 8);
-            }
-
-            // Need to delete SFML image...
-        }
-
-        public static void LoadBackgroundNames ()
-        {
-            for (var i = 0; i < numberOfBackgrounds; i++)
-                backgroundNames[i] = "";
-
-            var filename = (graphicMode == 0) ? "data/map/backgrounds.txt" : "data/map/backgroundsUpdated.txt";
-
-            //TODO: Ignoring # of backgrounds - numberOfBackgrounds
-            var lines = File.ReadAllLines(filename);            
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                var idx = line.IndexOf('=');
-                var text = line.Substring(idx + 2);
-
-                backgroundNames[i] = text;
-                background[i] = new Texture("data/images/backgrounds/" + text + ".png");
-            };
-        }
+        #region Review Data
 
         // Storage for textures
         public static readonly int numberOfTextures = 68;
@@ -619,15 +627,16 @@ namespace P3Net.Arx
 
         public static int depth = 33; // should be 13 was 33
         public static int columns = 25; // should be an odd number 25
-        public static int frontwall = 0;
-        public static int leftwall = 0;
-        public static int rightwall = 0;
-        public static int frontheight = 0;
-        public static int leftheight = 0;
-        public static int rightheight = 0;
-        public static int ceiling = 0;
-        public static int floorTexture = 0;
-        public static int specialwall = 0;
-        public static int zone = 0;
+        public static int frontwall;
+        public static int leftwall;
+        public static int rightwall;
+        public static int frontheight;
+        public static int leftheight;
+        public static int rightheight;
+        public static int ceiling;
+        public static int floorTexture;
+        public static int specialwall;
+        public static int zone;
+        #endregion
     }
 }

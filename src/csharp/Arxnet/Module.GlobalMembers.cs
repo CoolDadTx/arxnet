@@ -10,28 +10,29 @@
 using System;
 
 namespace P3Net.Arx
-{
+{    
     public partial class GlobalMembers
     {
-        public const int MAX_MENU_ITEMS = 6; // Max 6 items per menu page. Should be usable for building any type of general shop menus with a maximum of 20 multi page items
-        public static MenuItem[] menuItems = Arrays.InitializeWithDefaultInstances<MenuItem>(20); // Should be usable for building any type of general shop menus with a maximum of 20 multi page items
-
-        public static int CalculateMaximumMenuPage ( int numberOfItems )
+        //TODO: Make a module a first class citizen with control over the game loop, available items, etc
+        public static void RunModule ( Modules module )
         {
-            var maxPageNumber = (numberOfItems / MAX_MENU_ITEMS);
-            if (numberOfItems % MAX_MENU_ITEMS > 0)
-                maxPageNumber++;
-            maxPageNumber--;
-            return maxPageNumber;
+            plyr.status = GameStates.Module;
+            UpdateModule(module);
+            if (plyr.facing == Directions.West)
+                plyr.x = plyr.oldx;
+            if (plyr.facing == Directions.East)
+                plyr.x = plyr.oldx;
+            if (plyr.facing == Directions.North)
+                plyr.y = plyr.oldy;
+            if (plyr.facing == Directions.South)
+                plyr.y = plyr.oldy;
+
+            //MLT: Double to float
+            plyr.z_offset = 1.6F; // position player just outside door
+            plyr.status = GameStates.Explore;
         }
 
-        public static void DisplayModuleImage ( int module )
-        {
-            App.Clear();
-            App.PushGLStates();
-            DrawStatsPanel();
-        }
-
+        //TODO: Move to Input component
         // Returns an item reference based on a multi page menu e.g. food item, weapon item
         public static int InputItemChoice ( string message, int totalItems )
         {
@@ -137,6 +138,7 @@ namespace P3Net.Arx
             return itemRef;
         }
 
+        //TODO: Move to Input component
         public static int InputNumber ( string message )
         {
             var inputText = "";
@@ -181,6 +183,7 @@ namespace P3Net.Arx
             return value;
         }
 
+        //TODO: Move to Input component
         public static string InputText ( string message )
         {
             var inputText = "";
@@ -216,25 +219,25 @@ namespace P3Net.Arx
             return inputText;
         }
 
-        public static void RunModule ( Modules module )
+        #region Review Data
+
+        public const int MAX_MENU_ITEMS = 6; // Max 6 items per menu page. Should be usable for building any type of general shop menus with a maximum of 20 multi page items
+        public static MenuItem[] menuItems = Arrays.InitializeWithDefaultInstances<MenuItem>(20); // Should be usable for building any type of general shop menus with a maximum of 20 multi page items
+
+        #endregion
+
+        #region Private Members
+
+        private static int CalculateMaximumMenuPage ( int numberOfItems )
         {
-            plyr.status = GameStates.Module;
-            UpdateModule(module);
-            if (plyr.facing == Directions.West)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.East)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.North)
-                plyr.y = plyr.oldy;
-            if (plyr.facing == Directions.South)
-                plyr.y = plyr.oldy;
+            var maxPageNumber = (numberOfItems / MAX_MENU_ITEMS);
+            if (numberOfItems % MAX_MENU_ITEMS > 0)
+                maxPageNumber++;
+            maxPageNumber--;
+            return maxPageNumber;
+        }                              
 
-            //MLT: Double to float
-            plyr.z_offset = 1.6F; // position player just outside door
-            plyr.status = GameStates.Explore;
-        }
-
-        public static void UpdateModule ( Modules module )
+        private static void UpdateModule ( Modules module )
         {
             if (module == Modules.RATHSKELLER)
                 RunRathskeller();
@@ -243,10 +246,6 @@ namespace P3Net.Arx
             if (module == Modules.VAULT)
                 RunVault();
         }
-
-        //extern menuItem menuItems[20];
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void LeaveModule();
+        #endregion
     }
 }

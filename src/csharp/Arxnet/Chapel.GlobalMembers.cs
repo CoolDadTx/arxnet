@@ -50,8 +50,6 @@ namespace P3Net.Arx
 
             StopShopMusic();
             LeaveShop();
-        }        
-
-        // extern Player plyr;
+        }                
     }
 }

@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
@@ -18,8 +19,30 @@ namespace P3Net.Arx
 
         public int level { get; set; }
 
-        public int x { get; set; }
+        [Obsolete("Use Location")]
+        public int x
+        {
+            get => _location.X;
+            set => _location.X = value;
+        }
 
-        public int y { get; set; }
+        [Obsolete("Use Location")]
+        public int y
+        {
+            get => _location.Y;
+            set => _location.Y = value;
+        }
+
+        public Point Location 
+        {
+            get => _location;
+            set => _location = value;
+        }
+
+        #region Private Members
+
+        //TODO: Remove when obsolete removed
+        private Point _location;
+        #endregion
     }
 }

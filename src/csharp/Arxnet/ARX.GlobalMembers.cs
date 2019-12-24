@@ -8,13 +8,62 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace P3Net.Arx
 {
+    //TODO: Move the game menu logic to its own helper class
     public partial class GlobalMembers
-    {
+    {                   
+        //TODO: Move to City module
+        public static void CreateCityCharacter ()
+        {
+            CreateNewCharacter(Scenarios.City);
+            StartGame();
+        }
+
+        //TODO: Move to Dungeon module
+        public static void CreateDungeonCharacter ()
+        {
+            CreateNewCharacter(Scenarios.Dungeon);
+            StartGame();
+        }
+
+        public static void LoadCharacter ()
+        {
+            var done = false;
+            while (!done)
+            {
+                ClearDisplay();
+                DisplayLoadGame();
+                DrawText(12, 0, "Load a character");
+                UpdateDisplay();
+
+                //TODO: Modify to allow loading any # of characters
+                var key = GetSingleKey();
+                switch (key)
+                {
+                    case "0":
+                    case "1":
+                    case "2":
+                    case "3":
+                    case "4":
+                    case "5":
+                    case "6":
+                    case "7":
+                    case "8":
+                    case "9":
+                    {
+                        LoadCharacter(Int32.Parse(key));
+                        StartGame();
+                        done = true;
+                        break;
+                    };
+
+                    case "ESC": done = true; break;
+                };
+            }
+        }
+
         public static void StartGame ()
         {
             DisplayLoading(); // display loading message on screen
@@ -52,147 +101,15 @@ namespace P3Net.Arx
             GameLoop(); // Enter the main game loop
         }
 
-        public static bool programRunning = true;
-        public static int loadgameMenu = 0;
-
-        static void Main ()
+        public static void ToggleAndInitializeFont ()
         {
-            if (!LoadConfig())
-                return; // load screen resolution from arx.ini
-
-            SetDeveloperFlags();
-            CreateGameWindow();
-
-            plyr.fontStyle = 1;
-            DispInit();
+            if (plyr.fontStyle == 0)
+                plyr.fontStyle = 1;
+            else
+                plyr.fontStyle = 0;
             InitFont();
-            LoadLogoImage();
-
-            InitSaveGameDescriptions();
-
-            while (programRunning)
-            {
-                ClearDisplay();
-                DisplayMainMenu();
-                UpdateDisplay();
-
-                var key = GetSingleKey();
-
-                if (key == "1")
-                {
-                    CreateNewCharacter(Scenarios.City);
-                    StartGame();
-                }
-
-                if (key == "2")
-                {
-                    CreateNewCharacter(Scenarios.Dungeon);
-                    StartGame();
-                }
-
-                if (key == "3")
-                {
-                    loadgameMenu = 255; // high level menu
-                    while (loadgameMenu < 256)
-                    {
-                        ClearDisplay();
-                        DisplayLoadGame();
-                        DrawText(12, 0, "Load a character");
-                        UpdateDisplay();
-
-                        key = GetSingleKey();
-                        if (key == "0")
-                        {
-                            LoadCharacter(0);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "1")
-                        {
-                            LoadCharacter(1);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "2")
-                        {
-                            LoadCharacter(2);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "3")
-                        {
-                            LoadCharacter(3);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "4")
-                        {
-                            LoadCharacter(4);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "5")
-                        {
-                            LoadCharacter(5);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "6")
-                        {
-                            LoadCharacter(6);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "7")
-                        {
-                            LoadCharacter(7);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "8")
-                        {
-                            LoadCharacter(8);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "9")
-                        {
-                            LoadCharacter(9);
-                            StartGame();
-                            loadgameMenu = 256;
-                        }
-                        if (key == "ESC")
-                            loadgameMenu = 256;
-                    }
-                    key = "";
-                }
-
-                if (key == "4")
-                    DisplayAcknowledgements();
-
-                if (key == "6")
-                {
-                    //Toggle
-                    plyr.musicStyle = !plyr.musicStyle;
-                }
-
-                if (key == "7")
-                {
-                    if (plyr.fontStyle == 0)
-                        plyr.fontStyle = 1;
-                    else
-                        plyr.fontStyle = 0;
-                    InitFont();
-                }
-
-                if (key == "0")
-                    programRunning = false;
-                if (key == "QUIT")
-                    programRunning = false;
-            }
         }
 
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void InitialiseGame();
+        public static void ToggleMusic () => plyr.musicStyle = !plyr.musicStyle;        
     }
 }

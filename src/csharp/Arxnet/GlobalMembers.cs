@@ -18,6 +18,9 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
+        #region Review Coins 
+
+        //TODO: Move to Currency
         public static bool CheckCoins ( int gold, int silver, int copper )
         {
             var itemCostInCoppers = (gold * 100) + (silver * 10) + copper;
@@ -26,6 +29,7 @@ namespace P3Net.Arx
             return itemCostInCoppers <= playerTotalCoppers;
         }
 
+        //TODO: Move to Currency
         public static void DeductCoins ( int gold, int silver, int copper )
         {
             // Assumption 1 - Goods will be paid for using copper coins if possible as they take up the most weight for least value
@@ -95,6 +99,7 @@ namespace P3Net.Arx
                 plyr.silver += (10 - silverChange);
         }
 
+        //TODO: Move to Currency
         public static void DisplayCoins ()
         {
             var coinsCopper = (plyr.gold * 100) + (plyr.silver * 10) + plyr.copper;
@@ -102,6 +107,7 @@ namespace P3Net.Arx
             CyText(9, $"Your coins in copper {ToCurrency(coinsCopper)}");
         }
 
+        //TODO: Move to Currency formatter
         public static void DisplaySilverCoins ()
         {
             var coinsSilver = (plyr.gold * 10) + plyr.silver + (plyr.copper / 10);
@@ -109,8 +115,20 @@ namespace P3Net.Arx
             CyText(9, $"Your coins in silver {ToCurrency(coinsSilver)}");
         }
 
+        //TODO: Create format providers for currency, time, percentage, currency in copper, etc
+        /// <summary>Formats with thousands separator.</summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public static string ToCurrency ( int i ) => i.ToString("N0");
+        #endregion
+
+        #region Review Input
+
+        //TODO: Move to input
+
         public static string GetSingleKey () => ReadKey();
 
+        //TODO: Move to input
         public static string GetTextChar ()
         {
             //Before this was a pollEvents call but the implementation uses eventing so we'll switch to handler approach            
@@ -152,10 +170,9 @@ namespace P3Net.Arx
             App.TextEntered -= handler;
 
             return keyString;
-        }
+        }        
 
-        public static int Hex2Dec ( string s ) => Int32.Parse(s, NumberStyles.HexNumber);
-
+        //TODO: Move to input
         public static int InputValue ( string message, int shopNo )
         {
             var inputText = "";
@@ -209,38 +226,8 @@ namespace P3Net.Arx
             return itemQuantity;
         }
 
+        //TODO: Move to input
         public static bool KeyPressed () => ReadKey() != "";
-
-        public static void ModuleMessage ( string txt )
-        {
-            string key;
-            do
-            {
-                ClearShopDisplay();
-                CText(txt);
-                CyText(9, "( Press SPACE to continue )");
-                UpdateDisplay();
-                key = GetSingleKey();
-            } while (key != "SPACE");
-        }
-
-        /// <summary>Generates a random number.</summary>
-        /// <param name="low">The lowest number to generate, inclusive.</param>
-        /// <param name="high">The highest number to generate, inclusive.</param>
-        /// <returns>A number in the given range.</returns>
-        public static int Random ( int low, int high ) => s_random.Next(low, high + 1);        
-
-        private static readonly Random s_random = new Random();
-
-        public static string ReadBinaryString ( byte[] buffer, int offset, byte delimiter = 0 )
-        {
-            var endIndex = Array.IndexOf(buffer, delimiter, offset);
-            if (endIndex < 0)
-                endIndex = buffer.Length - 1;
-
-            //TODO: Check for off by one
-            return Encoding.ASCII.GetString(monstersBinary, offset, endIndex - offset);
-        }
 
         public static string ReadKey ()
         {
@@ -378,18 +365,28 @@ namespace P3Net.Arx
             EventHandler<TextEventArgs> handler = ( o, e ) => {
                 //TODO: Change this to juse use raw string value
                 switch (e.Unicode)
-                {                    
-                    case "\r": keyString = "RETURN"; break;
-                    case " ": keyString = "SPACE"; break;
-                    case "\b": keyString = "BACKSPACE"; break;
-                    case "ESC": keyString = "ESC"; break;
+                {
+                    case "\r":
+                    keyString = "RETURN";
+                    break;
+                    case " ":
+                    keyString = "SPACE";
+                    break;
+                    case "\b":
+                    keyString = "BACKSPACE";
+                    break;
+                    case "ESC":
+                    keyString = "ESC";
+                    break;
 
                     //TODO: Functions, capital/lowercase letters
-                    default: keyString = e.Unicode; break;
+                    default:
+                    keyString = e.Unicode;
+                    break;
                 };
             };
             EventHandler closeHandler = ( o, e ) => { keyString = "QUIT"; };
-            
+
             App.TextEntered += handler;
             App.Closed += closeHandler;
             do
@@ -403,6 +400,39 @@ namespace P3Net.Arx
             return keyString;
         }
 
+        #endregion
+
+        public static int Hex2Dec ( string s ) => Int32.Parse(s, NumberStyles.HexNumber);
+
+        public static void ModuleMessage ( string txt )
+        {
+            string key;
+            do
+            {
+                ClearShopDisplay();
+                CText(txt);
+                CyText(9, "( Press SPACE to continue )");
+                UpdateDisplay();
+                key = GetSingleKey();
+            } while (key != "SPACE");
+        }
+
+        /// <summary>Generates a random number.</summary>
+        /// <param name="low">The lowest number to generate, inclusive.</param>
+        /// <param name="high">The highest number to generate, inclusive.</param>
+        /// <returns>A number in the given range.</returns>
+        public static int Random ( int low, int high ) => s_random.Next(low, high + 1);        
+        
+        public static string ReadBinaryString ( byte[] buffer, int offset, byte delimiter = 0 )
+        {
+            var endIndex = Array.IndexOf(buffer, delimiter, offset);
+            if (endIndex < 0)
+                endIndex = buffer.Length - 1;
+
+            //TODO: Check for off by one
+            return Encoding.ASCII.GetString(monstersBinary, offset, endIndex - offset);
+        }
+        
         public static void Sleep ( TimeSpan time ) => Thread.Sleep(time);
 
         //TODO: This method does nothing, sorting rectangular arrays requires a reasonable amount of code and we honestly are going to remove the arrays anyway
@@ -410,21 +440,28 @@ namespace P3Net.Arx
         {            
         }
 
+        //TODO: Move to helper Dice class
         public static int RollDice ( int rolls, int dice )
         {
             var result = 0;
 
             for (var r = 0; r < rolls; r++)
-                result = result + Random(1, dice);
+                result += Random(1, dice);
             if (result == 0)
                 Console.Write("\nDice roll 0 error!\n");
             return result;
-        }
-        
-        //TODO: Create format providers for currency, time, percentage, currency in copper, etc
-        /// <summary>Formats with thousands separator.</summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public static string ToCurrency ( int i ) => i.ToString("N0");        
+        }                
+
+        #region Review Data
+
+        //TODO: Move to configuration settings
+        public static DevSettings AR_DEV = new DevSettings();
+
+        #endregion
+
+        #region Private Members
+
+        private static readonly Random s_random = new Random();
+        #endregion
     }
 }

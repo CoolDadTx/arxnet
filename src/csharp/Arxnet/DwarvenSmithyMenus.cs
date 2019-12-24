@@ -8,16 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
-/* DWARVEN SMITHY.CPP
-		 *
-		 * TODO:
-		 *
-		 *  Offer to reforge Goblin / Troll ring
-		 *
-		 *
-		 */
 namespace P3Net.Arx
 {
     public enum DwarvenSmithyMenus

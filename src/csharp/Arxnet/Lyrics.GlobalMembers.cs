@@ -9,6 +9,7 @@
  */
 using System;
 using System.IO;
+
 using SFML.Graphics;
 using SFML.System;
 
@@ -16,72 +17,20 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static int backInk;
-        public static string backText;
-        public static int backx;
-
-        //TODO: Use regular time
-        public static Clock clock1 = new Clock();
-        public static string foreText;
-        public static float fSpeedCoefficient = 0F;
-        public static int iCounter;
-        public static int ink;
-        public static Sprite lyricCharImage = new Sprite();
-        public static int lyricDuration;
-
-        public static Texture lyricFontImage;
-        public static int lyricPointer;
-
-        public static LyricElement[] lyrics = Arrays.InitializeWithDefaultInstances<LyricElement>(2048);
-        public static int sequenceLength;
-
-        public static bool wipe;
-        public static int x;
-
-        //============================== drawLyricChar =================================
-        //
-        //  Accepts as parameters an upper-y position (which is always 0), the
-        //  current character's x-value (an index which is incremented...), and
-        //  INITCHAR_NO, an ASCII value derived in the 'lyric' function.
-        //                                                      *** CALLED BY 'LYRIC'
-        //------------------------------------------------------------------------------
-        public static void DrawLyricChar ( int x, int initchar_no )
-        {
-            var char_no = initchar_no - 64;
-            if (initchar_no == 39)
-                char_no = 29;
-            if (initchar_no == 32)
-                char_no = 0;
-            if (initchar_no == 33)
-                char_no = 27;
-            if (initchar_no == 63)
-                char_no = 28;
-            if (initchar_no == 45)
-                char_no = 30;
-            if (initchar_no == 46)
-                char_no = 31;
-            int charX = char_no * 32;
-
-            lyricCharImage.TextureRect = new IntRect(charX, 0, 32, 16);
-            lyricCharImage.Position = new Vector2f(lyricX + ((x - 1) * 32), lyricY);
-            App.Draw(lyricCharImage);
-        }
-
         public static void InitLyricFont ()
         {
             lyricFontImage = new Texture("data/images/songFont.png");
             lyricCharImage.Texture = lyricFontImage;
         }
 
-        //=============================== loadLyrics ===================================
-        //
-        //  A thick function that takes as input the lyrics (stored in .txt files at
-        //  either one of two locations, depending on if we're using the 'modern' or
-        //  'classic' soundtrack), which comprise one of two elements: an integer (X,
-        //  which is used as either an on-screen position indicator, a delay, or a
-        //  color value) and a string, which itself either indicates a lyric or a
-        //  color.
-        //------------------------------------------------------------------------------
+        /// <summary>Loads lyrics from a file.</summary>
+        /// <param name="filename">The file containing the lyrics.</param>
+        /// <remarks>
+        /// A thick function that takes as input the lyrics (stored in .txt files at either one of two locations, 
+        /// depending on if we're using the 'modern' or 'classic' soundtrack), which comprise one of two elements: an integer (X,
+        /// which is used as either an on-screen position indicator, a delay, or a color value) and a string, which itself
+        /// either indicates a lyric or a color.
+        /// </remarks>
         public static void LoadLyrics ( string filename )
         {
             lyricPointer = 0; // *** reset for a new set of lyrics
@@ -97,7 +46,7 @@ namespace P3Net.Arx
                 lyricsFilename = $"data/audio/B/{filename}";
 
             using (var reader = new StreamReader(lyricsFilename))
-            {                
+            {
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine(); // *** read first line as blank
@@ -151,39 +100,13 @@ namespace P3Net.Arx
             iCounter = 0;
         }
 
-        //================================== lyric =====================================
-        //
-        //  Calls the 'drawLyricChar' function, passing it 0 (the upper-leftmost
-        //  y-component), X (a value passed to 'lyric' that serves a number of
-        //  functions [explained below]), and CHAR_NO (the ASCII value of the current
-        //  letter in the string).
-        //                                              *** CALLED BY 'UPDATE LYRICS'
-        //------------------------------------------------------------------------------
-        public static void Lyric ( int x, string text )
-        {
-            for (var i = 0; i < text.Length; ++i)
-            {
-                var current_char = text[i];
-                int char_no = current_char;
-
-                DrawLyricChar(x, char_no);
-                x++;
-            }
-        }
-
-        public static void LyricColour ( int r, int g, int b, int a ) => lyricCharImage.Color = new Color((byte)r, (byte)g, (byte)b, (byte)a);
-        public static void LyricColour ( byte r, byte g, byte b, byte a ) => lyricCharImage.Color = new Color(r, g, b, a);
-
-        //=============================== updateLyrics =================================
-        //  Interprets the lyricElement structure and updates accordingly. Assigns a
-        //  'lyricDuration' value on the basis of a clock that is started whenever
-        //  'updateLyrics()' is called, which measures the elapsed time between the
-        //  call and its receipt; this adjusts the lyric duration so that slower
-        //  computers will see a reduction in the time it takes to update the on-screen
-        //  lyrics, accounting for the longer time spent in processing.
-        //                                               *** CALLED BY 'TAVERN.CPP,'
-        //                                                  'SMITHY.CPP,' 'SHOP.CPP'
-        //------------------------------------------------------------------------------
+        /// <summary>Interprets the lyricElement structure and updates accordingly.</summary>
+        /// <remarks>
+        /// Assigns a 'lyricDuration' value on the basis of a clock that is started whenever 'updateLyrics()' is called, 
+        /// which measures the elapsed time between the call and its receipt; this adjusts the lyric duration so that slower
+        /// computers will see a reduction in the time it takes to update the on-screen lyrics, accounting for the longer
+        /// time spent in processing.
+        /// </remarks>
         public static void UpdateLyrics ()
         {
             if (lyricDuration < 0)
@@ -193,14 +116,14 @@ namespace P3Net.Arx
                 if (lyricDuration > 0)
                 {
                     if (backInk == 1)
-                        LyricColour(59, 83, 255, 255);
+                        LyricColor(59, 83, 255, 255);
                     if (backInk == 2)
-                        LyricColour(54, 127, 40, 255);
+                        LyricColor(54, 127, 40, 255);
                     Lyric(backx, backText);
                     if (ink == 3)
-                        LyricColour(161, 238, 255, 255);
+                        LyricColor(161, 238, 255, 255);
                     if (ink == 4)
-                        LyricColour(192, 192, 192, 255);
+                        LyricColor(192, 192, 192, 255);
                     Lyric(x, foreText);
 
                     Sleep(TimeSpan.FromMilliseconds(100));
@@ -268,17 +191,17 @@ namespace P3Net.Arx
                     }
 
                     if (backInk == 1)
-                        LyricColour(59, 83, 255, 255);
+                        LyricColor(59, 83, 255, 255);
                     if (backInk == 2)
-                        LyricColour(54, 127, 40, 255);
+                        LyricColor(54, 127, 40, 255);
                     Lyric(backx, backText);
 
                     if (backText != "")
                     {
                         if (ink == 3)
-                            LyricColour(161, 238, 255, 255);
+                            LyricColor(161, 238, 255, 255);
                         if (ink == 4)
-                            LyricColour(192, 192, 192, 255);
+                            LyricColor(192, 192, 192, 255);
                         Lyric(x, foreText);
                     }
 
@@ -313,12 +236,76 @@ namespace P3Net.Arx
             }
         }
 
-        //extern int lyricX;
-        //extern int lyricY;
-        //extern Player plyr;
-        //extern sf::Clock clock1;
-        //extern sf::RenderWindow App;
-        //extern sf::RenderTexture lyricstexture;
-        //extern int charYBase;
+        #region Review Data
+
+        public static int backInk;
+        public static string backText;
+        public static int backx;
+
+        //TODO: Use regular time
+        public static Clock clock1 = new Clock();
+        public static string foreText;
+        public static float fSpeedCoefficient = 0F;
+        public static int iCounter;
+        public static int ink;
+        public static Sprite lyricCharImage = new Sprite();
+        public static int lyricDuration;
+
+        public static Texture lyricFontImage;
+        public static int lyricPointer;
+
+        public static LyricElement[] lyrics = Arrays.InitializeWithDefaultInstances<LyricElement>(2048);
+        public static int sequenceLength;
+
+        public static bool wipe;
+        public static int x;
+
+        #endregion
+
+        #region Private Members
+
+        /// <summary>?</summary>
+        /// <param name="x">Character's current X-value</param>
+        /// <param name="initchar_no">ASCII value derived in the lyric function</param>
+        private static void DrawLyricChar ( int x, int initchar_no )
+        {
+            var char_no = initchar_no - 64;
+            if (initchar_no == 39)
+                char_no = 29;
+            if (initchar_no == 32)
+                char_no = 0;
+            if (initchar_no == 33)
+                char_no = 27;
+            if (initchar_no == 63)
+                char_no = 28;
+            if (initchar_no == 45)
+                char_no = 30;
+            if (initchar_no == 46)
+                char_no = 31;
+            int charX = char_no * 32;
+
+            lyricCharImage.TextureRect = new IntRect(charX, 0, 32, 16);
+            lyricCharImage.Position = new Vector2f(lyricX + ((x - 1) * 32), lyricY);
+            App.Draw(lyricCharImage);
+        }
+
+        /// <summary>Calls the 'drawLyricChar' function.</summary>
+        /// <param name="x">Number of functions.</param>
+        /// <param name="text">ASCII value of the current letter in the string.</param>        
+        private static void Lyric ( int x, string text )
+        {
+            for (var i = 0; i < text.Length; ++i)
+            {
+                var current_char = text[i];
+                int char_no = current_char;
+
+                DrawLyricChar(x, char_no);
+                x++;
+            }
+        }
+
+        private static void LyricColor ( int r, int g, int b, int a ) => lyricCharImage.Color = new Color((byte)r, (byte)g, (byte)b, (byte)a);
+        
+        #endregion
     }
 }

@@ -8,14 +8,13 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.IO;
-using System.Linq;
-using SFML.Audio;
 
 namespace P3Net.Arx
 {
+    //TODO: Should we have a base class for shops to cover common properties?
     public class Smithy
     {
+        //TODO: Use TimeRange
         public int closingHour { get; set; }
 
         public float initialPriceFactor { get; set; }
@@ -26,6 +25,7 @@ namespace P3Net.Arx
 
         public string name { get; set; }
 
+        //TODO: Use TimeRange
         public int openingHour { get; set; }
     }
 }

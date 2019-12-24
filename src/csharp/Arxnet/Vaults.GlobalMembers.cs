@@ -8,13 +8,45 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+
 using SFML.System;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
+    {        
+        /*
+		 * TODO:
+		 *  Choose random item
+		 *  Check for guards
+		 */
+        public static void RunVault ()
+        {
+            vmenu = VaultMenus.MenuMain;
+            AddVaultToMap();
+            LoadShopImage(27);
+            SetBagType();
+
+            while (vmenu != VaultMenus.MenuLeft)
+            {
+                gdt = gmyclock.Restart();
+
+                ClearShopDisplay();
+                DisplayVaultModuleText();
+                UpdateDisplay();
+                ProcessVaultMenuInput();
+
+                guardCheckTime += gdt;
+                if (guardCheckTime >= Time.FromSeconds(0.8f)) // was 0.8f
+                {
+                    CheckForGuard();
+                    guardCheckTime = Time.Zero;
+                }
+            }
+        }
+
+        #region Review Data
+
         public static string bagDesc = "copper coins";
 
         public static int bagType = 0;
@@ -27,7 +59,11 @@ namespace P3Net.Arx
 
         public static VaultMenus vmenu;
 
-        public static void AddVaultToMap ()
+        #endregion
+
+        #region Private Members
+
+        private static void AddVaultToMap ()
         {
             if (plyr.x == 2)
             {
@@ -41,7 +77,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CheckForGuard ()
+        private static void CheckForGuard ()
         {
             var x = Random(0, 100);
             if (x < 5)
@@ -52,7 +88,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DisplayVaultModuleText ()
+        private static void DisplayVaultModuleText ()
         {
             if (vmenu == VaultMenus.MenuMain)
             {
@@ -76,7 +112,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void GrabBag ()
+        private static void GrabBag ()
         {
             var amount = Random(0, 10) + 40;
             if (bagType == 0)
@@ -97,7 +133,7 @@ namespace P3Net.Arx
                 plyr.alignment = 0;
         }
 
-        public static void ProcessVaultMenuInput ()
+        private static void ProcessVaultMenuInput ()
         {
             var key = ReadKey();
 
@@ -132,32 +168,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void RunVault ()
-        {
-            vmenu = VaultMenus.MenuMain;
-            AddVaultToMap();
-            LoadShopImage(27);
-            SetBagType();
-
-            while (vmenu != VaultMenus.MenuLeft)
-            {
-                gdt = gmyclock.Restart();
-
-                ClearShopDisplay();
-                DisplayVaultModuleText();
-                UpdateDisplay();
-                ProcessVaultMenuInput();
-
-                guardCheckTime += gdt;
-                if (guardCheckTime >= Time.FromSeconds(0.8f)) // was 0.8f
-                {
-                    CheckForGuard();
-                    guardCheckTime = Time.Zero;
-                }
-            }
-        }
-
-        public static void SetBagType ()
+        private static void SetBagType ()
         {
             // Copper, Silver, Gold, Gems or Jewels
             var x = Random(0, 4);
@@ -190,5 +201,6 @@ namespace P3Net.Arx
                 break;
             }
         }
+        #endregion
     }
 }

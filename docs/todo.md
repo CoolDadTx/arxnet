@@ -21,6 +21,7 @@
 
 ## Enhancements
 
+- [ ] Switch to Winforms to allow hiding of console? [OpenTK](https://github.com/mono/opentk/blob/master/Source/Examples/OpenTK/GLControl/GLControlGameLoop.cs) [SFML](https://en.sfml-dev.org/forums/index.php?topic=9141.0)
 - [ ] Make Scenarios a standalone type
 - [ ] Make Items a standalone type
 - [ ] Make Spells a standalone type

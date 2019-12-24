@@ -25,6 +25,7 @@ namespace P3Net.Arx
 
         public string name { get; set; }
 
+        //TODO: Make a list of requirements with stats being one of the options
         public string statRequirementName { get; set; }
 
         public int statRequirementValue { get; set; }

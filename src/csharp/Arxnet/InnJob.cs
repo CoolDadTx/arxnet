@@ -11,6 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: Make base class for Jobs
     public class InnJob
     {
         public float fatigueRate { get; set; }
@@ -25,6 +26,7 @@ namespace P3Net.Arx
 
         public string name { get; set; }
 
+        //TODO: Use requiremens type
         public string statRequirementName { get; set; }
 
         public int statRequirementValue { get; set; }

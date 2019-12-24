@@ -15,6 +15,7 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
+        //TODO: Move to Scenario
         public static void DungeonGate ()
         {
             var gateNotDone = true;
@@ -121,6 +122,7 @@ namespace P3Net.Arx
             plyr.silver = counters[7].value1;
         }
 
+        //TODO: Move to Scenario
         public static void CityGate ()
         {
             var gateNotDone = true;
@@ -225,52 +227,6 @@ namespace P3Net.Arx
             plyr.copper = (counters[7].value1) + 120;
         }
 
-        public static void DisplayCounters ()
-        {
-            var digit1 = "0";
-            var digit2 = "0";
-            var counter = 0;
-            while (counter < 8) // number of counters should be 8
-            {
-                // Draw the first layer number (upper)
-                var counter_x = counters[counter].x;
-                var counter_y = counters[counter].y;
-
-                var digits = counters[counter].value1.ToString();
-                var digits_number = counters[counter].value1;
-                if (digits_number < 10)
-                {
-                    digit1 = "0";
-                    digit2 = digits.Substring(0, 1);
-                } else
-                {
-                    digit1 = digits.Substring(0, 1);
-                    digit2 = digits.Substring(1, 1);
-                }
-
-                DrawImage(digit1, counter_x, counter_y);
-                DrawImage(digit2, counter_x + 32, counter_y);
-
-                // Draw the second layer number (lower)
-                digits = counters[counter].value2.ToString();
-                digits_number = counters[counter].value2;
-                if (digits_number < 10)
-                {
-                    digit1 = "0";
-                    digit2 = digits.Substring(0, 1);
-                } else
-                {
-                    digit1 = digits.Substring(0, 1);
-                    digit2 = digits.Substring(1, 1);
-                }
-
-                DrawImage(digit1, counter_x, counter_y + 16);
-                DrawImage(digit2, counter_x + 32, counter_y + 16);
-
-                counter++;
-            }
-        }
-
         public static void GetPlayerName ()
         {
             var details_confirmed = false;
@@ -309,7 +265,7 @@ namespace P3Net.Arx
                     } else
                     {
                         if (single_key != "RETURN")
-                        {                            
+                        {
                             if (name_length != 24) // check for limit of name length
                                 typed_name += single_key;
                         }
@@ -356,10 +312,57 @@ namespace P3Net.Arx
 
                 DrawPlayerDetails(typed_name);
             }
-
         }
 
-        public static void DrawPlayerDetails ( string typed_name )
+        #region Private Members
+
+        private static void DisplayCounters ()
+        {
+            var digit1 = "0";
+            var digit2 = "0";
+            var counter = 0;
+            while (counter < 8) // number of counters should be 8
+            {
+                // Draw the first layer number (upper)
+                var counter_x = counters[counter].x;
+                var counter_y = counters[counter].y;
+
+                var digits = counters[counter].value1.ToString();
+                var digits_number = counters[counter].value1;
+                if (digits_number < 10)
+                {
+                    digit1 = "0";
+                    digit2 = digits.Substring(0, 1);
+                } else
+                {
+                    digit1 = digits.Substring(0, 1);
+                    digit2 = digits.Substring(1, 1);
+                }
+
+                DrawImage(digit1, counter_x, counter_y);
+                DrawImage(digit2, counter_x + 32, counter_y);
+
+                // Draw the second layer number (lower)
+                digits = counters[counter].value2.ToString();
+                digits_number = counters[counter].value2;
+                if (digits_number < 10)
+                {
+                    digit1 = "0";
+                    digit2 = digits.Substring(0, 1);
+                } else
+                {
+                    digit1 = digits.Substring(0, 1);
+                    digit2 = digits.Substring(1, 1);
+                }
+
+                DrawImage(digit1, counter_x, counter_y + 16);
+                DrawImage(digit2, counter_x + 32, counter_y + 16);
+
+                counter++;
+            }
+        }        
+
+        private static void DrawPlayerDetails ( string typed_name )
         {
             ClearDisplay();
             DrawText(2, 2, "Create a new character");
@@ -379,6 +382,9 @@ namespace P3Net.Arx
             }
             UpdateDisplay();
         }
+        #endregion
+
+        #region Review Data
 
         public static CreateCharacterCounter[] counters =
         {
@@ -392,6 +398,7 @@ namespace P3Net.Arx
               new CreateCharacterCounter() { value1 = 54, value2 = 47, x = 560 - 32, y = 336, speed = 11, speed_initial = 11 }
         };
 
+        //TODO: Move to Scenario
         public static CreateCharacterCounter[] dungeonCounters =
         {
               new CreateCharacterCounter() { value1 = 10, value2 = 16, x = 48, y = 96, speed = 2, speed_initial = 2 },
@@ -404,6 +411,7 @@ namespace P3Net.Arx
               new CreateCharacterCounter() { value1 = 54, value2 = 47, x = 544, y = 336, speed = 5, speed_initial = 5 }
         };
 
+        //TODO: Move to Scenario
         public static CreateCharacterCounter[] cityCounters =
         {
               new CreateCharacterCounter() { value1 = 8, value2 = 16, x = 48, y = 96, speed = 2, speed_initial = 2 },
@@ -415,9 +423,6 @@ namespace P3Net.Arx
               new CreateCharacterCounter() { value1 = 23, value2 = 15, x = 528, y = 96, speed = 4, speed_initial = 4 },
               new CreateCharacterCounter() { value1 = 54, value2 = 47, x = 514, y = 370, speed = 5, speed_initial = 5 }
         };
-
-        // extern Player plyr;
-        //extern sf::Sound cityGate2Sound;
-        //extern sf::Sound cityGate3Sound;
+        #endregion
     }
 }

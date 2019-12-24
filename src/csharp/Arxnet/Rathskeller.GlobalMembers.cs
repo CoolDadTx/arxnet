@@ -8,13 +8,50 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+
 using SFML.Audio;
 
 namespace P3Net.Arx
 {
+    /* 
+     * TODO:
+     * carrying corpse message once corpses implemented, dragon/wyrm corpse gold offer,
+     * enclosed booth???
+     * all music and on screen lyrics
+     */     
     public partial class GlobalMembers
     {
+        //TODO: Move to its own module with init logic
+        public static void RunRathskeller ()
+        {
+            menu = RathSkellerMenus.MenuMain;
+            LoadShopImage(2);
+            stillEating = 0;
+            bar = true;
+            npcNotPresent = true;
+            roundCost = Random(5, 20);
+            rathMusicPlaying = false;
+
+            BuildFoodDrinkMenuOptions(); // Each visit currently
+            AddRathskellerToMap();
+            SetGreetingText();
+            PlayRathskellerMusic();
+
+            while (menu != (int)RathSkellerMenus.MenuLeft)
+            {
+                UpdateFoodConsumption();
+                CheckForNPC();
+                ClearShopDisplay();
+                DisplayModuleText();
+                UpdateDisplay();
+                ProcessMenuInput();
+            }
+
+            rathskellerMusic.Stop();
+        }
+
+        #region Review Data
+
         public static bool bar;
         public static string eatingDescription = "";
         public static string greetingText;
@@ -22,6 +59,7 @@ namespace P3Net.Arx
         public static RathSkellerMenus menu;
         public static string npcDescription;
 
+        //TODO: Store with data
         public static string[] npcDescriptions =
         {
             "A sly looking stranger sits down.",
@@ -35,6 +73,7 @@ namespace P3Net.Arx
         public static bool npcNotPresent;
         public static string npcOpener;
 
+        //TODO: Store with data
         public static string[] npcOpeners =
         {
             "It's too bad they beefed up@@the security in the Dungeon.@@It used to be an easy life stealing@@from others.",
@@ -45,6 +84,7 @@ namespace P3Net.Arx
         };
         public static string npcRumour;
 
+        //TODO: Store with data
         public static string[] npcRumours =
         {
             "A wise oracle dwells beneath@the Floating Gate.",
@@ -151,6 +191,7 @@ namespace P3Net.Arx
         public static int[] rathskellerFoodDrink = new int[18];
         public static bool[] rathskellerFoodDrinkCheck = new bool[40];
 
+        //TODO: Store in data file
         public static RathskellerFoodDrinkItem[] rathskellerItems =
         {
             new RathskellerFoodDrinkItem()
@@ -253,8 +294,11 @@ namespace P3Net.Arx
         public static int roundCost;
         public static int stillEating;
         public static int value;
+        #endregion
 
-        public static void AddRathskellerToMap ()
+        #region Private Members
+
+        private static void AddRathskellerToMap ()
         {
             SetAutoMapFlag(plyr.map, 58, 3);
             SetAutoMapFlag(plyr.map, 62, 3);
@@ -270,7 +314,7 @@ namespace P3Net.Arx
             SetAutoMapFlag(plyr.map, 62, 1);
         }
 
-        public static void BuildFoodDrinkMenuOptions ()
+        private static void BuildFoodDrinkMenuOptions ()
         {
             // Run daily to randomly pick 19 unique items
             // Check for duplicates using Check array of bools
@@ -300,7 +344,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CheckForNPC ()
+        private static void CheckForNPC ()
         {
             if ((npcNotPresent) && (menu == RathSkellerMenus.MenuSeated))
             {
@@ -318,7 +362,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ChooseFoodDrinkMenuItem ()
+        private static void ChooseFoodDrinkMenuItem ()
         {
             var foodDrinkChoice = InputItemChoice("What would thou like? (0 to go back)", 20);
             if (foodDrinkChoice < 255)
@@ -341,7 +385,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ConsumeFoodDrinkItem ( int foodDrinkItem )
+        private static void ConsumeFoodDrinkItem ( int foodDrinkItem )
         {
             // Unlike the City taverns Rathskeller items appear to have both food and drink values
 
@@ -362,7 +406,7 @@ namespace P3Net.Arx
             plyr.alcohol += rathskellerItems[foodDrinkItem].alcoholValue;
         }
 
-        public static void DisplayModuleText ()
+        private static void DisplayModuleText ()
         {
             if (menu == RathSkellerMenus.MenuMain)
             {
@@ -426,7 +470,7 @@ namespace P3Net.Arx
                 CyText(1, "Leaving already?  You haven't@@finished your meal.  I'll wrap it@@in a packet for you.");            
         }
 
-        public static void LeaveTip ()
+        private static void LeaveTip ()
         {
             var tip = InputNumber("How many silvers@dost thou wish to leave?");
             if (CheckCoins(0, tip, 0))
@@ -442,7 +486,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void PlayRathskellerMusic ()
+        private static void PlayRathskellerMusic ()
         {
             if (!rathMusicPlaying)
             {
@@ -456,7 +500,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ProcessMenuInput ()
+        private static void ProcessMenuInput ()
         {
             var key = ReadKey();
 
@@ -602,37 +646,9 @@ namespace P3Net.Arx
                 }
                 break;
             }
-        }
+        }        
 
-        public static void RunRathskeller ()
-        {
-            menu = RathSkellerMenus.MenuMain;
-            LoadShopImage(2);
-            stillEating = 0;
-            bar = true;
-            npcNotPresent = true;
-            roundCost = Random(5, 20);
-            rathMusicPlaying = false;
-
-            BuildFoodDrinkMenuOptions(); // Each visit currently
-            AddRathskellerToMap();
-            SetGreetingText();
-            PlayRathskellerMusic();
-
-            while (menu != (int)RathSkellerMenus.MenuLeft)
-            {
-                UpdateFoodConsumption();
-                CheckForNPC();
-                ClearShopDisplay();
-                DisplayModuleText();
-                UpdateDisplay();
-                ProcessMenuInput();
-            }
-
-            rathskellerMusic.Stop();
-        }
-
-        public static void SetGreetingText ()
+        private static void SetGreetingText ()
         {
             if (plyr.rathskellerFriendship == -6)
                 greetingText = "Slimy thing, must thee darken my door?";
@@ -654,12 +670,10 @@ namespace P3Net.Arx
                 greetingText = $"Well met, {plyr.name} is welcome here!";
         }
 
-        public static void UpdateFoodConsumption ()
+        private static void UpdateFoodConsumption ()
         {
             // Check for time 30 seconds?
         }
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void OrderFoodDrink();
+        #endregion
     }
 }

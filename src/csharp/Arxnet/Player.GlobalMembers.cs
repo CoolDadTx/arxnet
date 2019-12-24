@@ -13,18 +13,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static bool[,] autoMapExplored = new bool[5, 4096]; // 5 levels of 4096 on/off values
-
-        public static EffectItem[] effectBuffer = Arrays.InitializeWithDefaultInstances<EffectItem>(50); // active time limited effects from spells, scrolls, eyes
-
-        public static Player plyr = new Player();
-
-        //TODO: Replace with structured lists of items
-        public static int[,] shopDailyWares = new int[15, 12]; //15 shops with 12 items each a day for sale
-        public static int[,] smithyDailyWares = new int[4, 10]; // 4 smithies with 10 items each a day for sale
-        public static int[,] tavernDailyDrinks = new int[14, 6]; // 14 taverns with 6 drink items each day for sale
-        public static int[,] tavernDailyFoods = new int[14, 6]; // 14 taverns with 6 food items each day for sale
-
         //TODO: Move to a game clock
         public static void AddDay ()
         {
@@ -105,32 +93,6 @@ namespace P3Net.Arx
         //TODO: Move to a game clock
         public static void AddYear () => plyr.years++;
 
-        //TODO: Move to status effect
-        public static void CheckActiveMagic ()
-        {
-            if (plyr.protection1 > 0)
-                plyr.protection1--;
-            if (plyr.protection2 > 0)
-                plyr.protection2--;
-            if (plyr.invulnerability[0] > 0)
-                plyr.invulnerability[0]--;
-            if (plyr.invulnerability[1] > 0)
-                plyr.invulnerability[1]--;
-            if (plyr.invulnerability[2] > 0)
-                plyr.invulnerability[2]--;
-            if (plyr.invulnerability[3] > 0)
-                plyr.invulnerability[3]--;
-            if (plyr.invulnerability[4] > 0)
-                plyr.invulnerability[4]--;
-            if (plyr.invulnerability[5] > 0)
-                plyr.invulnerability[5]--;
-            if (plyr.invulnerability[6] > 0)
-                plyr.invulnerability[6]--;
-            if (plyr.invulnerability[7] > 0)
-                plyr.invulnerability[7]--;
-            if (plyr.invulnerability[8] > 0)
-                plyr.invulnerability[8]--;
-        }
 
         //TODO: Move to status effect
         public static string CheckAlcohol ()
@@ -268,7 +230,7 @@ namespace P3Net.Arx
             StockTavernFoods();
             StockShopWares();
 
-            if (AR_DEV.CHARACTER_CREATION == OnOff.On)
+            if (AR_DEV.EnableCharacterCreation)
             {
                 GetPlayerName();
                 switch (scenario)
@@ -282,16 +244,62 @@ namespace P3Net.Arx
                 }
             }
         }
-   
+
+        #region Review Data
+
+        public static bool[,] autoMapExplored = new bool[5, 4096]; // 5 levels of 4096 on/off values
+
+        //TODO: Load effects from data file
+        public static EffectItem[] effectBuffer = Arrays.InitializeWithDefaultInstances<EffectItem>(50); // active time limited effects from spells, scrolls, eyes
+
+        public static Player plyr = new Player();
+
+        //TODO: Replace with structured lists of items
+        public static int[,] shopDailyWares = new int[15, 12]; //15 shops with 12 items each a day for sale
+        public static int[,] smithyDailyWares = new int[4, 10]; // 4 smithies with 10 items each a day for sale
+        public static int[,] tavernDailyDrinks = new int[14, 6]; // 14 taverns with 6 drink items each day for sale
+        public static int[,] tavernDailyFoods = new int[14, 6]; // 14 taverns with 6 food items each day for sale
+
+        #endregion
+
+        #region Private Members
+                
+        //TODO: Move to status effect
+        private static void CheckActiveMagic ()
+        {
+            if (plyr.protection1 > 0)
+                plyr.protection1--;
+            if (plyr.protection2 > 0)
+                plyr.protection2--;
+            if (plyr.invulnerability[0] > 0)
+                plyr.invulnerability[0]--;
+            if (plyr.invulnerability[1] > 0)
+                plyr.invulnerability[1]--;
+            if (plyr.invulnerability[2] > 0)
+                plyr.invulnerability[2]--;
+            if (plyr.invulnerability[3] > 0)
+                plyr.invulnerability[3]--;
+            if (plyr.invulnerability[4] > 0)
+                plyr.invulnerability[4]--;
+            if (plyr.invulnerability[5] > 0)
+                plyr.invulnerability[5]--;
+            if (plyr.invulnerability[6] > 0)
+                plyr.invulnerability[6]--;
+            if (plyr.invulnerability[7] > 0)
+                plyr.invulnerability[7]--;
+            if (plyr.invulnerability[8] > 0)
+                plyr.invulnerability[8]--;
+        }
+                       
         //TODO: Need more descriptive name
-        public static void InitStats ()
+        private static void InitStats ()
         {            
             CreateBareHands(); // Put "bare hand" into itemBuffer[0]            
             plyr.clothing[0] = CreateClothing(0); // Put "Cheap Robe" into itemBuffer[1]                                    
         }
 
         //TODO: Move to status effect class
-        public static void UpdateDisease ()
+        private static void UpdateDisease ()
         {
             var rabiesStatus = plyr.diseases[0];
             if (rabiesStatus > 0)
@@ -305,7 +313,7 @@ namespace P3Net.Arx
         }
 
         //TODO: Move to status effect class
-        public static void UpdatePoison ()
+        private static void UpdatePoison ()
         {
             if (plyr.poison[0] > 0)
                 plyr.hp -= 2;
@@ -316,5 +324,6 @@ namespace P3Net.Arx
             if (plyr.poison[3] > 0)
                 plyr.hp -= 10;
         }
+        #endregion
     }
 }

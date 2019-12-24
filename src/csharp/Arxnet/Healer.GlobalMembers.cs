@@ -13,84 +13,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static int alcoholPrice = 0;
-        public static int clarityPrice = 0;
-        public static int diagnosePrice = 0;
-        public static int diseasesPrice = 0;
-
-        // Base prices
-        public static int healPrice = 0;
-        public static int poisonsPrice = 0;
-
-        public static int GetHealerNo ()
-        {
-            var healer_no = 0;
-            if (plyr.location == 74)
-                healer_no = 1; // One Way Soothers
-            if (plyr.location == 75)
-                healer_no = 2; // Alpha Omega Healers
-            return healer_no;
-        }
-
-        public static void HealerShopHealWounds ()
-        {
-            var str = $"Cure how many hits at@@ {healPrice} coppers each?";
-            var hpToHealInput = InputValue(str, 14);
-
-            var hpToHeal = hpToHealInput * healPrice;
-            if (hpToHealInput > 0)
-            {
-                if (!CheckCoins(0, 0, hpToHeal))
-                    // Insufficient funds
-                    ModuleMessage("I'm sorry... You have not the funds.");
-                else
-                {
-                    // Sufficient funds
-                    ModuleMessage("IT SHALL BE DONE!");
-                    DeductCoins(0, 0, hpToHeal);
-                    plyr.hp = plyr.hp + hpToHealInput;
-                    if (plyr.hp > plyr.maxhp)
-                        plyr.hp = plyr.maxhp;
-                    HealerUpdateLastServiceTime();
-                    HealerUpdatePrices();
-                }
-            }
-        }
-
-        public static void HealerUpdateLastServiceTime ()
-        {
-            var healerNo = GetHealerNo();
-            healerNo--;
-            plyr.healerDays[healerNo] = plyr.days;
-            plyr.healerHours[healerNo] = plyr.hours;
-            plyr.healerMinutes[healerNo] = plyr.minutes;
-        }
-
-        public static void HealerUpdatePrices ()
-        {
-            var healerNo = GetHealerNo();
-            healerNo--;
-            var days = plyr.healerDays[healerNo];
-            var hours = plyr.healerHours[healerNo];
-            var minutes = plyr.healerMinutes[healerNo];
-            var n = 1;
-            if (days == plyr.days)
-                n = 2;
-            if ((days == plyr.days) && (hours == plyr.hours))
-                n = 4;
-            if ((days == plyr.days) && (hours == plyr.hours) && (minutes == plyr.minutes))
-                n = 8;
-            if ((days == 0) && (hours == 0) && (minutes == 0))
-                n = 1; // First time visitor
-
-            healPrice = 10 * n;
-            poisonsPrice = 100 * n;
-            diseasesPrice = 200 * n;
-            alcoholPrice = 20 * n;
-            clarityPrice = 200 * n;
-            diagnosePrice = 10 * n;
-        }
-
         public static void ShopHealer ()
         {
             var healerMenu = 1; // high level menu
@@ -330,5 +252,90 @@ namespace P3Net.Arx
             }
             LeaveShop();
         }
+
+        #region Review Data
+
+        public static int alcoholPrice = 0;
+        public static int clarityPrice = 0;
+        public static int diagnosePrice = 0;
+        public static int diseasesPrice = 0;
+
+        // Base prices
+        public static int healPrice = 0;
+        public static int poisonsPrice = 0;
+        #endregion
+
+        #region Private Members
+
+        //TODO: Return Healer
+        private static int GetHealerNo ()
+        {
+            var healer_no = 0;
+            if (plyr.location == 74)
+                healer_no = 1; // One Way Soothers
+            if (plyr.location == 75)
+                healer_no = 2; // Alpha Omega Healers
+            return healer_no;
+        }
+
+        private static void HealerShopHealWounds ()
+        {
+            var str = $"Cure how many hits at@@ {healPrice} coppers each?";
+            var hpToHealInput = InputValue(str, 14);
+
+            var hpToHeal = hpToHealInput * healPrice;
+            if (hpToHealInput > 0)
+            {
+                if (!CheckCoins(0, 0, hpToHeal))
+                    // Insufficient funds
+                    ModuleMessage("I'm sorry... You have not the funds.");
+                else
+                {
+                    // Sufficient funds
+                    ModuleMessage("IT SHALL BE DONE!");
+                    DeductCoins(0, 0, hpToHeal);
+                    plyr.hp = plyr.hp + hpToHealInput;
+                    if (plyr.hp > plyr.maxhp)
+                        plyr.hp = plyr.maxhp;
+                    HealerUpdateLastServiceTime();
+                    HealerUpdatePrices();
+                }
+            }
+        }
+
+        private static void HealerUpdateLastServiceTime ()
+        {
+            var healerNo = GetHealerNo();
+            healerNo--;
+            plyr.healerDays[healerNo] = plyr.days;
+            plyr.healerHours[healerNo] = plyr.hours;
+            plyr.healerMinutes[healerNo] = plyr.minutes;
+        }
+
+        private static void HealerUpdatePrices ()
+        {
+            var healerNo = GetHealerNo();
+            healerNo--;
+            var days = plyr.healerDays[healerNo];
+            var hours = plyr.healerHours[healerNo];
+            var minutes = plyr.healerMinutes[healerNo];
+            var n = 1;
+            if (days == plyr.days)
+                n = 2;
+            if ((days == plyr.days) && (hours == plyr.hours))
+                n = 4;
+            if ((days == plyr.days) && (hours == plyr.hours) && (minutes == plyr.minutes))
+                n = 8;
+            if ((days == 0) && (hours == 0) && (minutes == 0))
+                n = 1; // First time visitor
+
+            healPrice = 10 * n;
+            poisonsPrice = 100 * n;
+            diseasesPrice = 200 * n;
+            alcoholPrice = 20 * n;
+            clarityPrice = 200 * n;
+            diagnosePrice = 10 * n;
+        }        
+        #endregion
     }
 }

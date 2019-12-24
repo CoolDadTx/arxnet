@@ -8,14 +8,39 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
     public class AnimFrame
     {
-        public int xOffset { get; set; } // 0 for most animations
-        public int yOffset { get; set; } // 0 for most animations
+        public Point Offset
+        {
+            get => _offset;
+            set => _offset = value;
+        }
+
+        [Obsolete("Use Offset")]
+        public int xOffset
+        {
+            get => _offset.X;
+            set => _offset.X = value;
+        }
+
+        [Obsolete("Use Offset")]
+        public int yOffset
+        {
+            get => _offset.Y;
+            set => _offset.Y = value;
+        }
+
         public int image { get; set; }
         public int duration { get; set; }
+
+        #region Private Members
+
+        //None for most animations
+        private Point _offset;
+        #endregion
     }
 }

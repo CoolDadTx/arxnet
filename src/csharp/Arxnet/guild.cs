@@ -8,8 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-
-using SFML.Audio;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
@@ -17,12 +16,31 @@ namespace P3Net.Arx
     {
         public string name { get; set; }
 
-        public int x { get; set; }
+        [Obsolete("Use Location")]
+        public int x
+        {
+            get => _location.X;
+            set => _location.X = value;
+        }
 
-        public int y { get; set; }
+        [Obsolete("Use Location")]
+        public int y 
+        {
+            get => _location.Y;
+            set => _location.Y = value;
+        }
 
+        public Point Location        
+        {
+            //TODO: Make auto once obsolete members are removed
+            get => _location;
+            set => _location = value;
+        }
+
+        //TODO: Use Range
         public int minAlignment { get; set; }
 
+        //TODO: Use Range
         public int maxAlignment { get; set; }
 
         public int minLevel { get; set; }
@@ -34,5 +52,10 @@ namespace P3Net.Arx
         public int fullDues { get; set; }
 
         public int associateDues { get; set; }
+
+        #region Private Members
+        
+        private Point _location;
+        #endregion
     }
 }

@@ -13,6 +13,27 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
+        public static void CheckDailybankJobOpenings ()
+        {
+            // Run at the start of each new day
+            for (var i = 0; i < bankJobOpenings.Length; i++) 
+            {
+                var jobOpeningProbability = Random(0, 255);
+                if (jobOpeningProbability <= banks[i].jobProbability)
+                {
+                    // Create a new job entry for the day
+                    var newJobNumber = Random(0, 2);
+                    bankJobOpenings[i].jobNumber = newJobNumber;
+                    bankJobOpenings[i].jobHoursRequired = Random(0, 5) + 3;
+                    bankJobOpenings[i].jobHourlyIncome = Random(bankJobs[newJobNumber].minIncome, bankJobs[newJobNumber].maxIncome);
+                } else
+                {
+                    // No job available today
+                    bankJobOpenings[i].jobNumber = 255; // 255 for none
+                }
+            }
+        }
+
         public static void ShopBank ()
         {
             int workingHours = 0;
@@ -49,7 +70,7 @@ namespace P3Net.Arx
                     BText(2, 7, "8) Apply for a job");
                     BText(2, 8, "0) Leave");
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(14, 2, "2");
                     BText(2, 3, "3");
@@ -59,7 +80,7 @@ namespace P3Net.Arx
                     BText(2, 6, "7");
                     BText(2, 7, "8");
                     BText(2, 8, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     DisplayCoins();
                     UpdateDisplay();
@@ -316,9 +337,9 @@ namespace P3Net.Arx
                         CyText(1, str);
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
-                        SetFontColour(40, 96, 244, 255);
+                        SetFontColor(40, 96, 244, 255);
                         CyText(5, " Y      N  ");
-                        SetFontColour(215, 215, 215, 255);
+                        SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
 
                         var key = GetSingleKey();
@@ -713,41 +734,47 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static int GetBankNo ()
+        //TODO: Move to clock
+        public static void CheckDailybankInterest ()
+        {
+            // Run at the start of each new day
+
+            for (var i = 0; i < plyr.bankAccountBalances.Length; i++)
+            {
+                //TODO: Fix this logic so account info is kept per bank, not per account so we can use a foreach
+                if (plyr.bankAccountBalances[i] > 0)
+                {
+                    //TODO: Verify math
+                    //0-2 = 0, 3-5 = 1, 6-8 = 2
+                    var bankNo = i / banks.Length;
+
+                    //0, 3, 6 = 0; 1, 4, 7 = 1; 2, 5, 8 = 2
+                    var accountNo = i % 3;
+
+                    var account = banks[bankNo].accounts[accountNo];
+
+                    var newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * account.interest;
+                    plyr.bankAccountBalances[i] += ((int)newInterest);
+                }
+            }
+        }
+
+        #region Private Members
+
+        //TODO: Return bank
+        private static int GetBankNo ()
         {
             int bank_no = -1;
-            for (var  i = 0; i < 3; i++) // Max number of bank objects
+            for (var  i = 0; i < banks.Length; i++) 
             {
                 if (banks[i].location == plyr.location)
                     bank_no = i; // The number of the bank you have entered
             }
 
             return bank_no;
-        }
+        }        
 
-        public static void CheckDailybankJobOpenings ()
-        {
-            // Run at the start of each new day
-            var jobOpeningProbability = 0;
-            for (var i = 0; i < 3; i++) // 3 banks in total
-            {
-                jobOpeningProbability = Random(0, 255);
-                if (jobOpeningProbability <= banks[i].jobProbability)
-                {
-                    // Create a new job entry for the day
-                    var newJobNumber = Random(0, 2);
-                    bankJobOpenings[i].jobNumber = newJobNumber;
-                    bankJobOpenings[i].jobHoursRequired = Random(0, 5) + 3;
-                    bankJobOpenings[i].jobHourlyIncome = Random(bankJobs[newJobNumber].minIncome, bankJobs[newJobNumber].maxIncome);
-                } else
-                {
-                    // No job available today
-                    bankJobOpenings[i].jobNumber = 255; // 255 for none
-                }
-            }
-        }
-
-        public static void WithdrawCoppers ( int coppersToWithdraw )
+        private static void WithdrawCoppers ( int coppersToWithdraw )
         {
             // Adds an amount of coppers to plyr in gold, silver and copper coins
 
@@ -768,30 +795,10 @@ namespace P3Net.Arx
             plyr.copper += copperFromWithdrawal;
             plyr.gold += goldFromWithdrawal;
             plyr.silver += silverFromWithdrawal;
-        }
+        }        
+        #endregion
 
-        public static void CheckDailybankInterest ()
-        {
-            // Run at the start of each new day
-
-            for (var i = 0; i < 9; i++) // 9 potential bank accounts
-            {
-                if (plyr.bankAccountBalances[i] > 0)
-                {
-                    //TODO: Verify math
-                    //0-2 = 0, 3-5 = 1, 6-8 = 2
-                    var bankNo = i / 3;
-
-                    //0, 3, 6 = 0; 1, 4, 7 = 1; 2, 5, 8 = 2
-                    var accountNo = i % 3;
-
-                    var account = banks[bankNo].accounts[accountNo];
-
-                    var newInterest = (((float)plyr.bankAccountBalances[i]) / 100) * account.interest;
-                    plyr.bankAccountBalances[i] += ((int)newInterest);
-                }
-            }
-        }
+        #region Review Data
 
         public static int bankNo;
         public static int accountType;
@@ -799,6 +806,7 @@ namespace P3Net.Arx
         public static int currentAccount;
         public static int findValue;
 
+        //TODO: Move to map
         //MLT: Fix double to float conversion
         public static Bank[] banks =
         {
@@ -848,6 +856,7 @@ namespace P3Net.Arx
 
         public static BankJobOpening[] bankJobOpenings = Arrays.InitializeWithDefaultInstances<BankJobOpening>(3);
 
+        //TODO: Move to map
         //MLT: Double to float
         public static BankJob[] bankJobs =
         {
@@ -856,7 +865,6 @@ namespace P3Net.Arx
             new BankJob() { name = "Coin Roller", minIncome = 22, maxIncome = 28, statRequirementName = "Alignment", statRequirementValue = 144, fatigueRate = 0.59375F, minorWoundProbability = 2.29F, majorWoundProbability = 0.05F }
         };
 
-        // extern Player plyr;
-        // extern sf::RenderWindow App;
+        #endregion
     }
 }

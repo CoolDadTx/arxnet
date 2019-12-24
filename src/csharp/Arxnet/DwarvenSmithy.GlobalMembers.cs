@@ -11,18 +11,44 @@ using System;
 using System.IO;
 using System.Linq;
 
-/* DWARVEN SMITHY.CPP
-		 *
-		 * TODO:
-		 *
-		 *  Offer to reforge Goblin / Troll ring
-		 *
-		 *
-		 */
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
+        //TODO: Combine with load data
+        public static void LoadDwarvenBinary ()
+        {
+            //TODO: Not using fixed size - dwarvenFileSize
+
+            // Loads armour and weapons binary data into the "dwarvenBinary" array
+            dwarvenBinary = File.ReadAllBytes("data/map/DwarvenItems.bin");
+        }
+
+        public static void RunDwarvenSmithy ()
+        {
+            if (plyr.forgeDays > 0)
+                dmenu = DwarvenSmithyMenus.MenuBusyForging;
+            else
+                dmenu = DwarvenSmithyMenus.MenuMain;
+            if ((plyr.forgeDays == 0) && (plyr.forgeType > 0))
+                dmenu = DwarvenSmithyMenus.MenuCustomReady;
+
+            AddDwarvenSmithyToMap();
+            LoadShopImage(26);
+
+            BuildSmithyMenuOptions();
+
+            while (dmenu != DwarvenSmithyMenus.MenuLeft)
+            {
+                ClearShopDisplay();
+                DisplayDwarvenModuleText();
+                UpdateDisplay();
+                ProcessDwarvenMenuInput();
+            }
+        }
+
+        #region Review Data
+
         public static string customWeaponDesc = "";
 
         public static int customWeaponType;
@@ -38,6 +64,7 @@ namespace P3Net.Arx
 
         public static string itemDesc = "item";
 
+        //TODO: Move to data file
         public static string[] itemNames =
         {
             "Truesilver Morion",
@@ -58,6 +85,7 @@ namespace P3Net.Arx
         public static int itemValue = 0;
         public static int smithyChoice = 0;
 
+        //TODO: Move to map data
         public static void AddDwarvenSmithyToMap ()
         {
             SetAutoMapFlag(plyr.map, 16, 6);
@@ -70,8 +98,11 @@ namespace P3Net.Arx
             SetAutoMapFlag(plyr.map, 17, 8);
             SetAutoMapFlag(plyr.map, 18, 8);
         }
+        #endregion
 
-        public static void BuildSmithyMenuOptions ()
+        #region Private Members
+
+        private static void BuildSmithyMenuOptions ()
         {
             // Copies Dwarven Smithy items into structure for use in module.cpp
             // The Dwarven Smithy has a fixed, unchanging menu of items for purchase.
@@ -85,7 +116,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CalculateForgeBonus ( int additionalGemsOffered )
+        private static void CalculateForgeBonus ( int additionalGemsOffered )
         {
             var bonus = additionalGemsOffered / 60;
             if (bonus < 1)
@@ -93,9 +124,9 @@ namespace P3Net.Arx
             plyr.forgeBonus = bonus;
         }
 
-        public static int CalculateGemsAndJewelsTotal () => plyr.gems + plyr.jewels;
+        private static int CalculateGemsAndJewelsTotal () => plyr.gems + plyr.jewels;
 
-        public static void CalculateSaleItemValue ( int itemRef )
+        private static void CalculateSaleItemValue ( int itemRef )
         {
             var item = itemBuffer[itemRef];
 
@@ -131,7 +162,7 @@ namespace P3Net.Arx
         }
 
         // Attempt to buy a chosen Dwarven Smithy (non custom) item
-        public static void ChooseDwarvenSmithyItem ()
+        private static void ChooseDwarvenSmithyItem ()
         {
             smithyChoice = InputItemChoice("What would thou like? (0 to go back)", 11);
 
@@ -161,7 +192,7 @@ namespace P3Net.Arx
             } // Option 0 was selected
         }
 
-        public static void CreateCustomWeapon ()
+        private static void CreateCustomWeapon ()
         {
             // Routine to create weapon after 4 days have elapsed
             var offset = 0;
@@ -252,7 +283,7 @@ namespace P3Net.Arx
 
         // Take a binary offset within dwarvenBinary and create a new inventory item from the binary data (weapon, armour or clothing)
         // Item types:  03 - weapon, 04 - armour, 02 - ammo        
-        public static void CreateDwarvenInventoryItem ( int startByte )
+        private static void CreateDwarvenInventoryItem ( int startByte )
         {
             int index = 0;
             int alignment = 0;
@@ -404,7 +435,7 @@ namespace P3Net.Arx
             itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
         }
 
-        public static void DeductGems ( int totalGems )
+        private static void DeductGems ( int totalGems )
         {
             // Deducts from gems before jewels
             if (plyr.gems >= totalGems)
@@ -417,7 +448,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DisplayDwarvenModuleText ()
+        private static void DisplayDwarvenModuleText ()
         {
             if (dmenu == DwarvenSmithyMenus.MenuMain)
             {
@@ -496,16 +527,8 @@ namespace P3Net.Arx
                 CyText(1, $"Very well then, I will simply call@@it the {plyr.forgeName}.");
             }
         }
-
-        public static void LoadDwarvenBinary ()
-        {
-            //TODO: Not using fixed size - dwarvenFileSize
-
-            // Loads armour and weapons binary data into the "dwarvenBinary" array
-            dwarvenBinary = File.ReadAllBytes("data/map/DwarvenItems.bin");            
-        }
-
-        public static void MakeCustomWeaponOffer ()
+        
+        private static void MakeCustomWeaponOffer ()
         {
             var custonWeaponMinimum = 0;
             if (customWeaponType == 1)
@@ -572,7 +595,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ProcessDwarvenMenuInput ()
+        private static void ProcessDwarvenMenuInput ()
         {
             var key = ReadKey();
 
@@ -678,7 +701,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ProcessPayment ()
+        private static void ProcessPayment ()
         {
             // Check equipped items
             if (plyr.priWeapon == itemRef)
@@ -701,31 +724,8 @@ namespace P3Net.Arx
             plyr.silver += itemValue;
         }
 
-        public static string ReadDwarvenNameString ( int stringOffset ) => ReadBinaryString(dwarvenBinary, stringOffset);
+        private static string ReadDwarvenNameString ( int stringOffset ) => ReadBinaryString(dwarvenBinary, stringOffset);        
 
-        public static void RunDwarvenSmithy ()
-        {
-            if (plyr.forgeDays > 0)
-                dmenu = DwarvenSmithyMenus.MenuBusyForging;
-            else
-                dmenu = DwarvenSmithyMenus.MenuMain;
-            if ((plyr.forgeDays == 0) && (plyr.forgeType > 0))
-                dmenu = DwarvenSmithyMenus.MenuCustomReady;
-
-            AddDwarvenSmithyToMap();
-            LoadShopImage(26);
-
-            BuildSmithyMenuOptions();
-
-            while (dmenu != DwarvenSmithyMenus.MenuLeft)
-            {
-                ClearShopDisplay();
-                DisplayDwarvenModuleText();
-                UpdateDisplay();
-                ProcessDwarvenMenuInput();
-            }
-        }
-
-        //extern byte dwarvenBinary[dwarvenFileSize];
+        #endregion
     }
 }

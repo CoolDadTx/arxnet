@@ -13,200 +13,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static ShopClothingItem[] shopClothingWares =
-        {
-            new ShopClothingItem()
-            { type = 180, price = 112, itemRef = 13 },
-            new ShopClothingItem()
-            { type = 180, price = 117, itemRef = 14 },
-            new ShopClothingItem()
-            { type = 180, price = 117, itemRef = 15 },
-            new ShopClothingItem()
-            { type = 180, price = 1252, itemRef = 16 },
-            new ShopClothingItem()
-            { type = 180, price = 162, itemRef = 17 },
-            new ShopClothingItem()
-            { type = 180, price = 112, itemRef = 18 },
-            new ShopClothingItem()
-            { type = 180, price = 117, itemRef = 19 },
-            new ShopClothingItem()
-            { type = 180, price = 122, itemRef = 20 },
-            new ShopClothingItem()
-            { type = 180, price = 1222, itemRef = 21 },
-            new ShopClothingItem()
-            { type = 180, price = 162, itemRef = 22 },
-            new ShopClothingItem()
-            { type = 180, price = 162, itemRef = 23 },
-            new ShopClothingItem()
-            { type = 180, price = 182, itemRef = 24 }
-        };
-
-        //MLT: Double to float
-        public static Shop[] Shops =
-        {
-            new Shop()
-            {
-                name = "Smiley's Shop",
-                minimumPriceFactor = 1.00F,
-                initialPriceFactor = 1.53F,
-                location = 40,
-                openingHour = 8,
-                closingHour = 20
-            },
-            new Shop()
-            {
-                name = "Honest Trader",
-                minimumPriceFactor = 1.10F,
-                initialPriceFactor = 1.75F,
-                location = 41,
-                openingHour = 8,
-                closingHour = 21
-            },
-            new Shop()
-            {
-                name = "Adventurer's Outfitters",
-                minimumPriceFactor = 0.95F,
-                initialPriceFactor = 1.35F,
-                location = 42,
-                openingHour = 8,
-                closingHour = 19
-            },
-            new Shop()
-            {
-                name = "Warrior's Supplies",
-                minimumPriceFactor = 0.80F,
-                initialPriceFactor = 1.10F,
-                location = 43,
-                openingHour = 5,
-                closingHour = 17
-            },
-            new Shop()
-            {
-                name = "General Store",
-                minimumPriceFactor = 0.90F,
-                initialPriceFactor = 1.29F,
-                location = 44,
-                openingHour = 5,
-                closingHour = 23
-            },
-            new Shop()
-            {
-                name = "Exclusive Outfitters",
-                minimumPriceFactor = 1.10F,
-                initialPriceFactor = 1.85F,
-                location = 45,
-                openingHour = 10,
-                closingHour = 15
-            },
-            new Shop()
-            {
-                name = "Rocky's Emporium",
-                minimumPriceFactor = 1.00F,
-                initialPriceFactor = 1.53F,
-                location = 46,
-                openingHour = 9,
-                closingHour = 17
-            },
-            new Shop()
-            {
-                name = "Best Bargain Store",
-                minimumPriceFactor = 1.10F,
-                initialPriceFactor = 1.85F,
-                location = 47,
-                openingHour = 9,
-                closingHour = 21
-            },
-            new Shop()
-            {
-                name = "Special Imports Store",
-                minimumPriceFactor = 0.90F,
-                initialPriceFactor = 1.55F,
-                location = 48,
-                openingHour = 10,
-                closingHour = 14
-            },
-            new Shop()
-            {
-                name = "Betelgeuse Sales",
-                minimumPriceFactor = 0.90F,
-                initialPriceFactor = 1.43F,
-                location = 49,
-                openingHour = 3,
-                closingHour = 22
-            },
-            new Shop()
-            {
-                name = "Merchant's Grotto",
-                minimumPriceFactor = 1.00F,
-                initialPriceFactor = 1.64F,
-                location = 50,
-                openingHour = 4,
-                closingHour = 19
-            },
-            new Shop()
-            {
-                name = "Sunset Market",
-                minimumPriceFactor = 1.00F,
-                initialPriceFactor = 1.53F,
-                location = 51,
-                openingHour = 9,
-                closingHour = 19
-            },
-            new Shop()
-            {
-                name = "Pauline's Emporium",
-                minimumPriceFactor = 0.95F,
-                initialPriceFactor = 1.35F,
-                location = 52,
-                openingHour = 11,
-                closingHour = 16
-            },
-            new Shop()
-            {
-                name = "Da Place!",
-                minimumPriceFactor = 0.82F,
-                initialPriceFactor = 1.12F,
-                location = 53,
-                openingHour = 8,
-                closingHour = 17
-            },
-            new Shop()
-            {
-                name = "Trade Winds",
-                minimumPriceFactor = 0.95F,
-                initialPriceFactor = 1.70F,
-                location = 54,
-                openingHour = 8,
-                closingHour = 17
-            }
-        };
-
-        // There are 16 possible items that could be in stock but only 12 unique items per day per shop
-        public static bool[,] shopWaresCheck = new bool[15, 16]; // markers used to check for duplicate items created during daily stocking up process
-
-        public static int GetShopNo ()
-        {
-            var shop_no = 255;
-            for (var i = 0; i < 15; i++) // Max number of smithy objects
-            {
-                if (Shops[i].location == plyr.location)
-                    shop_no = i; // The number of the shop you have entered
-            }
-            return shop_no;
-        }
-
-        public static void ShopMessage ( string txt )
-        {
-            var key = "";
-            do
-            {
-                ClearShopDisplay();
-                CText(txt);
-                UpdateDisplay();
-                key = GetSingleKey();
-            } while (key != "SPACE");
-        }
-
         public static void ShopShop ()
         {
             var shopNo = GetShopNo();
@@ -243,9 +49,9 @@ namespace P3Net.Arx
                     BText(13, 0, "Welcome Stranger!");
                     BText(7, 3, "Do you wish to see our wares?");
                     CyText(5, "( es or  o)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
                     UpdateDisplay();
 
@@ -265,9 +71,9 @@ namespace P3Net.Arx
                     CyText(1, "Well then, How about a compass?");
                     CyText(3, "I charge only 5 silvers for it.");
                     CyText(5, "( es or  o)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
                     UpdateDisplay();
 
@@ -300,9 +106,9 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     CyText(0, "What would you like? (  to leave)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0          ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     for (var i = 0; i < maxMenuItems; i++)
                     {
@@ -331,7 +137,7 @@ namespace P3Net.Arx
                         BText(x + 2, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
@@ -342,7 +148,7 @@ namespace P3Net.Arx
                         BText(2, 1, "}");
                     if (menuStartItem != 6)
                         BText(2, 8, "{");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -424,12 +230,12 @@ namespace P3Net.Arx
                     BText(11, 5, " ) Select other apparel");
                     BText(11, 6, " ) Buy something else");
                     DisplayCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(11, 3, "1");
                     BText(11, 4, "2");
                     BText(11, 5, "3");
                     BText(11, 6, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -608,5 +414,209 @@ namespace P3Net.Arx
             // Requires items arranged in the array in ascending price order to work!                        
             sort(shopDailyWares);
         }
+
+        #region Review Data 
+
+        //TODO: Move to data files
+        public static ShopClothingItem[] shopClothingWares =
+        {
+            new ShopClothingItem()
+            { type = 180, price = 112, itemRef = 13 },
+            new ShopClothingItem()
+            { type = 180, price = 117, itemRef = 14 },
+            new ShopClothingItem()
+            { type = 180, price = 117, itemRef = 15 },
+            new ShopClothingItem()
+            { type = 180, price = 1252, itemRef = 16 },
+            new ShopClothingItem()
+            { type = 180, price = 162, itemRef = 17 },
+            new ShopClothingItem()
+            { type = 180, price = 112, itemRef = 18 },
+            new ShopClothingItem()
+            { type = 180, price = 117, itemRef = 19 },
+            new ShopClothingItem()
+            { type = 180, price = 122, itemRef = 20 },
+            new ShopClothingItem()
+            { type = 180, price = 1222, itemRef = 21 },
+            new ShopClothingItem()
+            { type = 180, price = 162, itemRef = 22 },
+            new ShopClothingItem()
+            { type = 180, price = 162, itemRef = 23 },
+            new ShopClothingItem()
+            { type = 180, price = 182, itemRef = 24 }
+        };
+
+        //TODO: Move to data files
+        //MLT: Double to float
+        public static Shop[] Shops =
+        {
+            new Shop()
+            {
+                name = "Smiley's Shop",
+                minimumPriceFactor = 1.00F,
+                initialPriceFactor = 1.53F,
+                location = 40,
+                openingHour = 8,
+                closingHour = 20
+            },
+            new Shop()
+            {
+                name = "Honest Trader",
+                minimumPriceFactor = 1.10F,
+                initialPriceFactor = 1.75F,
+                location = 41,
+                openingHour = 8,
+                closingHour = 21
+            },
+            new Shop()
+            {
+                name = "Adventurer's Outfitters",
+                minimumPriceFactor = 0.95F,
+                initialPriceFactor = 1.35F,
+                location = 42,
+                openingHour = 8,
+                closingHour = 19
+            },
+            new Shop()
+            {
+                name = "Warrior's Supplies",
+                minimumPriceFactor = 0.80F,
+                initialPriceFactor = 1.10F,
+                location = 43,
+                openingHour = 5,
+                closingHour = 17
+            },
+            new Shop()
+            {
+                name = "General Store",
+                minimumPriceFactor = 0.90F,
+                initialPriceFactor = 1.29F,
+                location = 44,
+                openingHour = 5,
+                closingHour = 23
+            },
+            new Shop()
+            {
+                name = "Exclusive Outfitters",
+                minimumPriceFactor = 1.10F,
+                initialPriceFactor = 1.85F,
+                location = 45,
+                openingHour = 10,
+                closingHour = 15
+            },
+            new Shop()
+            {
+                name = "Rocky's Emporium",
+                minimumPriceFactor = 1.00F,
+                initialPriceFactor = 1.53F,
+                location = 46,
+                openingHour = 9,
+                closingHour = 17
+            },
+            new Shop()
+            {
+                name = "Best Bargain Store",
+                minimumPriceFactor = 1.10F,
+                initialPriceFactor = 1.85F,
+                location = 47,
+                openingHour = 9,
+                closingHour = 21
+            },
+            new Shop()
+            {
+                name = "Special Imports Store",
+                minimumPriceFactor = 0.90F,
+                initialPriceFactor = 1.55F,
+                location = 48,
+                openingHour = 10,
+                closingHour = 14
+            },
+            new Shop()
+            {
+                name = "Betelgeuse Sales",
+                minimumPriceFactor = 0.90F,
+                initialPriceFactor = 1.43F,
+                location = 49,
+                openingHour = 3,
+                closingHour = 22
+            },
+            new Shop()
+            {
+                name = "Merchant's Grotto",
+                minimumPriceFactor = 1.00F,
+                initialPriceFactor = 1.64F,
+                location = 50,
+                openingHour = 4,
+                closingHour = 19
+            },
+            new Shop()
+            {
+                name = "Sunset Market",
+                minimumPriceFactor = 1.00F,
+                initialPriceFactor = 1.53F,
+                location = 51,
+                openingHour = 9,
+                closingHour = 19
+            },
+            new Shop()
+            {
+                name = "Pauline's Emporium",
+                minimumPriceFactor = 0.95F,
+                initialPriceFactor = 1.35F,
+                location = 52,
+                openingHour = 11,
+                closingHour = 16
+            },
+            new Shop()
+            {
+                name = "Da Place!",
+                minimumPriceFactor = 0.82F,
+                initialPriceFactor = 1.12F,
+                location = 53,
+                openingHour = 8,
+                closingHour = 17
+            },
+            new Shop()
+            {
+                name = "Trade Winds",
+                minimumPriceFactor = 0.95F,
+                initialPriceFactor = 1.70F,
+                location = 54,
+                openingHour = 8,
+                closingHour = 17
+            }
+        };
+
+        // There are 16 possible items that could be in stock but only 12 unique items per day per shop
+        public static bool[,] shopWaresCheck = new bool[15, 16]; // markers used to check for duplicate items created during daily stocking up process
+
+        #endregion
+
+        #region Private Members
+
+        //TODO: Return the shop
+        private static int GetShopNo ()
+        {
+            var shop_no = 255;
+            for (var i = 0; i < Shops.Length; i++)
+            {
+                if (Shops[i].location == plyr.location)
+                    shop_no = i; // The number of the shop you have entered
+            }
+            return shop_no;
+        }
+
+        private static void ShopMessage ( string txt )
+        {
+            string key;
+            do
+            {
+                ClearShopDisplay();
+                CText(txt);
+                UpdateDisplay();
+                key = GetSingleKey();
+            } while (key != "SPACE");
+        }
+        #endregion        
     }
 }

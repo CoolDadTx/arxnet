@@ -13,326 +13,13 @@ using SFML.Audio;
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
-        public static string closingText;
-        public static int descriptionPointer = 0;
-        public static int drinkChoice;
-        public static int drinkCost;
-        public static int drinkNo;
-
-        public static string[] eatDrinkDescriptions = new string[4];
-        public static int foodChoice;
-        public static int foodCost;
-        public static int foodNo;
-        public static string lyricsFilename;
-        public static string openingText;
-
-        public static TavernDrinkItem[] tavernDrinks =
-        {
-            new TavernDrinkItem()
-            { name = "Water Flask", basePrice = 5, alcoholAdded = 0, thirstRemoved = 0, waterFlaskAdded = 1 },
-            new TavernDrinkItem()
-            { name = "Milk", basePrice = 2, alcoholAdded = 0, thirstRemoved = 6, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Beer", basePrice = 2, alcoholAdded = 1, thirstRemoved = 2, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Ale", basePrice = 3, alcoholAdded = 1, thirstRemoved = 3, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Wine", basePrice = 4, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Grog", basePrice = 2, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Spirits", basePrice = 5, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Water", basePrice = 1, alcoholAdded = 0, thirstRemoved = 8, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Sarsaparila", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Orange Juice", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Grape Juice", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
-            new TavernDrinkItem()
-            { name = "Mineral Water", basePrice = 2, alcoholAdded = 0, thirstRemoved = 8, waterFlaskAdded = 0 }
-        };
-        public static bool[,] tavernDrinksCheck = new bool[14, 12]; // markers used to check for duplicate items - 14 taverns, 12 potential drinks
-
-        public static TavernFoodItem[] tavernFoods =
-        {
-            new TavernFoodItem()
-            { name = "Rack of Lamb", basePrice = 40, hungerRemoved = 16, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Roast Beef", basePrice = 50, hungerRemoved = 18, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Roast Chicken", basePrice = 25, hungerRemoved = 16, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Roast Dragon", basePrice = 150, hungerRemoved = 22, foodPacketAdded = 1 },
-            new TavernFoodItem()
-            { name = "Pork Ribs", basePrice = 30, hungerRemoved = 12, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Leg of Lamb", basePrice = 80, hungerRemoved = 19, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Fried Chicken", basePrice = 50, hungerRemoved = 15, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Leg of Dragon", basePrice = 300, hungerRemoved = 22, foodPacketAdded = 2 },
-            new TavernFoodItem()
-            { name = "Ham", basePrice = 60, hungerRemoved = 14, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Lamb", basePrice = 56, hungerRemoved = 17, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Filet of Beef", basePrice = 70, hungerRemoved = 19, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Vegetable Soup", basePrice = 5, hungerRemoved = 8, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Ragout of Beef", basePrice = 33, hungerRemoved = 10, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Ragout of Dragon", basePrice = 50, hungerRemoved = 11, foodPacketAdded = 1 },
-            new TavernFoodItem()
-            { name = "Bowl of Fruit", basePrice = 25, hungerRemoved = 7, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Plate of Greens", basePrice = 18, hungerRemoved = 6, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Smoked Fish", basePrice = 30, hungerRemoved = 12, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Apple Pie", basePrice = 12, hungerRemoved = 4, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Lemon Pie", basePrice = 12, hungerRemoved = 4, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Chocolate Cake", basePrice = 10, hungerRemoved = 4, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Loaf of Bread", basePrice = 8, hungerRemoved = 6, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Block of Cheese", basePrice = 15, hungerRemoved = 9, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Food Packet", basePrice = 25, hungerRemoved = 0, foodPacketAdded = 1 },
-            new TavernFoodItem()
-            { name = "Gruel", basePrice = 4, hungerRemoved = 8, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Bagel", basePrice = 6, hungerRemoved = 5, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Pemmican", basePrice = 20, hungerRemoved = 4, foodPacketAdded = 1 },
-            new TavernFoodItem()
-            { name = "Bowl of Chili", basePrice = 10, hungerRemoved = 6, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Pasta", basePrice = 30, hungerRemoved = 10, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Lasagna", basePrice = 30, hungerRemoved = 10, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Crayfish", basePrice = 40, hungerRemoved = 9, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Lobster", basePrice = 100, hungerRemoved = 14, foodPacketAdded = 0 },
-            new TavernFoodItem()
-            { name = "Sandwich", basePrice = 10, hungerRemoved = 8, foodPacketAdded = 0 }
-        };
-        public static bool[,] tavernFoodsCheck = new bool[14, 32]; // markers used to check for duplicate items
-
-        public static TavernJobOpening[] tavernJobOpenings = Arrays.InitializeWithDefaultInstances<TavernJobOpening>(14);
-
-        public static TavernJob[] tavernJobs =
-        {
-            new TavernJob()
-            {
-                name = "Bouncer",
-                minIncome = 40,
-                maxIncome = 44,
-                statRequirementName = "Strength",
-                statRequirementValue = 22,
-                fatigueRate = 0.75F,
-                minorWoundProbability = 19.69F,
-                majorWoundProbability = 7.26F
-            },
-            new TavernJob()
-            {
-                name = "Host",
-                minIncome = 20,
-                maxIncome = 24,
-                statRequirementName = "Charm",
-                statRequirementValue = 12,
-                fatigueRate = 0.5625F,
-                minorWoundProbability = 0.77F,
-                majorWoundProbability = 0.01F
-            },
-            new TavernJob()
-            {
-                name = "Dish Washer",
-                minIncome = 8,
-                maxIncome = 12,
-                statRequirementName = "Skill",
-                statRequirementValue = 9,
-                fatigueRate = 0.5625F,
-                minorWoundProbability = 12.64F,
-                majorWoundProbability = 2.20F
-            }
-        };
-
-        public static Music tavernMusic;
-        public static int tavernNo;
-
-        //MLT: Double to float, int to boolean
-        public static Tavern[] Taverns =
-        {
-            new Tavern()
-            {
-                name = "Flaming Dragon",
-                priceFactor = 1.2F,
-                location = 23,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 51,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Misty Mountain",
-                priceFactor = 3.5F,
-                location = 24,
-                openingHour = 11,
-                closingHour = 2,
-                jobProbability = 51,
-                membershipFee = 3000,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Screaming Siren Bar",
-                priceFactor = 1.2F,
-                location = 25,
-                openingHour = 16,
-                closingHour = 3,
-                jobProbability = 64,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Happy Hunter Rest Stop",
-                priceFactor = 1.4F,
-                location = 26,
-                openingHour = 0,
-                closingHour = 7,
-                jobProbability = 77,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Dancing Nymph",
-                priceFactor = 1.6F,
-                location = 27,
-                openingHour = 16,
-                closingHour = 7,
-                jobProbability = 72,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Club",
-                priceFactor = 3.5F,
-                location = 28,
-                openingHour = 18,
-                closingHour = 22,
-                jobProbability = 182,
-                membershipFee = 1500,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Black Devil",
-                priceFactor = 1.4F,
-                location = 29,
-                openingHour = 0,
-                closingHour = 5,
-                jobProbability = 64,
-                membershipFee = 0,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Lost Oasis",
-                priceFactor = 0.8F,
-                location = 30,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 26,
-                membershipFee = 0,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Last Stop",
-                priceFactor = 1.2F,
-                location = 31,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 38,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Tail of the Dog",
-                priceFactor = 2.0F,
-                location = 32,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 192,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Club Babylon",
-                priceFactor = 5.0F,
-                location = 33,
-                openingHour = 10,
-                closingHour = 4,
-                jobProbability = 77,
-                membershipFee = 50000,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Lost Tears",
-                priceFactor = 1.8F,
-                location = 34,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 56,
-                membershipFee = 0,
-                classy = true
-            },
-            new Tavern()
-            {
-                name = "Mom's Bar",
-                priceFactor = 1.6F,
-                location = 35,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 128,
-                membershipFee = 0,
-                classy = false
-            },
-            new Tavern()
-            {
-                name = "Lusty Lloyds",
-                priceFactor = 1.0F,
-                location = 36,
-                openingHour = 0,
-                closingHour = 23,
-                jobProbability = 46,
-                membershipFee = 0,
-                classy = false
-            }
-        };
-
+    {        
         public static void CheckDailyTavernJobOpenings ()
         {
             // Run at the start of each new day
-            var jobOpeningProbability = 0;
             for (var i = 0; i < 14; i++) // 14 taverns in total
             {
-                jobOpeningProbability = Random(0, 255);
+                var jobOpeningProbability = Random(0, 255);
                 if (jobOpeningProbability <= Taverns[i].jobProbability)
                 {
                     // Create a new job entry for the day
@@ -348,18 +35,7 @@ namespace P3Net.Arx
                 }
             }
         }
-
-        public static int GetTavernNo ()
-        {
-            var tavern_no = 0;
-            for (var i = 0; i < 14; i++) // Max number of tavern objects
-            {
-                if (Taverns[i].location == plyr.location)
-                    tavern_no = i; // The number of the tavern you have entered
-            }
-            return tavern_no;
-        }
-
+        
         public static void ShopTavern ()
         {
             var tavernNo = GetTavernNo();
@@ -450,9 +126,9 @@ namespace P3Net.Arx
                     CyText(1, "To enter you must become a member.");
                     CyText(3, $"Dues are {ToCurrency(Taverns[tavernNo].membershipFee)} copper coins.");
                     CyText(5, "( es or  o)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
                     UpdateDisplay();
 
@@ -519,13 +195,13 @@ namespace P3Net.Arx
                     BText(9, 5, " ) Sit in a private booth");
                     BText(9, 6, " ) Apply for a job");
                     BText(9, 7, " ) Leave");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(9, 3, "1");
                     BText(9, 4, "2");
                     BText(9, 5, "3");
                     BText(9, 6, "4");
                     BText(9, 7, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
 
                     UpdateDisplay();
@@ -629,20 +305,20 @@ namespace P3Net.Arx
                     BText(7, 5, " ) Hail the Waitress");
                     BText(7, 6, " ) Buy a round for the house");
                     BText(7, 7, " ) Leave");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(7, 4, "1");
                     BText(7, 5, "2");
                     BText(7, 6, "3");
                     BText(7, 7, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
 
-                    SetFontColour(208, 178, 2, 255);
+                    SetFontColor(208, 178, 2, 255);
                     BText(7, 1, (eatDrinkDescriptions[0]));
                     BText(23, 1, (eatDrinkDescriptions[1]));
                     BText(7, 2, (eatDrinkDescriptions[2]));
                     BText(23, 2, (eatDrinkDescriptions[3]));
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -661,9 +337,9 @@ namespace P3Net.Arx
                 {
                     TavernDisplayUpdate();
                     CyText(0, "What would you like? (  to go back)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0            ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     tavernNo = GetTavernNo();
                     for (var i = 0; i < 6; i++)
@@ -693,14 +369,14 @@ namespace P3Net.Arx
                         BText(x, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
                     BText(2, 5, "4");
                     BText(2, 6, "5");
                     BText(2, 7, "6");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -791,9 +467,9 @@ namespace P3Net.Arx
                 {
                     TavernDisplayUpdate();
                     CyText(0, "What would you like? (  to go back)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0            ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     tavernNo = GetTavernNo();
                     for (var i = 0; i < 6; i++)
@@ -822,14 +498,14 @@ namespace P3Net.Arx
                         BText(x, (i + 2), ToCurrency(itemCost));
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
                     BText(2, 5, "4");
                     BText(2, 6, "5");
                     BText(2, 7, "6");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -936,9 +612,9 @@ namespace P3Net.Arx
                         CyText(1, str);
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
-                        SetFontColour(40, 96, 244, 255);
+                        SetFontColor(40, 96, 244, 255);
                         CyText(5, " Y      N  ");
-                        SetFontColour(215, 215, 215, 255);
+                        SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
 
                         var key = GetSingleKey();
@@ -1138,7 +814,340 @@ namespace P3Net.Arx
             }
         }
 
-        public static void TavernDisplayUpdate ()
+        #region Review Data
+
+        public static string closingText;
+        public static int descriptionPointer = 0;
+        public static int drinkChoice;
+        public static int drinkCost;
+        public static int drinkNo;
+
+        public static string[] eatDrinkDescriptions = new string[4];
+        public static int foodChoice;
+        public static int foodCost;
+        public static int foodNo;
+        public static string lyricsFilename;
+        public static string openingText;
+
+        //TODO: Move to data files
+        public static TavernDrinkItem[] tavernDrinks =
+        {
+            new TavernDrinkItem()
+            { name = "Water Flask", basePrice = 5, alcoholAdded = 0, thirstRemoved = 0, waterFlaskAdded = 1 },
+            new TavernDrinkItem()
+            { name = "Milk", basePrice = 2, alcoholAdded = 0, thirstRemoved = 6, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Beer", basePrice = 2, alcoholAdded = 1, thirstRemoved = 2, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Ale", basePrice = 3, alcoholAdded = 1, thirstRemoved = 3, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Wine", basePrice = 4, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Grog", basePrice = 2, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Spirits", basePrice = 5, alcoholAdded = 2, thirstRemoved = 2, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Water", basePrice = 1, alcoholAdded = 0, thirstRemoved = 8, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Sarsaparila", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Orange Juice", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Grape Juice", basePrice = 3, alcoholAdded = 0, thirstRemoved = 5, waterFlaskAdded = 0 },
+            new TavernDrinkItem()
+            { name = "Mineral Water", basePrice = 2, alcoholAdded = 0, thirstRemoved = 8, waterFlaskAdded = 0 }
+        };
+        public static bool[,] tavernDrinksCheck = new bool[14, 12]; // markers used to check for duplicate items - 14 taverns, 12 potential drinks
+
+        //TODO: Move to data files
+        public static TavernFoodItem[] tavernFoods =
+        {
+            new TavernFoodItem()
+            { name = "Rack of Lamb", basePrice = 40, hungerRemoved = 16, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Roast Beef", basePrice = 50, hungerRemoved = 18, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Roast Chicken", basePrice = 25, hungerRemoved = 16, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Roast Dragon", basePrice = 150, hungerRemoved = 22, foodPacketAdded = 1 },
+            new TavernFoodItem()
+            { name = "Pork Ribs", basePrice = 30, hungerRemoved = 12, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Leg of Lamb", basePrice = 80, hungerRemoved = 19, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Fried Chicken", basePrice = 50, hungerRemoved = 15, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Leg of Dragon", basePrice = 300, hungerRemoved = 22, foodPacketAdded = 2 },
+            new TavernFoodItem()
+            { name = "Ham", basePrice = 60, hungerRemoved = 14, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Lamb", basePrice = 56, hungerRemoved = 17, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Filet of Beef", basePrice = 70, hungerRemoved = 19, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Vegetable Soup", basePrice = 5, hungerRemoved = 8, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Ragout of Beef", basePrice = 33, hungerRemoved = 10, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Ragout of Dragon", basePrice = 50, hungerRemoved = 11, foodPacketAdded = 1 },
+            new TavernFoodItem()
+            { name = "Bowl of Fruit", basePrice = 25, hungerRemoved = 7, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Plate of Greens", basePrice = 18, hungerRemoved = 6, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Smoked Fish", basePrice = 30, hungerRemoved = 12, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Apple Pie", basePrice = 12, hungerRemoved = 4, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Lemon Pie", basePrice = 12, hungerRemoved = 4, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Chocolate Cake", basePrice = 10, hungerRemoved = 4, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Loaf of Bread", basePrice = 8, hungerRemoved = 6, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Block of Cheese", basePrice = 15, hungerRemoved = 9, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Food Packet", basePrice = 25, hungerRemoved = 0, foodPacketAdded = 1 },
+            new TavernFoodItem()
+            { name = "Gruel", basePrice = 4, hungerRemoved = 8, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Bagel", basePrice = 6, hungerRemoved = 5, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Pemmican", basePrice = 20, hungerRemoved = 4, foodPacketAdded = 1 },
+            new TavernFoodItem()
+            { name = "Bowl of Chili", basePrice = 10, hungerRemoved = 6, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Pasta", basePrice = 30, hungerRemoved = 10, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Lasagna", basePrice = 30, hungerRemoved = 10, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Crayfish", basePrice = 40, hungerRemoved = 9, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Lobster", basePrice = 100, hungerRemoved = 14, foodPacketAdded = 0 },
+            new TavernFoodItem()
+            { name = "Sandwich", basePrice = 10, hungerRemoved = 8, foodPacketAdded = 0 }
+        };
+        public static bool[,] tavernFoodsCheck = new bool[14, 32]; // markers used to check for duplicate items
+
+        public static TavernJobOpening[] tavernJobOpenings = Arrays.InitializeWithDefaultInstances<TavernJobOpening>(14);
+
+        //TODO: Move to data files
+        public static TavernJob[] tavernJobs =
+        {
+            new TavernJob()
+            {
+                name = "Bouncer",
+                minIncome = 40,
+                maxIncome = 44,
+                statRequirementName = "Strength",
+                statRequirementValue = 22,
+                fatigueRate = 0.75F,
+                minorWoundProbability = 19.69F,
+                majorWoundProbability = 7.26F
+            },
+            new TavernJob()
+            {
+                name = "Host",
+                minIncome = 20,
+                maxIncome = 24,
+                statRequirementName = "Charm",
+                statRequirementValue = 12,
+                fatigueRate = 0.5625F,
+                minorWoundProbability = 0.77F,
+                majorWoundProbability = 0.01F
+            },
+            new TavernJob()
+            {
+                name = "Dish Washer",
+                minIncome = 8,
+                maxIncome = 12,
+                statRequirementName = "Skill",
+                statRequirementValue = 9,
+                fatigueRate = 0.5625F,
+                minorWoundProbability = 12.64F,
+                majorWoundProbability = 2.20F
+            }
+        };
+
+        public static Music tavernMusic;
+        public static int tavernNo;
+
+        //TODO: Move to data files
+        //MLT: Double to float, int to boolean
+        public static Tavern[] Taverns =
+        {
+            new Tavern()
+            {
+                name = "Flaming Dragon",
+                priceFactor = 1.2F,
+                location = 23,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 51,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Misty Mountain",
+                priceFactor = 3.5F,
+                location = 24,
+                openingHour = 11,
+                closingHour = 2,
+                jobProbability = 51,
+                membershipFee = 3000,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Screaming Siren Bar",
+                priceFactor = 1.2F,
+                location = 25,
+                openingHour = 16,
+                closingHour = 3,
+                jobProbability = 64,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Happy Hunter Rest Stop",
+                priceFactor = 1.4F,
+                location = 26,
+                openingHour = 0,
+                closingHour = 7,
+                jobProbability = 77,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Dancing Nymph",
+                priceFactor = 1.6F,
+                location = 27,
+                openingHour = 16,
+                closingHour = 7,
+                jobProbability = 72,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Club",
+                priceFactor = 3.5F,
+                location = 28,
+                openingHour = 18,
+                closingHour = 22,
+                jobProbability = 182,
+                membershipFee = 1500,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Black Devil",
+                priceFactor = 1.4F,
+                location = 29,
+                openingHour = 0,
+                closingHour = 5,
+                jobProbability = 64,
+                membershipFee = 0,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Lost Oasis",
+                priceFactor = 0.8F,
+                location = 30,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 26,
+                membershipFee = 0,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Last Stop",
+                priceFactor = 1.2F,
+                location = 31,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 38,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Tail of the Dog",
+                priceFactor = 2.0F,
+                location = 32,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 192,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Club Babylon",
+                priceFactor = 5.0F,
+                location = 33,
+                openingHour = 10,
+                closingHour = 4,
+                jobProbability = 77,
+                membershipFee = 50000,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Lost Tears",
+                priceFactor = 1.8F,
+                location = 34,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 56,
+                membershipFee = 0,
+                classy = true
+            },
+            new Tavern()
+            {
+                name = "Mom's Bar",
+                priceFactor = 1.6F,
+                location = 35,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 128,
+                membershipFee = 0,
+                classy = false
+            },
+            new Tavern()
+            {
+                name = "Lusty Lloyds",
+                priceFactor = 1.0F,
+                location = 36,
+                openingHour = 0,
+                closingHour = 23,
+                jobProbability = 46,
+                membershipFee = 0,
+                classy = false
+            }
+        };
+        #endregion
+
+        #region Private Members
+
+        //TODO: Return the Tavern itself
+        private static int GetTavernNo ()
+        {
+            var tavern_no = 0;
+            for (var i = 0; i < Taverns.Length; i++)
+            {
+                if (Taverns[i].location == plyr.location)
+                    tavern_no = i; // The number of the tavern you have entered
+            }
+            return tavern_no;
+        }
+
+        private static void TavernDisplayUpdate ()
         {
             clock1.Restart();
             ClearShopDisplay();
@@ -1146,9 +1155,9 @@ namespace P3Net.Arx
             iCounter++;
         }
 
-        public static void TavernMessage ( string txt )
+        private static void TavernMessage ( string txt )
         {
-            var key = "";
+            string key;
             do
             {
                 ClearShopDisplay();
@@ -1157,5 +1166,6 @@ namespace P3Net.Arx
                 key = GetSingleKey();
             } while (key != "SPACE");
         }
+        #endregion
     }
 }

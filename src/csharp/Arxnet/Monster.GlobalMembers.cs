@@ -14,12 +14,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public const int noOfEncounters = 84;
-        public const int noOfMonsterWeapons = 250;
-
-        public const int noOfWeapons = 111;
-        public const int monstersFileSize = 45056;
-
         public static void LoadEncounters ()
         {
             //TODO: Read as structural data
@@ -410,80 +404,15 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ReadMonsterNameText ( int monsterNo, int nameOffset )
-        {
-            // Special Case - "thief" class has value 0
-            if (monsterNo == 1)
-                nameOffset = 0x2AA;
+        #region Review Data
 
-            var name = ReadBinaryString(monstersBinary, nameOffset);
+        public const int noOfEncounters = 84;
+        public const int noOfMonsterWeapons = 250;
 
-            // Some special monster classes have multiple entries here
-            if (maxNumberEncountered > 1)
-                pluralNameOffset = name.Length + 1;
+        public const int noOfWeapons = 111;
+        public const int monstersFileSize = 45056;
 
-            Monsters[monsterNo].name = name;
-        }
-
-        public static void ReadMonsterPluralNameText ( int monsterNo, int pluralNameOffset )
-        {
-            // Special Case - "thief" class has value 0
-            if (monsterNo == 1)
-                pluralNameOffset = 0x2CF;
-
-            // Loop through until 0 found
-            // Some special monster classes have multiple entries here
-            Monsters[monsterNo].pluName = ReadBinaryString(monstersBinary, pluralNameOffset);
-        }
-
-        public static void ReadMonsterDeathText ( int monsterNo, int deathOffset )
-        {
-            // Change variable name
-            if (monsterNo == (int)Encounters.Devourer)
-                deathOffset = 0x42;
-
-            var name = ReadBinaryString(monstersBinary, deathOffset, 0xAE);
-
-            //Convert 0xA5 to 0x40
-            name = name.Replace(Char.ConvertFromUtf32(0xA5), Char.ConvertFromUtf32(0x40));
-
-            // Some special monster classes have multiple entries here
-            Monsters[monsterNo].armorText = name;
-        }
-
-        public static void CreateMonsterWeapon ( int currentWeapon, int weaponOffset )
-        {
-            var weaponNameOffset = weaponOffset + 6;
-            monsterWeapons[currentWeapon].name = ReadBinaryString(monstersBinary, weaponNameOffset);
-
-            // byte 2 is object length, byte 3 is unknown
-            monsterWeapons[currentWeapon].type = monstersBinary[weaponOffset + 0];
-            monsterWeapons[currentWeapon].alignment = monstersBinary[weaponOffset + 3];
-            monsterWeapons[currentWeapon].weight = monstersBinary[weaponOffset + 4];
-
-            var wAttributes = (weaponOffset + monstersBinary[weaponOffset + 1]) - 20; // Working out from the end of the weapon object
-
-            monsterWeapons[currentWeapon].melee = monstersBinary[wAttributes + 1];
-            monsterWeapons[currentWeapon].ammo = monstersBinary[wAttributes + 2];
-            monsterWeapons[currentWeapon].blunt = monstersBinary[wAttributes + 3];
-            monsterWeapons[currentWeapon].sharp = monstersBinary[wAttributes + 4];
-            monsterWeapons[currentWeapon].earth = monstersBinary[wAttributes + 5];
-            monsterWeapons[currentWeapon].air = monstersBinary[wAttributes + 6];
-            monsterWeapons[currentWeapon].fire = monstersBinary[wAttributes + 7];
-            monsterWeapons[currentWeapon].water = monstersBinary[wAttributes + 8];
-            monsterWeapons[currentWeapon].power = monstersBinary[wAttributes + 9];
-            monsterWeapons[currentWeapon].magic = monstersBinary[wAttributes + 10];
-            monsterWeapons[currentWeapon].good = monstersBinary[wAttributes + 11];
-            monsterWeapons[currentWeapon].evil = monstersBinary[wAttributes + 12];
-            monsterWeapons[currentWeapon].cold = monstersBinary[wAttributes + 13];
-            monsterWeapons[currentWeapon].minStrength = monstersBinary[wAttributes + 14];
-            monsterWeapons[currentWeapon].minDexterity = monstersBinary[wAttributes + 15];
-            monsterWeapons[currentWeapon].hp = monstersBinary[wAttributes + 16];
-            monsterWeapons[currentWeapon].maxHP = monstersBinary[wAttributes + 17];
-            monsterWeapons[currentWeapon].flags = monstersBinary[wAttributes + 18];
-            monsterWeapons[currentWeapon].parry = monstersBinary[wAttributes + 19];
-        }
-
+        //TODO: Move into data
         public static MonsterFramePair[] animations =
         {
                 new MonsterFramePair () { startFrame = 0, endFrame = 2 },
@@ -546,5 +475,84 @@ namespace P3Net.Arx
         public static int pluralNameOffset;
         public static int maxNumberEncountered;
         public static int currentWeapon;
+
+        #endregion        
+
+        #region Private Members
+
+        private static void ReadMonsterNameText ( int monsterNo, int nameOffset )
+        {
+            // Special Case - "thief" class has value 0
+            if (monsterNo == 1)
+                nameOffset = 0x2AA;
+
+            var name = ReadBinaryString(monstersBinary, nameOffset);
+
+            // Some special monster classes have multiple entries here
+            if (maxNumberEncountered > 1)
+                pluralNameOffset = name.Length + 1;
+
+            Monsters[monsterNo].name = name;
+        }
+
+        private static void ReadMonsterPluralNameText ( int monsterNo, int pluralNameOffset )
+        {
+            // Special Case - "thief" class has value 0
+            if (monsterNo == 1)
+                pluralNameOffset = 0x2CF;
+
+            // Loop through until 0 found
+            // Some special monster classes have multiple entries here
+            Monsters[monsterNo].pluName = ReadBinaryString(monstersBinary, pluralNameOffset);
+        }
+
+        private static void ReadMonsterDeathText ( int monsterNo, int deathOffset )
+        {
+            // Change variable name
+            if (monsterNo == (int)Encounters.Devourer)
+                deathOffset = 0x42;
+
+            var name = ReadBinaryString(monstersBinary, deathOffset, 0xAE);
+
+            //Convert 0xA5 to 0x40
+            name = name.Replace(Char.ConvertFromUtf32(0xA5), Char.ConvertFromUtf32(0x40));
+
+            // Some special monster classes have multiple entries here
+            Monsters[monsterNo].armorText = name;
+        }
+
+        private static void CreateMonsterWeapon ( int currentWeapon, int weaponOffset )
+        {
+            var weaponNameOffset = weaponOffset + 6;
+            monsterWeapons[currentWeapon].name = ReadBinaryString(monstersBinary, weaponNameOffset);
+
+            // byte 2 is object length, byte 3 is unknown
+            monsterWeapons[currentWeapon].type = monstersBinary[weaponOffset + 0];
+            monsterWeapons[currentWeapon].alignment = monstersBinary[weaponOffset + 3];
+            monsterWeapons[currentWeapon].weight = monstersBinary[weaponOffset + 4];
+
+            var wAttributes = (weaponOffset + monstersBinary[weaponOffset + 1]) - 20; // Working out from the end of the weapon object
+
+            monsterWeapons[currentWeapon].melee = monstersBinary[wAttributes + 1];
+            monsterWeapons[currentWeapon].ammo = monstersBinary[wAttributes + 2];
+            monsterWeapons[currentWeapon].blunt = monstersBinary[wAttributes + 3];
+            monsterWeapons[currentWeapon].sharp = monstersBinary[wAttributes + 4];
+            monsterWeapons[currentWeapon].earth = monstersBinary[wAttributes + 5];
+            monsterWeapons[currentWeapon].air = monstersBinary[wAttributes + 6];
+            monsterWeapons[currentWeapon].fire = monstersBinary[wAttributes + 7];
+            monsterWeapons[currentWeapon].water = monstersBinary[wAttributes + 8];
+            monsterWeapons[currentWeapon].power = monstersBinary[wAttributes + 9];
+            monsterWeapons[currentWeapon].magic = monstersBinary[wAttributes + 10];
+            monsterWeapons[currentWeapon].good = monstersBinary[wAttributes + 11];
+            monsterWeapons[currentWeapon].evil = monstersBinary[wAttributes + 12];
+            monsterWeapons[currentWeapon].cold = monstersBinary[wAttributes + 13];
+            monsterWeapons[currentWeapon].minStrength = monstersBinary[wAttributes + 14];
+            monsterWeapons[currentWeapon].minDexterity = monstersBinary[wAttributes + 15];
+            monsterWeapons[currentWeapon].hp = monstersBinary[wAttributes + 16];
+            monsterWeapons[currentWeapon].maxHP = monstersBinary[wAttributes + 17];
+            monsterWeapons[currentWeapon].flags = monstersBinary[wAttributes + 18];
+            monsterWeapons[currentWeapon].parry = monstersBinary[wAttributes + 19];
+        }
+        #endregion
     }
 }

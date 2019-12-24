@@ -119,8 +119,6 @@ namespace P3Net.Arx
             }
 
             LeaveShop();
-        }
-
-        // extern Player plyr;
+        }        
     }
 }

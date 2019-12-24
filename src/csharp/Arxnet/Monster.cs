@@ -12,20 +12,15 @@ using System;
 namespace P3Net.Arx
 {
     public class Monster
-    {
-        public int type { get; set; }
+    {        
         public string name { get; set; }
         public string pluName { get; set; }
         public string armorText { get; set; }
-        public int behaviour { get; set; } // evil, bad, neutral, good
+        
         public int alignment { get; set; }
         public int stealth { get; set; }
-        public int randomStrength { get; set; }
-        public int randomSkill { get; set; }
-        public int randomIntelligence { get; set; }
-        public int randomSpeed { get; set; }
+        
         public int hp { get; set; }
-        public int randomHP { get; set; }
         public int maxHP { get; set; }
         public int image { get; set; } // becomes first frame in animations array
         public int image2 { get; set; } // becomes last frame in animations array
@@ -50,8 +45,6 @@ namespace P3Net.Arx
         public int aEvil { get; set; }
         public int aCold { get; set; }
 
-        public int tPotions { get; set; }
-        public int tEquipment { get; set; }
         public int tFood { get; set; }
         public int tWater { get; set; }
         public int tTorches { get; set; }

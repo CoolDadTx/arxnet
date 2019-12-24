@@ -9,24 +9,14 @@
  */
 using System;
 using System.IO;
-using System.Linq;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        // Each character save game file is made up of a 28540 element string array.
-        // Each array element can hold a number or text string (e.g. no. of torches carried or an item name)
-
-        // NOTES:
-        // job openings not currently part of saved game
-
-        public static string[] character = new string[saveGameSize];
-        public static string[] saveGameDescriptions = new string[10];
-        public static readonly int saveGameSize = 28541;
-
         public static void DisplayLoadGame ()
         {
+            //TODO: Base this on size of game file list
             DrawText(1, 3, "(0)");
             DrawText(1, 5, "(1)");
             DrawText(1, 7, "(2)");
@@ -97,18 +87,13 @@ namespace P3Net.Arx
             }
         }
 
-        public static void Initcharacter ()
-        {
-            for (var i = 0; i < saveGameSize; i++)
-                character[i] = "<BLANK>";
-        }
-
         public static void InitSaveGameDescriptions ()
         {
             //TODO: Ignoring fixed saved game slots 0-9
             saveGameDescriptions = File.ReadAllLines("data/saves/saveGames.txt");
         }
 
+        //TODO: Why is load public but save private?
         public static bool LoadCharacter ( int saveSlot )
         {
             //TODO: Use a normal struct reader
@@ -366,7 +351,7 @@ namespace P3Net.Arx
                 effectBuffer[z].duration = Convert.ToInt32(character[loadGameIndex + 3]);
                 loadGameIndex = loadGameIndex + 4;
             }
-            
+
             // Smithy daily wares
             loadGameIndex = 7670;
             for (var z = 0; z < 4; ++z)
@@ -429,7 +414,28 @@ namespace P3Net.Arx
             return true;
         }
 
-        public static bool SaveCharacter ( int saveSlot )
+        #region Review Data
+
+        // Each character save game file is made up of a 28540 element string array.
+        // Each array element can hold a number or text string (e.g. no. of torches carried or an item name)
+
+        // NOTES:
+        // job openings not currently part of saved game
+
+        public static string[] character = new string[saveGameSize];
+        public static string[] saveGameDescriptions = new string[10];
+        public static readonly int saveGameSize = 28541;
+        #endregion
+
+        #region Private Members
+
+        private static void Initcharacter ()
+        {
+            for (var i = 0; i < saveGameSize; i++)
+                character[i] = "<BLANK>";
+        }        
+        
+        private static bool SaveCharacter ( int saveSlot )
         {
             //TODO: Use a regular struct system
             
@@ -749,9 +755,11 @@ namespace P3Net.Arx
             return true;
         }
 
-        public static void UpdateSaveGameDescriptions ()
+        //TODO: Make this part of save game data
+        private static void UpdateSaveGameDescriptions ()
         {
             File.WriteAllLines("data/saves/saveGames.txt", saveGameDescriptions);
         }
+        #endregion
     }
 }

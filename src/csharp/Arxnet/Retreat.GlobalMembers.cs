@@ -12,57 +12,7 @@ using System;
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
-        public static int InputValue ()
-        {
-            var inputText = "";
-            var maxNumberSize = 6;
-            var enterKeyNotPressed = true;
-            while (enterKeyNotPressed)
-            {
-                ClearShopDisplay();
-                CyText(0, "Thou mayest have a spot on@the floor for a small donation.@@How many coppers woulds't thou give?");
-
-                BText(17, 5, $">{inputText}_");
-                UpdateDisplay();
-                var key = GetSingleKey();
-                if ((key == "0") ||
-                    (key == "1") ||
-                    (key == "2") ||
-                    (key == "3") ||
-                    (key == "4") ||
-                    (key == "5") ||
-                    (key == "6") ||
-                    (key == "7") ||
-                    (key == "8") ||
-                    (key == "9"))
-                {
-                    var numberLength = inputText.Length;
-                    if (numberLength < maxNumberSize)
-                        inputText = inputText + key;
-                }
-                if (key == "BACKSPACE")
-                {
-                    int numberLength = inputText.Length;
-                    if (numberLength != 0)
-                    {
-                        inputText = inputText.Substring(0, (numberLength - 1));
-                    }
-                }
-                if (key == "RETURN")
-                    enterKeyNotPressed = false;
-                if (key == "ESC")
-                {
-                    enterKeyNotPressed = false;
-                }
-            }
-
-            //TODO: Does this work if RETURN or ESC is pressed
-            var itemQuantity = Convert.ToInt32(inputText);
-
-            return itemQuantity;
-        }
-
+    {        
         public static void ShopRetreat ()
         {
             var retreatMenu = 1; // high level menu
@@ -115,7 +65,7 @@ namespace P3Net.Arx
 
                 while (retreatMenu == 2) // how many coppers?
                 {
-                    coppers = InputValue();
+                    coppers = RetreatInputValue();
 
                     if (coppers > 0)
                     {
@@ -286,5 +236,58 @@ namespace P3Net.Arx
                 plyr.retreatFriendship = 2;
             LeaveShop();
         }
+
+        #region Private Members
+
+        private static int RetreatInputValue ()
+        {
+            var inputText = "";
+            var maxNumberSize = 6;
+            var enterKeyNotPressed = true;
+            while (enterKeyNotPressed)
+            {
+                ClearShopDisplay();
+                CyText(0, "Thou mayest have a spot on@the floor for a small donation.@@How many coppers woulds't thou give?");
+
+                BText(17, 5, $">{inputText}_");
+                UpdateDisplay();
+                var key = GetSingleKey();
+                if ((key == "0") ||
+                    (key == "1") ||
+                    (key == "2") ||
+                    (key == "3") ||
+                    (key == "4") ||
+                    (key == "5") ||
+                    (key == "6") ||
+                    (key == "7") ||
+                    (key == "8") ||
+                    (key == "9"))
+                {
+                    var numberLength = inputText.Length;
+                    if (numberLength < maxNumberSize)
+                        inputText = inputText + key;
+                }
+                if (key == "BACKSPACE")
+                {
+                    int numberLength = inputText.Length;
+                    if (numberLength != 0)
+                    {
+                        inputText = inputText.Substring(0, (numberLength - 1));
+                    }
+                }
+                if (key == "RETURN")
+                    enterKeyNotPressed = false;
+                if (key == "ESC")
+                {
+                    enterKeyNotPressed = false;
+                }
+            }
+
+            //TODO: Does this work if RETURN or ESC is pressed
+            var itemQuantity = Convert.ToInt32(inputText);
+
+            return itemQuantity;
+        }
+        #endregion
     }
 }

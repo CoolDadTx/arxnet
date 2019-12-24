@@ -46,6 +46,7 @@ namespace P3Net.Arx
             autoMapExplored[mapno, cellNo] = true;
         }
 
+        //TODO: Not used but we'll leave it for now
         public static void ClearAutoMaps ()
         {
             for (var y = 0; y < 5; y++)
@@ -124,8 +125,23 @@ namespace P3Net.Arx
                 }
             }
         }
+        
+        #region Review Data
 
-        public static void DrawFullAutomap ()
+        public static Texture mapImage;
+        public static Texture legendImage;
+        public static Sprite cellImage = new Sprite();
+
+        public static Sprite mapLegend = new Sprite();
+        
+        public static int pixelSize;
+        public static int mapLocation;
+        #endregion
+
+        #region Private Members
+
+        //TODO: Probably should be tied to map
+        private static void DrawFullAutomap ()
         {
             plyr.drawingBigAutomap = true;
             pixelSize = 16;
@@ -135,7 +151,7 @@ namespace P3Net.Arx
             var cornerY = 0; // top left pixel coordinate for automap
             var startx = 0; // map cell coords for first x
             var starty = 0; // map cell coords for first y
-            
+
             if ((plyr.x < 32) && (plyr.y < 32))
             {
                 startx = 0;
@@ -198,18 +214,8 @@ namespace P3Net.Arx
             plyr.drawingBigAutomap = false;
         }
 
-        public static Texture mapImage;
-        public static Texture legendImage;
-        public static Sprite cellImage = new Sprite();
-
-        public static Sprite mapLegend = new Sprite();
-
-        //float scale;
-        public static int pixelSize;
-        public static int mapLocation;
-
         // Draw an individual image to the display at pixel x,y
-        public static void DrawImage ( int x, int y, int tileNo )
+        private static void DrawImage ( int x, int y, int tileNo )
         {
             x++;
             y++;
@@ -237,7 +243,7 @@ namespace P3Net.Arx
         }
 
         // Draw all the images required for a single cell on the automap
-        public static void DrawCell ( int x, int y, int pixelx, int pixely )
+        private static void DrawCell ( int x, int y, int pixelx, int pixely )
         {
             var idx = GetMapIndex(x, y);
             var north = levelmap[idx].north;
@@ -404,17 +410,6 @@ namespace P3Net.Arx
             if (tile != 0)
                 DrawImage(pixelx, pixely, tile);
         }
-
-        //extern bool autoMapExplored[5][4096];
-        //extern Mapcell levelmap[4096]; // 12288
-
-        //extern int miniMapY; // y position for displaying the bottom screen info panel
-        //extern int miniMapX; // x starting position for displaying the panel for centering
-        //extern int graphicMode;
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void DrawImage(int topY, int x, int y, int char_no);
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void DrawCell(int x, int y);
+        #endregion
     }
 }

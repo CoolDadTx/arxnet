@@ -9,275 +9,64 @@
  */
 using System;
 using System.IO;
-using System.Linq;
+
 using SFML.Audio;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
-        public static byte[] citySmithyBinary = new byte[citySmithyFileSize];
-        public static readonly int citySmithyFileSize = 1691;
-
-        public static int itemChoice;
-        public static int itemCost;
-        public static int itemNo;
-        public static int maxMenuItems = 6;
-        public static int menuStartItem;
-
-        //MLT: Double to float
-        public static Smithy[] Smithies =
-        {
-            new Smithy()
-            {
-                name = "Sharp Weaponsmiths",
-                minimumPriceFactor = 1.25F,
-                initialPriceFactor = 1.65F,
-                location = 55,
-                openingHour = 4,
-                closingHour = 20
-            },
-            new Smithy()
-            {
-                name = "Occum's Weaponsmiths",
-                minimumPriceFactor = 1.10F,
-                initialPriceFactor = 1.35F,
-                location = 56,
-                openingHour = 5,
-                closingHour = 21
-            },
-            new Smithy()
-            {
-                name = "Best Armorers",
-                minimumPriceFactor = 1.50F,
-                initialPriceFactor = 2.40F,
-                location = 57,
-                openingHour = 8,
-                closingHour = 19
-            },
-            new Smithy()
-            {
-                name = "Knight's Armorers",
-                minimumPriceFactor = 1.60F,
-                initialPriceFactor = 2.35F,
-                location = 58,
-                openingHour = 11,
-                closingHour = 15
-            }
-        };
-
-        public static Music smithyMusic;
-        public static int smithyNo;
-
-        public static SmithyItem[] smithyWares =
-        {
-            new SmithyItem()
-            { name = "a Stiletto", type = 178, basePrice = 113, itemRef = 0xAA },
-            new SmithyItem()
-            { name = "a Dagger", type = 178, basePrice = 129, itemRef = 0xCB },
-            new SmithyItem()
-            { name = "a Whip", type = 178, basePrice = 396, itemRef = 0xE9 },
-            new SmithyItem()
-            { name = "a War Net", type = 178, basePrice = 908, itemRef = 0x24 },
-            new SmithyItem()
-            { name = "Padded Armor", type = 177, basePrice = 2200, itemRef = 1 },
-            new SmithyItem()
-            { name = "a Small Shield", type = 178, basePrice = 2460, itemRef = 0x86 },
-            new SmithyItem()
-            { name = "a Shortsword", type = 178, basePrice = 3146, itemRef = 0x105 },
-            new SmithyItem()
-            { name = "a Shield", type = 178, basePrice = 4290, itemRef = 0x68 },
-            new SmithyItem()
-            { name = "a Flail", type = 178, basePrice = 4620, itemRef = 0x128 },
-            new SmithyItem()
-            { name = "Leather Armor", type = 177, basePrice = 4840, itemRef = 2 },
-            new SmithyItem()
-            { name = "a Spiked Shield", type = 178, basePrice = 6160, itemRef = 0x43 },
-            new SmithyItem()
-            { name = "a Battle Axe", type = 178, basePrice = 16930, itemRef = 0x145 },
-            new SmithyItem()
-            { name = "Studded Armor", type = 177, basePrice = 7260, itemRef = 3 },
-            new SmithyItem()
-            { name = "a Sword", type = 178, basePrice = 7680, itemRef = 0x167 },
-            new SmithyItem()
-            { name = "a Tower Shield", type = 178, basePrice = 9488, itemRef = 0x0 },
-            new SmithyItem()
-            { name = "Ring Mail", type = 177, basePrice = 10010, itemRef = 4 },
-            new SmithyItem()
-            { name = "a Battle Hammer", type = 178, basePrice = 10285, itemRef = 0x184 },
-            new SmithyItem()
-            { name = "a Longsword", type = 178, basePrice = 11193, itemRef = 0x1A9 },
-            new SmithyItem()
-            { name = "Scale Mail", type = 177, basePrice = 14245, itemRef = 5 },
-            new SmithyItem()
-            { name = "Splint Mail", type = 177, basePrice = 18975, itemRef = 6 },
-            new SmithyItem()
-            { name = "Chain Mail", type = 177, basePrice = 24640, itemRef = 7 },
-            new SmithyItem()
-            { name = "Banded Armor", type = 177, basePrice = 32000, itemRef = 8 },
-            new SmithyItem()
-            { name = "Plate Armor", type = 177, basePrice = 41500, itemRef = 9 }
-        };
-
-        public static bool[,] smithyWaresCheck = new bool[4, 23]; // markers used to check for duplicate items
-
-        // Take a binary offset within citySmithyBinary and create a new inventory item from the binary data (weapon or armour)
-        // Item types:  0x83 - weapon, 0x84 - armour
-
-        public static void CreateCitySmithyInventoryItem ( int startByte )
-        {
-            int index = 0;
-            int alignment = 0;
-            int weight = 0;
-            int wAttributes = 0;
-            int melee = 0;
-            int ammo = 0;
-            int blunt = 0;
-            int sharp = 0;
-            int earth = 0;
-            int air = 0;
-            int fire = 0;
-            int water = 0;
-            int power = 0;
-            int magic = 0;
-            int good = 0;
-            int evil = 0;
-            int cold = 0;
-            int minStrength = 0;
-            int minDexterity = 0;
-            int hp = 0;
-            int maxHP = 0;
-            int flags = 0;
-            int parry = 0;
-            int useStrength = 0;
-
-            var offset = startByte;
-            var itemType = citySmithyBinary[offset];
-            var itemName = ReadSmithyItemString((offset + 6));
-
-            if (itemType == 0x83)
-            {
-                itemType = 178; // ARX value for weapon
-                index = 0; // No longer required
-                useStrength = 0;
-                alignment = citySmithyBinary[offset + 3];
-                weight = citySmithyBinary[offset + 4];
-
-                wAttributes = (offset + citySmithyBinary[offset + 1]) - 19; // Working out from the end of the weapon object
-
-                melee = 0xFF;
-                ammo = 0;
-                blunt = citySmithyBinary[wAttributes + 3];
-                sharp = citySmithyBinary[wAttributes + 4];
-                earth = citySmithyBinary[wAttributes + 5];
-                air = citySmithyBinary[wAttributes + 6];
-                fire = citySmithyBinary[wAttributes + 7];
-                water = citySmithyBinary[wAttributes + 8];
-                power = citySmithyBinary[wAttributes + 9];
-                magic = citySmithyBinary[wAttributes + 10];
-                good = citySmithyBinary[wAttributes + 11];
-                evil = citySmithyBinary[wAttributes + 12];
-                cold = 0; // No cold damage for City items
-
-                //TODO: What should this be for?
-                //citySmithyBinary[wAttributes + 13];
-                minStrength = citySmithyBinary[wAttributes + 13];
-                minDexterity = citySmithyBinary[wAttributes + 14];
-                hp = 44;
-                maxHP = 44;
-                flags = citySmithyBinary[wAttributes + 17];
-                parry = citySmithyBinary[wAttributes + 18];
-            }
-
-            if (itemType == 0x84)
-            {
-                itemType = 177; // ARX value for armour
-                index = 0; // No longer required
-                useStrength = 0;
-                alignment = citySmithyBinary[offset + 3];
-                weight = citySmithyBinary[offset + 4];
-
-                wAttributes = (offset + citySmithyBinary[offset + 1]) - 17; // Working out from the end of the weapon object
-
-                melee = citySmithyBinary[wAttributes + 13]; // Body part
-                if (melee == 1)
-                    melee = 0;
-                if (melee == 2)
-                    melee = 1;
-                if (melee == 4)
-                    melee = 2;
-                if (melee == 8)
-                    melee = 3;
-                if (melee == 6)
-                    melee = 1;
-
-                ammo = 0; // Not used
-                blunt = citySmithyBinary[wAttributes + 2]; // ERROR ONWARDS
-                sharp = citySmithyBinary[wAttributes + 3];
-                earth = citySmithyBinary[wAttributes + 4];
-                air = citySmithyBinary[wAttributes + 5];
-                fire = citySmithyBinary[wAttributes + 6];
-                water = citySmithyBinary[wAttributes + 7];
-                power = citySmithyBinary[wAttributes + 8];
-                magic = citySmithyBinary[wAttributes + 9];
-                good = citySmithyBinary[wAttributes + 10];
-                evil = citySmithyBinary[wAttributes + 11];
-                cold = 0;
-                minStrength = 0;
-                minDexterity = 0;
-                hp = 56;
-                maxHP = 56;
-                flags = 0;
-                parry = 0;
-            }
-
-            var newItemRef = CreateItem(itemType,
-                                        index,
-                                        itemName,
-                                        hp,
-                                        maxHP,
-                                        flags,
-                                        minStrength,
-                                        minDexterity,
-                                        useStrength,
-                                        blunt,
-                                        sharp,
-                                        earth,
-                                        air,
-                                        fire,
-                                        water,
-                                        power,
-                                        magic,
-                                        good,
-                                        evil,
-                                        cold,
-                                        weight,
-                                        alignment,
-                                        melee,
-                                        ammo,
-                                        parry);
-            itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
-        }
-
-        public static int GetSmithyNo ()
-        {
-            var smithy_no = 0;
-            for (var i = 0; i < 4; i++) // Max number of smithy objects
-            {
-                if (Smithies[i].location == plyr.location)
-                    smithy_no = i; // The number of the smithy you have entered
-            }
-            return smithy_no;
-        }
-
+    {        
+        //TODO: Combine with core load and move to data file
         public static void LoadCitySmithyBinary ()
         {
             //TODO: Ignoring fixed length - citySmithyFileSize
             // Loads armour and weapons binary data into the "citySmithyBinary" array
             citySmithyBinary = File.ReadAllBytes($"data/map/smithyItems.bin");
         }
+        
+        public static void StockSmithyWares ()
+        {
+            // Run each day to randomly pick 10 items for sale at each of the 4 smithies
+            // Check for duplicates using smithyWaresCheck array of bools
 
-        public static string ReadSmithyItemString ( int stringOffset ) => ReadBinaryString(citySmithyBinary, stringOffset);
+            // Set bools for duplicate items check to false
+            var itemNo = 0;
+
+            for (var x = 0; x < 4; x++)
+            {
+                for (var y = 0; y < 23; y++)
+                    smithyWaresCheck[x, y] = false;
+            }
+
+            for (var smithyNo = 0; smithyNo < 4; smithyNo++)
+            {
+                for (var waresNo = 0; waresNo < 10; waresNo++)
+                {
+                    // Current code may create duplicate items in each smithy
+                    var uniqueItem = false;
+                    while (!uniqueItem)
+                    {
+                        itemNo = Random(0, 22);
+
+                        if (!smithyWaresCheck[smithyNo, itemNo])
+                        {
+                            smithyDailyWares[smithyNo, waresNo] = itemNo; // its not a duplicate
+                            smithyWaresCheck[smithyNo, itemNo] = true;
+                            uniqueItem = true;
+                        }
+                    }
+                }
+            }
+
+            // Simple sort of items in numeric order
+            sort(smithyDailyWares);
+
+            // Always make sure a stiletto will be available
+            smithyDailyWares[0, 0] = 0;
+            smithyDailyWares[1, 0] = 0;
+            smithyDailyWares[2, 0] = 0;
+            smithyDailyWares[3, 0] = 0;
+        }
 
         public static void ShopSmithy ()
         {
@@ -329,9 +118,9 @@ namespace P3Net.Arx
                     BText(13, 0, "Welcome Stranger!");
                     BText(7, 3, "Do you wish to see our wares?");
                     CyText(5, "( es or  o)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     DisplayCoins();
                     UpdateDisplay();
 
@@ -360,9 +149,9 @@ namespace P3Net.Arx
                     offerRounds = 0;
                     SmithyDisplayUpdate();
                     CyText(0, "What would you like? (  to leave)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0          ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     smithyNo = GetSmithyNo();
                     for (var i = 0; i < maxMenuItems; i++)
@@ -391,7 +180,7 @@ namespace P3Net.Arx
                         BText(x, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
@@ -402,7 +191,7 @@ namespace P3Net.Arx
                         BText(2, 1, "}");
                     if (menuStartItem != 4)
                         BText(2, 8, "{");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -485,12 +274,12 @@ namespace P3Net.Arx
                     BText(11, 5, " ) No sale");
                     BText(11, 6, " ) Leave");
                     DisplayCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(11, 3, "1");
                     BText(11, 4, "2");
                     BText(11, 5, "3");
                     BText(11, 6, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -694,7 +483,274 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static void SmithyDisplayUpdate ()
+        #region Review Data
+
+        public static byte[] citySmithyBinary = new byte[citySmithyFileSize];
+        public static readonly int citySmithyFileSize = 1691;
+
+        public static int itemChoice;
+        public static int itemCost;
+        public static int itemNo;
+        public static int maxMenuItems = 6;
+        public static int menuStartItem;
+
+        //TODO: Move to a data file
+        //MLT: Double to float
+        public static Smithy[] Smithies =
+        {
+            new Smithy()
+            {
+                name = "Sharp Weaponsmiths",
+                minimumPriceFactor = 1.25F,
+                initialPriceFactor = 1.65F,
+                location = 55,
+                openingHour = 4,
+                closingHour = 20
+            },
+            new Smithy()
+            {
+                name = "Occum's Weaponsmiths",
+                minimumPriceFactor = 1.10F,
+                initialPriceFactor = 1.35F,
+                location = 56,
+                openingHour = 5,
+                closingHour = 21
+            },
+            new Smithy()
+            {
+                name = "Best Armorers",
+                minimumPriceFactor = 1.50F,
+                initialPriceFactor = 2.40F,
+                location = 57,
+                openingHour = 8,
+                closingHour = 19
+            },
+            new Smithy()
+            {
+                name = "Knight's Armorers",
+                minimumPriceFactor = 1.60F,
+                initialPriceFactor = 2.35F,
+                location = 58,
+                openingHour = 11,
+                closingHour = 15
+            }
+        };
+
+        public static Music smithyMusic;
+        public static int smithyNo;
+
+        //TODO: Move to a data file
+        public static SmithyItem[] smithyWares =
+        {
+            new SmithyItem()
+            { name = "a Stiletto", type = 178, basePrice = 113, itemRef = 0xAA },
+            new SmithyItem()
+            { name = "a Dagger", type = 178, basePrice = 129, itemRef = 0xCB },
+            new SmithyItem()
+            { name = "a Whip", type = 178, basePrice = 396, itemRef = 0xE9 },
+            new SmithyItem()
+            { name = "a War Net", type = 178, basePrice = 908, itemRef = 0x24 },
+            new SmithyItem()
+            { name = "Padded Armor", type = 177, basePrice = 2200, itemRef = 1 },
+            new SmithyItem()
+            { name = "a Small Shield", type = 178, basePrice = 2460, itemRef = 0x86 },
+            new SmithyItem()
+            { name = "a Shortsword", type = 178, basePrice = 3146, itemRef = 0x105 },
+            new SmithyItem()
+            { name = "a Shield", type = 178, basePrice = 4290, itemRef = 0x68 },
+            new SmithyItem()
+            { name = "a Flail", type = 178, basePrice = 4620, itemRef = 0x128 },
+            new SmithyItem()
+            { name = "Leather Armor", type = 177, basePrice = 4840, itemRef = 2 },
+            new SmithyItem()
+            { name = "a Spiked Shield", type = 178, basePrice = 6160, itemRef = 0x43 },
+            new SmithyItem()
+            { name = "a Battle Axe", type = 178, basePrice = 16930, itemRef = 0x145 },
+            new SmithyItem()
+            { name = "Studded Armor", type = 177, basePrice = 7260, itemRef = 3 },
+            new SmithyItem()
+            { name = "a Sword", type = 178, basePrice = 7680, itemRef = 0x167 },
+            new SmithyItem()
+            { name = "a Tower Shield", type = 178, basePrice = 9488, itemRef = 0x0 },
+            new SmithyItem()
+            { name = "Ring Mail", type = 177, basePrice = 10010, itemRef = 4 },
+            new SmithyItem()
+            { name = "a Battle Hammer", type = 178, basePrice = 10285, itemRef = 0x184 },
+            new SmithyItem()
+            { name = "a Longsword", type = 178, basePrice = 11193, itemRef = 0x1A9 },
+            new SmithyItem()
+            { name = "Scale Mail", type = 177, basePrice = 14245, itemRef = 5 },
+            new SmithyItem()
+            { name = "Splint Mail", type = 177, basePrice = 18975, itemRef = 6 },
+            new SmithyItem()
+            { name = "Chain Mail", type = 177, basePrice = 24640, itemRef = 7 },
+            new SmithyItem()
+            { name = "Banded Armor", type = 177, basePrice = 32000, itemRef = 8 },
+            new SmithyItem()
+            { name = "Plate Armor", type = 177, basePrice = 41500, itemRef = 9 }
+        };
+
+        public static bool[,] smithyWaresCheck = new bool[4, 23]; // markers used to check for duplicate items
+
+        #endregion 
+
+        #region Private Members
+
+        //TODO: Move to a data file
+        private static void CreateCitySmithyInventoryItem ( int startByte )
+        {
+            // Take a binary offset within citySmithyBinary and create a new inventory item from the binary data (weapon or armour)
+            // Item types:  0x83 - weapon, 0x84 - armour
+
+            int index = 0;
+            int alignment = 0;
+            int weight = 0;
+            int wAttributes = 0;
+            int melee = 0;
+            int ammo = 0;
+            int blunt = 0;
+            int sharp = 0;
+            int earth = 0;
+            int air = 0;
+            int fire = 0;
+            int water = 0;
+            int power = 0;
+            int magic = 0;
+            int good = 0;
+            int evil = 0;
+            int cold = 0;
+            int minStrength = 0;
+            int minDexterity = 0;
+            int hp = 0;
+            int maxHP = 0;
+            int flags = 0;
+            int parry = 0;
+            int useStrength = 0;
+
+            var offset = startByte;
+            var itemType = citySmithyBinary[offset];
+            var itemName = ReadSmithyItemString((offset + 6));
+
+            if (itemType == 0x83)
+            {
+                itemType = 178; // ARX value for weapon
+                index = 0; // No longer required
+                useStrength = 0;
+                alignment = citySmithyBinary[offset + 3];
+                weight = citySmithyBinary[offset + 4];
+
+                wAttributes = (offset + citySmithyBinary[offset + 1]) - 19; // Working out from the end of the weapon object
+
+                melee = 0xFF;
+                ammo = 0;
+                blunt = citySmithyBinary[wAttributes + 3];
+                sharp = citySmithyBinary[wAttributes + 4];
+                earth = citySmithyBinary[wAttributes + 5];
+                air = citySmithyBinary[wAttributes + 6];
+                fire = citySmithyBinary[wAttributes + 7];
+                water = citySmithyBinary[wAttributes + 8];
+                power = citySmithyBinary[wAttributes + 9];
+                magic = citySmithyBinary[wAttributes + 10];
+                good = citySmithyBinary[wAttributes + 11];
+                evil = citySmithyBinary[wAttributes + 12];
+                cold = 0; // No cold damage for City items
+
+                //TODO: What should this be for?
+                //citySmithyBinary[wAttributes + 13];
+                minStrength = citySmithyBinary[wAttributes + 13];
+                minDexterity = citySmithyBinary[wAttributes + 14];
+                hp = 44;
+                maxHP = 44;
+                flags = citySmithyBinary[wAttributes + 17];
+                parry = citySmithyBinary[wAttributes + 18];
+            }
+
+            if (itemType == 0x84)
+            {
+                itemType = 177; // ARX value for armour
+                index = 0; // No longer required
+                useStrength = 0;
+                alignment = citySmithyBinary[offset + 3];
+                weight = citySmithyBinary[offset + 4];
+
+                wAttributes = (offset + citySmithyBinary[offset + 1]) - 17; // Working out from the end of the weapon object
+
+                melee = citySmithyBinary[wAttributes + 13]; // Body part
+                if (melee == 1)
+                    melee = 0;
+                if (melee == 2)
+                    melee = 1;
+                if (melee == 4)
+                    melee = 2;
+                if (melee == 8)
+                    melee = 3;
+                if (melee == 6)
+                    melee = 1;
+
+                ammo = 0; // Not used
+                blunt = citySmithyBinary[wAttributes + 2]; // ERROR ONWARDS
+                sharp = citySmithyBinary[wAttributes + 3];
+                earth = citySmithyBinary[wAttributes + 4];
+                air = citySmithyBinary[wAttributes + 5];
+                fire = citySmithyBinary[wAttributes + 6];
+                water = citySmithyBinary[wAttributes + 7];
+                power = citySmithyBinary[wAttributes + 8];
+                magic = citySmithyBinary[wAttributes + 9];
+                good = citySmithyBinary[wAttributes + 10];
+                evil = citySmithyBinary[wAttributes + 11];
+                cold = 0;
+                minStrength = 0;
+                minDexterity = 0;
+                hp = 56;
+                maxHP = 56;
+                flags = 0;
+                parry = 0;
+            }
+
+            var newItemRef = CreateItem(itemType,
+                                        index,
+                                        itemName,
+                                        hp,
+                                        maxHP,
+                                        flags,
+                                        minStrength,
+                                        minDexterity,
+                                        useStrength,
+                                        blunt,
+                                        sharp,
+                                        earth,
+                                        air,
+                                        fire,
+                                        water,
+                                        power,
+                                        magic,
+                                        good,
+                                        evil,
+                                        cold,
+                                        weight,
+                                        alignment,
+                                        melee,
+                                        ammo,
+                                        parry);
+            itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
+        }
+
+        //TODO: Return Smithy instead
+        private static int GetSmithyNo ()
+        {
+            var smithy_no = 0;
+            for (var i = 0; i < Smithies.Length; i++) 
+            {
+                if (Smithies[i].location == plyr.location)
+                    smithy_no = i; // The number of the smithy you have entered
+            }
+            return smithy_no;
+        }
+
+        
+        private static string ReadSmithyItemString ( int stringOffset ) => ReadBinaryString(citySmithyBinary, stringOffset);        
+
+        private static void SmithyDisplayUpdate ()
         {
             clock1.Restart();
             ClearShopDisplay();
@@ -702,53 +758,6 @@ namespace P3Net.Arx
             iCounter++;
         }
 
-        public static void StockSmithyWares ()
-        {
-            // Run each day to randomly pick 10 items for sale at each of the 4 smithies
-            // Check for duplicates using smithyWaresCheck array of bools
-
-            // Set bools for duplicate items check to false
-            var itemNo = 0;
-
-            for (var x = 0; x < 4; x++)
-            {
-                for (var y = 0; y < 23; y++)
-                    smithyWaresCheck[x, y] = false;
-            }
-
-            for (var smithyNo = 0; smithyNo < 4; smithyNo++)
-            {
-                for (var waresNo = 0; waresNo < 10; waresNo++)
-                {
-                    // Current code may create duplicate items in each smithy
-                    var uniqueItem = false;
-                    while (!uniqueItem)
-                    {
-                        itemNo = Random(0, 22);
-
-                        if (!smithyWaresCheck[smithyNo, itemNo])
-                        {
-                            smithyDailyWares[smithyNo, waresNo] = itemNo; // its not a duplicate
-                            smithyWaresCheck[smithyNo, itemNo] = true;
-                            uniqueItem = true;
-                        }
-                    }
-                }
-            }
-
-            // Simple sort of items in numeric order
-            sort(smithyDailyWares);
-
-            // Always make sure a stiletto will be available
-            smithyDailyWares[0, 0] = 0;
-            smithyDailyWares[1, 0] = 0;
-            smithyDailyWares[2, 0] = 0;
-            smithyDailyWares[3, 0] = 0;
-        }
-
-        //extern sf::Clock clock1;
-        //extern int iCounter;
-        //extern int smithyDailyWares[4][10];
-        //extern byte citySmithyBinary[citySmithyFileSize];
+        #endregion
     }
 }

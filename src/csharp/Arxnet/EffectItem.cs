@@ -11,6 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: If we implement Effect class is this needed?
     public class EffectItem
     {
         public int duration { get; set; }

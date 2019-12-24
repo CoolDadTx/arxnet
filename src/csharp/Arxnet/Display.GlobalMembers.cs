@@ -68,30 +68,6 @@ namespace P3Net.Arx
             OpenTKContext.Initialize(App.SystemHandle);
         }
 
-        public static void SetTileImage ( int tile_no )
-        {
-            int row;
-            int column;
-            var tilesPerRow = 8; // number of tiles per row in source image containing all tiles (8 default)
-                                 //int tilesPerColumn = 8; // number of tiles per column in source image (8 default)
-
-            //Select 64x128 section of tile sheet for tile
-            if (tile_no >= tilesPerRow)
-            {
-                column = (tile_no % tilesPerRow); // remainder
-                row = ((tile_no - column) / tilesPerRow);
-            } else
-            {
-                column = tile_no;
-                row = 0; // = row 1 on the actual tile sheet at y=0
-            }
-
-            var tileX = (column) * 64; // x loc on tiles image in pixels
-            var tileY = (row) * 128; // y loc on tiles image in pixels
-
-            encImage.TextureRect = new IntRect(tileX, tileY, 64, 128);
-        }
-
         // drawAtariAnimation - draws single frame and updates counter
         public static void DrawAtariAnimation ()
         {
@@ -117,7 +93,7 @@ namespace P3Net.Arx
             }
 
             animDuration--;
-            
+
             // Alternate and set animation frame as required
             encImage.Texture = encImageSheet;
 
@@ -169,15 +145,17 @@ namespace P3Net.Arx
             encImageSheet = new Texture("data/images/encounters/encounters.png"); // Atari 8bit
         }
 
+        //TODO: Move to main menu
         public static void DisplayQuitMenu ()
         {
             DrawText(6, 11, " Are you sure you want to quit?");
             DrawText(15, 13, " ( es or  o)");
-            SetFontColour(40, 96, 244, 255);
+            SetFontColor(40, 96, 244, 255);
             DrawText(15, 13, "  Y      N");
-            SetFontColour(215, 215, 215, 255);
+            SetFontColor(215, 215, 215, 255);
         }
 
+        //TODO: Move to main menu
         public static void DisplayOptionsMenu ()
         {
             DrawText(17, 0, "Options");
@@ -201,18 +179,19 @@ namespace P3Net.Arx
             DrawText(1, 23, "ESC   Display this screen");
 
 
-            SetFontColour(40, 96, 244, 255);
+            SetFontColor(40, 96, 244, 255);
             DrawText(8, 2, " S");
             DrawText(8, 4, " Q");
 
-            SetFontColour(215, 215, 215, 255);
+            SetFontColor(215, 215, 215, 255);
 
             DrawText(13, 7, "Or ESC to cancel");
-            SetFontColour(40, 96, 244, 255);
+            SetFontColor(40, 96, 244, 255);
             DrawText(13, 7, "   ESC");
-            SetFontColour(215, 215, 215, 255);
+            SetFontColor(215, 215, 215, 255);
         }
 
+        //TODO: Move to create character
         public static void DisplayDungeonGateImage ()
         {
             dungeonGate.Texture = imgDungeonGate;
@@ -220,6 +199,7 @@ namespace P3Net.Arx
             App.Draw(dungeonGate);
         }
 
+        //TODO: Move to create character
         public static void DisplayCityGateImage ()
         {
             cityGate.Texture = imgCityGate;
@@ -227,6 +207,7 @@ namespace P3Net.Arx
             App.Draw(cityGate);
         }
 
+        //TODO: Move to create character
         public static void LoadCounterImages ()
         {
             // Dungeon gate counters
@@ -281,11 +262,11 @@ namespace P3Net.Arx
             /* Original small 3D view */
             Glu.Perspective(45, (float)viewWidth / viewHeight, 0.1, 100);
             if (graphicMode < 2)
-            {                                
+            {
                 var z = windowHeight - (viewPortY + viewHeight);
 
                 GL.Viewport(viewPortX, z, viewWidth, viewHeight);
-                GL.Translate(0.0, 0.0, -1.0); 
+                GL.Translate(0.0, 0.0, -1.0);
             } else
             {
                 GL.Translate(0.0, 0.0, -1.2);
@@ -300,16 +281,17 @@ namespace P3Net.Arx
             if ((plyr.status != GameStates.Module) && (graphicMode == 2)) // Whilst not shopping
             {
                 var rectangle = new RectangleShape() {
-                                    Size = new Vector2f(670, 182),
-                                    OutlineColor = Color.Yellow,
-                                    FillColor = new Color(0, 0, 0, 128),
-                                    OutlineThickness = 1,
-                                    Position = new Vector2f(consoleX - 16, consoleY) // Offset to give a 16 pixel border to text
-                                };
+                    Size = new Vector2f(670, 182),
+                    OutlineColor = Color.Yellow,
+                    FillColor = new Color(0, 0, 0, 128),
+                    OutlineThickness = 1,
+                    Position = new Vector2f(consoleX - 16, consoleY) // Offset to give a 16 pixel border to text
+                };
                 App.Draw(rectangle);
             }
         }
 
+        //TODO: Move to main
         public static void DisplayLoading ()
         {
             ClearDisplay();
@@ -317,8 +299,9 @@ namespace P3Net.Arx
             UpdateDisplay();
         }
 
+        //TODO: Move to main menu
         public static void DisplayMainMenu ()
-        {            
+        {
             DrawLogo();
 
             //var tempy = (windowHeight - (180 + 240)) / 2;
@@ -343,6 +326,7 @@ namespace P3Net.Arx
                 DrawText(x + 21, z + 7, "Atari 8bit");
         }
 
+        //TODO: Move to main menu
         public static void DisplayAcknowledgements ()
         {
             var acknowledgements = true;
@@ -350,7 +334,7 @@ namespace P3Net.Arx
             while (acknowledgements)
             {
                 ClearDisplay();
-                SetFontColour(40, 96, 244, 255);
+                SetFontColor(40, 96, 244, 255);
                 DrawText(1, 3, "Alternate Reality X       New Music");
                 DrawText(1, 6, "Alternate Reality Copyright and Concept");
                 DrawText(1, 9, "Alternate Reality: The Dungeon");
@@ -359,7 +343,7 @@ namespace P3Net.Arx
                 DrawText(1, 19, "Disassembly Genius");
                 DrawText(1, 22, "Additional Programming");
 
-                SetFontColour(215, 215, 215, 255);
+                SetFontColor(215, 215, 215, 255);
                 DrawText(13, 0, "Acknowledgements");
                 DrawText(1, 4, "acrin1 AT gmail.com       Furious");
                 DrawText(1, 7, "Philip Price");
@@ -379,11 +363,11 @@ namespace P3Net.Arx
             while (acknowledgements)
             {
                 ClearDisplay();
-                SetFontColour(40, 96, 244, 255);
+                SetFontColor(40, 96, 244, 255);
                 DrawText(1, 3, "   Special thanks for supporting the");
                 DrawText(1, 5, "    development of release 0.82 to:");
 
-                SetFontColour(215, 215, 215, 255);
+                SetFontColor(215, 215, 215, 255);
                 DrawText(13, 0, "Acknowledgements");
                 DrawText(1, 8, "   Brian Herlihy       Dennis Hughes");
                 DrawText(1, 10, "   Danny Belvin        Marco Fraolini");
@@ -401,10 +385,10 @@ namespace P3Net.Arx
             while (acknowledgements)
             {
                 ClearDisplay();
-                SetFontColour(40, 96, 244, 255);
+                SetFontColor(40, 96, 244, 255);
                 DrawText(1, 3, "    Special thanks for their support");
 
-                SetFontColour(215, 215, 215, 255);
+                SetFontColor(215, 215, 215, 255);
                 DrawText(13, 0, "Acknowledgements");
                 DrawText(4, 5, "Eric Koh           Brian Herlihy    ");
                 DrawText(4, 6, "Maxzius            Stefano Peracchi ");
@@ -442,6 +426,7 @@ namespace P3Net.Arx
             App.Display();
         }
 
+        //TODO: Move to program
         public static void DispMain ()
         {
             // All non OpenGL drawing should be performed between the pushGLStates and popGLStates commands
@@ -455,6 +440,7 @@ namespace P3Net.Arx
                 DrawConsoleBackground();
         }
 
+        //TODO: Move to create character
         public static void DrawImage ( string imagename, int x, int y )
         {
             // Counter images for Dungeon gate character creation
@@ -462,18 +448,39 @@ namespace P3Net.Arx
             var useC = plyr.scenario != Scenarios.Dungeon;
             switch (imagename)
             {
-                case "0": texture = useC ? imgc0 : img0; break;
-                case "1": texture = useC ? imgc1 : img1; break;
-                case "2": texture = useC ? imgc2 : img2; break;
-                case "3": texture = useC ? imgc3 : img3; break;
-                case "4": texture = useC ? imgc4 : img4; break;
-                case "5": texture = useC ? imgc5 : img5; break;
-                case "6": texture = useC ? imgc6 : img6; break;
-                case "7": texture = useC ? imgc7 : img7; break;
-                case "8": texture = useC ? imgc8 : img8; break;
-                case "9": texture = useC ? imgc9 : img9; break;
+                case "0":
+                texture = useC ? imgc0 : img0;
+                break;
+                case "1":
+                texture = useC ? imgc1 : img1;
+                break;
+                case "2":
+                texture = useC ? imgc2 : img2;
+                break;
+                case "3":
+                texture = useC ? imgc3 : img3;
+                break;
+                case "4":
+                texture = useC ? imgc4 : img4;
+                break;
+                case "5":
+                texture = useC ? imgc5 : img5;
+                break;
+                case "6":
+                texture = useC ? imgc6 : img6;
+                break;
+                case "7":
+                texture = useC ? imgc7 : img7;
+                break;
+                case "8":
+                texture = useC ? imgc8 : img8;
+                break;
+                case "9":
+                texture = useC ? imgc9 : img9;
+                break;
 
-                default: throw new InvalidOperationException("Unknown image");
+                default:
+                throw new InvalidOperationException("Unknown image");
             };
 
             counterImage.Texture = texture;
@@ -481,62 +488,17 @@ namespace P3Net.Arx
             App.Draw(counterImage);
         }
 
-        public static void SetScreenValues ()
+        //TODO: Move to Program
+        public static void LoadLogoImage ()
         {
-            // Determines screen element locations based on window dimensions
-            gateX = (windowWidth - 640) / 2;
-            gateY = ((windowHeight - 384) / 2) - 78;
-            loadingX = 16;
-            loadingY = 11;
-
-            var spacer = 0; // spacer value between screen elements - adjust here
-            var consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
-            statPanelX = (windowWidth - 640) / 2; // Center in middle of window width
-            consoleX = (windowWidth - 640) / 2; // Center in middle of window width
-
-            /* Original small 3D view */
-            if (graphicMode < 2)
-            {
-                viewWidth = 288;
-                viewHeight = 144;
-                viewPortX = (windowWidth - viewWidth) / 2;
-                var temp = 110 + spacer + viewHeight + spacer + consoleHeight;
-                statPanelY = (windowHeight - temp) / 2;
-                viewPortY = statPanelY + 110 + spacer;
-                consoleY = viewPortY + viewHeight + 4;
-                miniMapX = windowWidth - (((((windowWidth - viewWidth) / 2) - 144) / 2) + 144);
-                miniMapY = spacer + viewPortY + ((viewHeight - 144) / 2);
-            }
-
-            /* New large 3D view */
-            if (graphicMode == 2)
-            {
-                viewWidth = windowWidth;
-                viewHeight = windowHeight;
-                viewPortX = 0;
-                viewPortY = windowHeight - viewHeight;
-                statPanelY = 16;
-                consoleY = (windowHeight - 32) - 144; // 16 x 10 not quite right
-                miniMapX = (windowWidth - 16) - 176;
-                miniMapY = (windowHeight - 176) / 2;
-            }
-
-            /* Shop positions are the same regardless of small / large 3D view choice */
-            {
-                var temp = 110 + spacer + 144 + 16 + consoleHeight;
-                shopStatsY = ((windowHeight - temp) / 2);
-                shopStatsY = statPanelY;
-                shopPictureY = shopStatsY + 110 + spacer;
-                shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
-            };
-
-            /* Misc assignments for positioning */
-
-            lyricX = (windowWidth - 640) / 2;
-            lyricY = shopPictureY - 18;
-
+            LogoImage = new Texture("data/images/logo640x240.png");
+            LogoSprite.Texture = LogoImage;
+            var x = (windowWidth - 640) / 2;
+            var y = (windowHeight - (180 + 240)) / 2;
+            LogoSprite.Position = new Vector2f(x, y);
         }
 
+        //TODO: Move to Main Window
         public static void DrawInfoPanels ()
         {
             if (plyr.status != GameStates.Encounter)
@@ -756,17 +718,18 @@ namespace P3Net.Arx
             }
         }
 
+        //TODO: Move to Main Window
         public static void DrawStatsPanel ()
         {
             //TODO: What is state 5?
             if ((graphicMode == 2) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
             {
                 var rectangle = new RectangleShape() {
-                        Size = new Vector2f(640, 110), // 640, 110
-                        OutlineColor = Color.Yellow,
-                        OutlineThickness = 1,
-                        Position = new Vector2f(statPanelX, statPanelY - 1)
-                    };
+                    Size = new Vector2f(640, 110), // 640, 110
+                    OutlineColor = Color.Yellow,
+                    OutlineThickness = 1,
+                    Position = new Vector2f(statPanelX, statPanelY - 1)
+                };
                 App.Draw(rectangle);
             }
 
@@ -787,13 +750,13 @@ namespace P3Net.Arx
                 App.Draw(BannerStrip);
             if (!plyr.diagOn)
             {
-                SetFontColour(162, 114, 64, 255);
+                SetFontColor(162, 114, 64, 255);
                 DrawText(2, 0, plyr.name);
                 DrawText(32, 0, "Level:");
                 DrawText(38, 0, plyr.level);
-                SetFontColour(147, 69, 130, 255);
+                SetFontColor(147, 69, 130, 255);
                 DrawText(2, 1, "Stats:  STA  CHR  STR  INT  WIS  SKL");
-                SetFontColour(138, 68, 158, 255);
+                SetFontColor(138, 68, 158, 255);
                 DrawText(11, 2, plyr.sta);
                 DrawText(16, 2, plyr.chr);
                 DrawText(21, 2, plyr.str);
@@ -801,7 +764,7 @@ namespace P3Net.Arx
                 DrawText(31, 2, plyr.wis);
                 DrawText(36, 2, plyr.skl);
 
-                SetFontColour(62, 106, 162, 255);
+                SetFontColor(62, 106, 162, 255);
                 DrawText(2, 3, "Experience:");
                 DrawText(14, 3, plyr.xp);
                 if (plyr.hp < 0)
@@ -822,18 +785,18 @@ namespace P3Net.Arx
                 // Draw status line text
                 CheckForItemsHere();
 
-                SetFontColour(102, 149, 40, 255);
+                SetFontColor(102, 149, 40, 255);
 
                 if ((plyr.status_text != " ") && (plyr.status != GameStates.Encounter) && plyr.alive)
                     DrawText(2, 5, plyr.status_text);
 
-                SetFontColour(102, 149, 40, 255);
+                SetFontColor(102, 149, 40, 255);
                 if (plyr.alive)
                     DrawText(2, 4, str);
                 else
                     DrawText(12, 4, "$ Where are you? $");
 
-                SetFontColour(215, 215, 215, 255); // set text colour to white for all other text
+                SetFontColor(215, 215, 215, 255); // set text colour to white for all other text
             }
 
             // Diag Text
@@ -842,17 +805,18 @@ namespace P3Net.Arx
             {
                 DrawText(2, 0, $"X:{plyr.x} Y:{plyr.y} Special:{plyr.special}  Zone:{plyr.zone} Set:{plyr.zoneSet}");
                 DrawText(2, 1, $"Front:{plyr.front}  Left:{plyr.left} Right:{plyr.right}  Back:{plyr.back}");
-                                                
+
                 DrawText(2, 5, $"Offset: {plyr.z_offset}");
                 DrawText(2, 2, $"Floor:{zones[plyr.zoneSet].floor}  Ceiling:{zones[plyr.zoneSet].ceiling}");
                 DrawText(2, 3, $"Location:{plyr.location}");
-                
+
                 var e = ReturnCarriedWeight();
                 DrawText(2, 4, $"Encumbrance:{e}");
                 DrawText(30, 4, $"T: {plyr.hours}:{plyr.minutes}");
             }
         }
 
+        //TODO: Move to Main Window
         public static void DrawCompass ()
         {
             if (plyr.compasses > 0)
@@ -863,24 +827,33 @@ namespace P3Net.Arx
                     var y = (windowHeight - 128) / 2;
 
                     var rectangle = new RectangleShape() {
-                                        Size = new Vector2f(130, 130),
-                                        OutlineColor = Color.Yellow,
-                                        FillColor = new Color(0, 0, 0, 128),
-                                        OutlineThickness = 1,
-                                        Position = new Vector2f(x, y) // Offset to give a 16 pixel border to text
-                                    };
+                        Size = new Vector2f(130, 130),
+                        OutlineColor = Color.Yellow,
+                        FillColor = new Color(0, 0, 0, 128),
+                        OutlineThickness = 1,
+                        Position = new Vector2f(x, y) // Offset to give a 16 pixel border to text
+                    };
                     App.Draw(rectangle);
                 }
-                
+
                 Texture texture;
                 switch (plyr.facing)
                 {
-                    case Directions.West: texture = compassW; break;
-                    case Directions.North: texture = compassN; break;
-                    case Directions.East: texture = compassE; break;
-                    case Directions.South: texture = compassS; break;
+                    case Directions.West:
+                    texture = compassW;
+                    break;
+                    case Directions.North:
+                    texture = compassN;
+                    break;
+                    case Directions.East:
+                    texture = compassE;
+                    break;
+                    case Directions.South:
+                    texture = compassS;
+                    break;
 
-                    default: throw new InvalidOperationException("Unknown player facing");
+                    default:
+                    throw new InvalidOperationException("Unknown player facing");
                 };
 
                 compass.Texture = texture;
@@ -901,6 +874,7 @@ namespace P3Net.Arx
             }
         }
 
+        //TODO: Move to Shop
         public static void ClearShopDisplay ()
         {
             App.Clear();
@@ -909,43 +883,99 @@ namespace P3Net.Arx
             DrawStatsPanel();
         }
 
+        //TODO: Move to Shop
         public static void LoadShopImage ( int imageno )
-        {            
+        {
             var useGraphics2 = graphicMode > 0;
             var texturePath = useGraphics2 ? "data/images/locations2/" : "data/images/locations";
 
             //TODO: Consolidate image names to eliminate the file checks
             switch (imageno)
             {
-                case 1: texturePath += useGraphics2 ? "inn.png" : "retreat.png"; break;
-                case 2: texturePath += useGraphics2 ? "rathskeller.png" : "rathskeller.png"; break;
-                case 3: texturePath += useGraphics2 ? "shop.png" : "oDamon.png"; break;
-                case 4: texturePath += useGraphics2 ? "guild.png" : "evilGuild.png"; break;
-                case 5: texturePath += useGraphics2 ? "guild.png" : "goodGuild.png"; break;
-                case 6: texturePath += useGraphics2 ? "stairwayUp.png" : "stairwayUp.png"; break;
-                case 7: texturePath += useGraphics2 ? "stairwayDown.png" : "stairwayDown.png"; break;
-                case 8: texturePath += useGraphics2 ? "citySmithyNight.png" : "citySmithyNight.png"; break;
-                case 9: texturePath += useGraphics2 ? "smithy.png" : "imgCitySmithy.png"; break;
-                case 10: texturePath += useGraphics2 ? "tavern.png" : "imgCityTavern.png"; break;
-                case 11: texturePath += useGraphics2 ? "inn.png" : "imgCityInn.png"; break;
-                case 12: texturePath += useGraphics2 ? "shop.png" : "imgCityShop.png"; break;
-                case 13: texturePath += useGraphics2 ? "bank.png" : "imgCityBank.png"; break;
-                case 14: texturePath += useGraphics2 ? "guild.png" : "imgCityGuild.png"; break;
-                case 15: texturePath += useGraphics2 ? "healer1.png" : "imgCityHealer.png"; break;
-                case 16: texturePath += useGraphics2 ? "trolls.png" : "trolls.png"; break;
-                case 17: texturePath += useGraphics2 ? "goblins.png" : "goblins.png"; break;
-                case 18: texturePath += useGraphics2 ? "chapel.png" : "chapel.png"; break;
-                case 19: texturePath += useGraphics2 ? "fountain.png" : "fountain.png"; break;
-                case 20: texturePath += useGraphics2 ? "oracle.png" : "oracle.png"; break;
-                case 21: texturePath += useGraphics2 ? "healer2.png" : "imgCityHealer.png"; break;
-                case 22: texturePath += useGraphics2 ? "lift.png" : "lift.png"; break;
-                case 23: texturePath += useGraphics2 ? "river.png" : "ferry.png"; break;
-                case 24: texturePath += useGraphics2 ? "undead.png" : "undead.png"; break;
-                case 25: texturePath += useGraphics2 ? "arena.png" : "arena.png"; break;
-                case 26: texturePath += useGraphics2 ? "dwarvenSmithy.png" : "dwarvenSmithy.png"; break;
-                case 27: texturePath += useGraphics2 ? "6.png" : "6.png"; break;
+                case 1:
+                texturePath += useGraphics2 ? "inn.png" : "retreat.png";
+                break;
+                case 2:
+                texturePath += useGraphics2 ? "rathskeller.png" : "rathskeller.png";
+                break;
+                case 3:
+                texturePath += useGraphics2 ? "shop.png" : "oDamon.png";
+                break;
+                case 4:
+                texturePath += useGraphics2 ? "guild.png" : "evilGuild.png";
+                break;
+                case 5:
+                texturePath += useGraphics2 ? "guild.png" : "goodGuild.png";
+                break;
+                case 6:
+                texturePath += useGraphics2 ? "stairwayUp.png" : "stairwayUp.png";
+                break;
+                case 7:
+                texturePath += useGraphics2 ? "stairwayDown.png" : "stairwayDown.png";
+                break;
+                case 8:
+                texturePath += useGraphics2 ? "citySmithyNight.png" : "citySmithyNight.png";
+                break;
+                case 9:
+                texturePath += useGraphics2 ? "smithy.png" : "imgCitySmithy.png";
+                break;
+                case 10:
+                texturePath += useGraphics2 ? "tavern.png" : "imgCityTavern.png";
+                break;
+                case 11:
+                texturePath += useGraphics2 ? "inn.png" : "imgCityInn.png";
+                break;
+                case 12:
+                texturePath += useGraphics2 ? "shop.png" : "imgCityShop.png";
+                break;
+                case 13:
+                texturePath += useGraphics2 ? "bank.png" : "imgCityBank.png";
+                break;
+                case 14:
+                texturePath += useGraphics2 ? "guild.png" : "imgCityGuild.png";
+                break;
+                case 15:
+                texturePath += useGraphics2 ? "healer1.png" : "imgCityHealer.png";
+                break;
+                case 16:
+                texturePath += useGraphics2 ? "trolls.png" : "trolls.png";
+                break;
+                case 17:
+                texturePath += useGraphics2 ? "goblins.png" : "goblins.png";
+                break;
+                case 18:
+                texturePath += useGraphics2 ? "chapel.png" : "chapel.png";
+                break;
+                case 19:
+                texturePath += useGraphics2 ? "fountain.png" : "fountain.png";
+                break;
+                case 20:
+                texturePath += useGraphics2 ? "oracle.png" : "oracle.png";
+                break;
+                case 21:
+                texturePath += useGraphics2 ? "healer2.png" : "imgCityHealer.png";
+                break;
+                case 22:
+                texturePath += useGraphics2 ? "lift.png" : "lift.png";
+                break;
+                case 23:
+                texturePath += useGraphics2 ? "river.png" : "ferry.png";
+                break;
+                case 24:
+                texturePath += useGraphics2 ? "undead.png" : "undead.png";
+                break;
+                case 25:
+                texturePath += useGraphics2 ? "arena.png" : "arena.png";
+                break;
+                case 26:
+                texturePath += useGraphics2 ? "dwarvenSmithy.png" : "dwarvenSmithy.png";
+                break;
+                case 27:
+                texturePath += useGraphics2 ? "6.png" : "6.png";
+                break;
 
-                default: throw new InvalidOperationException("Unknown image");
+                default:
+                throw new InvalidOperationException("Unknown image");
             };
 
             ShopSprite.Texture = new Texture(texturePath);
@@ -955,16 +985,94 @@ namespace P3Net.Arx
 
         public static int CheckCityDoors () => 0;
 
-        public static void LoadLogoImage ()
-        {
-            LogoImage = new Texture("data/images/logo640x240.png");
-            LogoSprite.Texture = LogoImage;
-            var x = (windowWidth - 640) / 2;
-            var y = (windowHeight - (180 + 240)) / 2;
-            LogoSprite.Position = new Vector2f(x, y);
-        }
+        #region Private Members
 
-        public static void DrawLogo () => App.Draw(LogoSprite);
+        private static void SetTileImage ( int tile_no )
+        {
+            int row;
+            int column;
+            var tilesPerRow = 8; // number of tiles per row in source image containing all tiles (8 default)
+                                 //int tilesPerColumn = 8; // number of tiles per column in source image (8 default)
+
+            //Select 64x128 section of tile sheet for tile
+            if (tile_no >= tilesPerRow)
+            {
+                column = (tile_no % tilesPerRow); // remainder
+                row = ((tile_no - column) / tilesPerRow);
+            } else
+            {
+                column = tile_no;
+                row = 0; // = row 1 on the actual tile sheet at y=0
+            }
+
+            var tileX = (column) * 64; // x loc on tiles image in pixels
+            var tileY = (row) * 128; // y loc on tiles image in pixels
+
+            encImage.TextureRect = new IntRect(tileX, tileY, 64, 128);
+        }
+        
+        
+        private static void SetScreenValues ()
+        {
+            // Determines screen element locations based on window dimensions
+            gateX = (windowWidth - 640) / 2;
+            gateY = ((windowHeight - 384) / 2) - 78;
+            loadingX = 16;
+            loadingY = 11;
+
+            var spacer = 0; // spacer value between screen elements - adjust here
+            var consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
+            statPanelX = (windowWidth - 640) / 2; // Center in middle of window width
+            consoleX = (windowWidth - 640) / 2; // Center in middle of window width
+
+            /* Original small 3D view */
+            if (graphicMode < 2)
+            {
+                viewWidth = 288;
+                viewHeight = 144;
+                viewPortX = (windowWidth - viewWidth) / 2;
+                var temp = 110 + spacer + viewHeight + spacer + consoleHeight;
+                statPanelY = (windowHeight - temp) / 2;
+                viewPortY = statPanelY + 110 + spacer;
+                consoleY = viewPortY + viewHeight + 4;
+                miniMapX = windowWidth - (((((windowWidth - viewWidth) / 2) - 144) / 2) + 144);
+                miniMapY = spacer + viewPortY + ((viewHeight - 144) / 2);
+            }
+
+            /* New large 3D view */
+            if (graphicMode == 2)
+            {
+                viewWidth = windowWidth;
+                viewHeight = windowHeight;
+                viewPortX = 0;
+                viewPortY = windowHeight - viewHeight;
+                statPanelY = 16;
+                consoleY = (windowHeight - 32) - 144; // 16 x 10 not quite right
+                miniMapX = (windowWidth - 16) - 176;
+                miniMapY = (windowHeight - 176) / 2;
+            }
+
+            /* Shop positions are the same regardless of small / large 3D view choice */
+            {
+                var temp = 110 + spacer + 144 + 16 + consoleHeight;
+                shopStatsY = ((windowHeight - temp) / 2);
+                shopStatsY = statPanelY;
+                shopPictureY = shopStatsY + 110 + spacer;
+                shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
+            };
+
+            /* Misc assignments for positioning */
+
+            lyricX = (windowWidth - 640) / 2;
+            lyricY = shopPictureY - 18;
+
+        }        
+        
+        private static void DrawLogo () => App.Draw(LogoSprite);
+
+        #endregion 
+
+        #region Review Data
 
         public static Sprite encImage = new Sprite();
 
@@ -1048,6 +1156,7 @@ namespace P3Net.Arx
         // If image2 == 255 then just display image1 rather than use animations below
         //Dungeon Monster Animation Scripts
 
+        //TODO: Move to data file
         public static AnimFrame[] encounterAnim =
         {
             new AnimFrame() { xOffset = 0, yOffset = 0, image = 0, duration = 12 },
@@ -1186,28 +1295,6 @@ namespace P3Net.Arx
         public static int animImage;
         public static int animDuration;
 
-        //extern sf::RenderWindow App;
-        //extern int graphicMode;
-        //extern int viewWidth, viewHeight, viewPortX, viewPortY;
-        //extern bool animationNotStarted;
-        //extern int firstFrame;
-        //extern int lastFrame;
-        //extern string roomMessages[255];
-        //extern string descriptions[255];
-
-        //extern effectItem effectBuffer[50]; // active time limited effects from spells, scrolls, eyes
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void ClearDisplay(); // clear display prior to displaying non openGL scene
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void UpdateDisplay();
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void DrawText(int x, int y, string txt);
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void InitGL();
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void FlashView();
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //void DrawShopImage(int imageno);
+        #endregion
     }
 }

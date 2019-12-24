@@ -14,17 +14,12 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static readonly int damonFileSize = 916;
-
-        public static void Message ( string txt )
+        public static void LoadDamonBinary ()
         {
-            do
-            {
-                ClearShopDisplay();
-                CText(txt);
-                UpdateDisplay();
-                var key = GetSingleKey();
-            } while (key != "SPACE");
+            //TODO: Ignoring file size - damonFileSize
+
+            // Loads armour,weapons and clothing binary data into the "damonBinary" array
+            damonBinary = File.ReadAllBytes("data/map/DamonItems.bin");
         }
 
         public static void ShopDamon ()
@@ -287,9 +282,9 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     CyText(0, "What would you like? (  to go back)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0            ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     for (var i = 0; i < maxMenuItems; i++)
                     {
@@ -301,7 +296,7 @@ namespace P3Net.Arx
                         BText(1, (2 + i), "                                 silvers");
                     }
                     DisplaySilverCoins();
-                    
+
                     for (var i = 0; i < maxMenuItems; i++) // Max number of item prices in this menu display
                     {
                         var itemNo = menuStartItem + i;
@@ -317,7 +312,7 @@ namespace P3Net.Arx
                         BText(x, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
@@ -328,7 +323,7 @@ namespace P3Net.Arx
                         BText(2, 1, "}");
                     if (menuStartItem != 6)
                         BText(2, 8, "{");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -420,12 +415,12 @@ namespace P3Net.Arx
                     BText(11, 5, " ) Select other apparel");
                     BText(11, 6, " ) Buy something else");
                     DisplaySilverCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(11, 3, "1");
                     BText(11, 4, "2");
                     BText(11, 5, "3");
                     BText(11, 6, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -541,9 +536,9 @@ namespace P3Net.Arx
                     ClearShopDisplay();
 
                     CyText(0, "What would you like? (  to go back)");
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(0, "                      0            ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     for (var i = 0; i < maxMenuItems; i++)
                     {
@@ -571,7 +566,7 @@ namespace P3Net.Arx
                         BText(x, (i + 2), itemCostDesc);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(2, 2, "1");
                     BText(2, 3, "2");
                     BText(2, 4, "3");
@@ -582,7 +577,7 @@ namespace P3Net.Arx
                         BText(2, 1, "}");
                     if (menuStartItem != 6)
                         BText(2, 8, "{");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -670,12 +665,12 @@ namespace P3Net.Arx
                     BText(11, 5, " ) Select other battle gear");
                     BText(11, 6, " ) Buy something else");
                     DisplaySilverCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(11, 3, "1");
                     BText(11, 4, "2");
                     BText(11, 5, "3");
                     BText(11, 6, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -981,25 +976,85 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        public static void StockDamon ()
+        #region Review Data
+
+        public static readonly int damonFileSize = 916;
+
+        public static string ReadNameString ( int stringOffset ) => ReadBinaryString(damonBinary, stringOffset);
+
+        public static byte[] damonBinary = new byte[damonFileSize];
+        public static int itemNameOffset;
+
+        public static int gemsToSell = 0;
+        public static int jewelsToSell = 0;
+        public static int totalSilver = 0;
+
+        // provision variables
+        public static string provisionDescription;
+
+        //TODO: Why are these global?
+        public static string provMessage;
+        public static int quantity;
+        public static int total;
+        public static int[] damonStock = new int[5];
+
+        public static DamonBattleGearItem[] damonBattleGearWares =
+        {
+            new DamonBattleGearItem() { type = 177, price = 127, itemRef = 0x00 },
+            new DamonBattleGearItem() { type = 177, price = 52, itemRef = 0x29 },
+            new DamonBattleGearItem() { type = 177, price = 52, itemRef = 0x50 },
+            new DamonBattleGearItem() { type = 177, price = 27, itemRef = 0x76 },
+            new DamonBattleGearItem() { type = 178, price = 22, itemRef = 0x98 },
+            new DamonBattleGearItem() { type = 178, price = 27, itemRef = 0xBB },
+            new DamonBattleGearItem() { type = 178, price = 47, itemRef = 0x102 },
+            new DamonBattleGearItem() { type = 178, price = 77, itemRef = 0x167 },
+            new DamonBattleGearItem() { type = 178, price = 102, itemRef = 0x18C },
+            new DamonBattleGearItem() { type = 178, price = 127, itemRef = 0x1B2 },
+            new DamonBattleGearItem() { type = 178, price = 82, itemRef = 0x1D7 },
+            new DamonBattleGearItem() { type = 178, price = 102, itemRef = 0x1FE }
+        };
+        
+        public static DamonClothingItem[] damonClothingWares =
+        {
+            new DamonClothingItem() { type = 180, price = 12, itemRef = 0x225 },
+            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x245 },
+            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x261 },
+            new DamonClothingItem() { type = 180, price = 52, itemRef = 0x27A },
+            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x296 },
+            new DamonClothingItem() { type = 180, price = 12, itemRef = 0x2C9 },
+            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x2E4 },
+            new DamonClothingItem() { type = 180, price = 22, itemRef = 0x300 },
+            new DamonClothingItem() { type = 180, price = 22, itemRef = 0x31F },
+            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x33B },
+            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x358 },
+            new DamonClothingItem() { type = 180, price = 82, itemRef = 0x375 }
+        };
+        #endregion
+
+        #region Private Members
+
+        private static void Message ( string txt )
+        {
+            do
+            {
+                ClearShopDisplay();
+                CText(txt);
+                UpdateDisplay();
+                var key = GetSingleKey();
+            } while (key != "SPACE");
+        }  
+        
+        private static void StockDamon ()
         {
             for (var i = 0; i < 5; i++)
                 damonStock[i] = Random(1, 5) + 8;
-        }
-
-        public static void LoadDamonBinary ()
-        {
-            //TODO: Ignoring file size - damonFileSize
-
-            // Loads armour,weapons and clothing binary data into the "damonBinary" array
-            damonBinary = File.ReadAllBytes("data/map/DamonItems.bin");
         }
 
         // Take a binary offset within damonBinary and create a new inventory item from the binary data (weapon, armour or clothing)
         // Item types:  03 - weapon, 04 - armour, 05 - clothing
 
         //MLT: No return value
-        public static void CreateInventoryItem ( int startByte )
+        private static void CreateInventoryItem ( int startByte )
         {
             //TODO: Read this better and are these booleans?
             int index = 0;
@@ -1126,56 +1181,7 @@ namespace P3Net.Arx
 
             var newItemRef = CreateItem(itemType, index, itemName, hp, maxHP, flags, minStrength, minDexterity, useStrength, blunt, sharp, earth, air, fire, water, power, magic, good, evil, cold, weight, alignment, melee, ammo, parry);
             itemBuffer[newItemRef].location = 10; // Add to player inventory - 10
-        }
-
-        public static string ReadNameString ( int stringOffset ) => ReadBinaryString(damonBinary, stringOffset);
-        
-        public static byte[] damonBinary = new byte[damonFileSize];
-        public static int itemNameOffset;
-
-        public static int gemsToSell = 0;
-        public static int jewelsToSell = 0;
-        public static int totalSilver = 0;
-
-        // provision variables
-        public static string provisionDescription;
-
-        //TODO: Why are these global?
-        public static string provMessage;
-        public static int quantity;
-        public static int total;
-        public static int[] damonStock = new int[5];
-
-        public static DamonBattleGearItem[] damonBattleGearWares =
-        {
-            new DamonBattleGearItem() { type = 177, price = 127, itemRef = 0x00 },
-            new DamonBattleGearItem() { type = 177, price = 52, itemRef = 0x29 },
-            new DamonBattleGearItem() { type = 177, price = 52, itemRef = 0x50 },
-            new DamonBattleGearItem() { type = 177, price = 27, itemRef = 0x76 },
-            new DamonBattleGearItem() { type = 178, price = 22, itemRef = 0x98 },
-            new DamonBattleGearItem() { type = 178, price = 27, itemRef = 0xBB },
-            new DamonBattleGearItem() { type = 178, price = 47, itemRef = 0x102 },
-            new DamonBattleGearItem() { type = 178, price = 77, itemRef = 0x167 },
-            new DamonBattleGearItem() { type = 178, price = 102, itemRef = 0x18C },
-            new DamonBattleGearItem() { type = 178, price = 127, itemRef = 0x1B2 },
-            new DamonBattleGearItem() { type = 178, price = 82, itemRef = 0x1D7 },
-            new DamonBattleGearItem() { type = 178, price = 102, itemRef = 0x1FE }
-        };
-
-        public static DamonClothingItem[] damonClothingWares =
-        {
-            new DamonClothingItem() { type = 180, price = 12, itemRef = 0x225 },
-            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x245 },
-            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x261 },
-            new DamonClothingItem() { type = 180, price = 52, itemRef = 0x27A },
-            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x296 },
-            new DamonClothingItem() { type = 180, price = 12, itemRef = 0x2C9 },
-            new DamonClothingItem() { type = 180, price = 17, itemRef = 0x2E4 },
-            new DamonClothingItem() { type = 180, price = 22, itemRef = 0x300 },
-            new DamonClothingItem() { type = 180, price = 22, itemRef = 0x31F },
-            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x33B },
-            new DamonClothingItem() { type = 180, price = 62, itemRef = 0x358 },
-            new DamonClothingItem() { type = 180, price = 82, itemRef = 0x375 }
-        };
+        }        
+        #endregion
     }
 }

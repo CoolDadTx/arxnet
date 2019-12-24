@@ -8,26 +8,11 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
-    {
-        public static void OracleMessage ( string str )
-        {
-            var keyNotPressed = true;
-            while (keyNotPressed)
-            {
-                ClearShopDisplay();
-                CyText(1, str);
-                UpdateDisplay();
-                var key = GetSingleKey();
-                if (key == "SPACE")
-                    keyNotPressed = false;
-            }
-        }
-
+    {        
         public static void ShopOracle ()
         {
             //TODO Add penalties for Oracle on return visits and come back in month
@@ -258,6 +243,21 @@ namespace P3Net.Arx
             LeaveShop();
         }
 
-        // extern Player plyr;
+        #region Private Members
+
+        private static void OracleMessage ( string str )
+        {
+            var keyNotPressed = true;
+            while (keyNotPressed)
+            {
+                ClearShopDisplay();
+                CyText(1, str);
+                UpdateDisplay();
+                var key = GetSingleKey();
+                if (key == "SPACE")
+                    keyNotPressed = false;
+            }
+        }
+        #endregion
     }
 }

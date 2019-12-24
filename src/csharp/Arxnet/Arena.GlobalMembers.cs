@@ -8,8 +8,6 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -17,8 +15,7 @@ namespace P3Net.Arx
     {
         public static void ArenaSouthernEntrance ()
         {
-            int menu = 1; // high level menu
-            string str;
+            var menu = 1; // high level menu
             string key;
             plyr.status = GameStates.Module; // special module
 
@@ -45,14 +42,11 @@ namespace P3Net.Arx
 
                 while (menu == 2) // Enter the Arena attempt
                 {
-                    key = "";
-                    while (key == "")
+                    do
                     {
                         ClearShopDisplay();
-                        if (plyr.gender == 1)
-                            str = "Away with you knave!";
-                        else
-                            str = "Away with you scullion!";
+
+                        var str = (plyr.gender == 1) ? "Away with you knave!" : "Away with you scullion!";
                         CyText(2, str);
                         CyText(4, "Only those of the great houses");
                         CyText(6, "may enter here.");
@@ -60,7 +54,7 @@ namespace P3Net.Arx
                         key = GetSingleKey();
                         if (key != "")
                             menu = 0;
-                    }
+                    } while (key == "");
                 }
 
             } // end main while loop
@@ -106,7 +100,8 @@ namespace P3Net.Arx
         }
 
         public static void ArenaWesternEntrance ()
-        {            
+        {
+            string key;
             do
             {
                 ClearShopDisplay();
@@ -116,7 +111,7 @@ namespace P3Net.Arx
                 CyText(8, "(0) Leave");
                 UpdateDisplay();
 
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "0");
             LeaveShop();
         }

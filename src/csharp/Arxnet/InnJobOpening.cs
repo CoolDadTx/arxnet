@@ -15,6 +15,7 @@ namespace P3Net.Arx
     {
         public int jobHourlyIncome { get; set; }
 
+        //TODO: Use TimeSpan
         public int JobHoursRequired { get; set; }
 
         public int jobNumber { get; set; }

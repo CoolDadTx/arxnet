@@ -14,8 +14,6 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static string goblinLyricsFilename;
-
         public static void ShopGoblins ()
         {
             SetAutoMapFlag(plyr.map, 2, 13);
@@ -75,7 +73,7 @@ namespace P3Net.Arx
                     var music = plyr.musicStyle ? 5 : 2;
                     PlayShopMusic(music);
                     goblinLyricsFilename = "goblins.txt";
-                    
+
                     LoadLyrics(goblinLyricsFilename);
 
                     var key = GetSingleKey();
@@ -185,5 +183,11 @@ namespace P3Net.Arx
             StopShopMusic();
             LeaveShop();
         }
+
+        #region Review Data
+
+        public static string goblinLyricsFilename;
+
+        #endregion        
     }
 }

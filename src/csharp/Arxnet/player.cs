@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
@@ -19,7 +20,7 @@ namespace P3Net.Arx
         //TODO: Make an enum
         public int gender { get; set; } = 1;
 
-        //TODO: Make an enum
+        //TODO: Make a range
         public int alignment { get; set; } = 128;
 
         //TODO: Should this be a calculated value based upon XP?
@@ -77,10 +78,26 @@ namespace P3Net.Arx
         public int zone { get; set; } = 0; // Inited at 1 but reset to 0 later in original code
         public int zoneSet { get; set; }
 
-        //TODO: Use Size
-        public int mapWidth { get; set; } = 64;
+        [Obsolete("Use MapSize")]
+        public int mapWidth
+        {
+            get => _mapSize.Width;
+            set => _mapSize.Width = value;
+        }
 
-        public int mapHeight { get; set; } = 64;
+        [Obsolete("Use MapSize")]
+        public int mapHeight
+        {
+            get => _mapSize.Height;
+            set => _mapSize.Height = value;
+        }
+
+        public Size MapSize
+        {
+            //TODO: Use auto property once obsolete removed
+            get => _mapSize;
+            set => _mapSize = value;
+        }
 
         // State
         //TODO: Group state management
@@ -192,8 +209,7 @@ namespace P3Net.Arx
         public int leftheight { get; set; }
 
         public int right { get; set; }
-        public int rightheight { get; set; }
-                
+        public int rightheight { get; set; }                
 
         public int[] bankAccountBalances { get; set; } = new int[9];
         public int[] bankAccountStatuses { get; set; } = new int[9];        
@@ -226,7 +242,8 @@ namespace P3Net.Arx
 
         public int floorTexture { get; set; }
 
-        public int fontStyle { get; set; } 
+        //TODO: Make boolean
+        public int fontStyle { get; set; } = 1;
 
         public bool game_on { get; set; }        
                 
@@ -267,12 +284,29 @@ namespace P3Net.Arx
         
         public bool movingForward { get; set; }
 
-        public bool musicStyle { get; set; }                        
+        public bool musicStyle { get; set; }
 
-        //TODO: Make into a Point
-        public int oldx { get; set; }
-        public int oldy { get; set; }                             
-                
+        [Obsolete("Use OldLocation")]
+        public int oldx
+        {
+            get => _oldLocation.X;
+            set => _oldLocation.X = value;
+        }
+
+        [Obsolete("Use OldLocation")]
+        public int oldy
+        {
+            get => _oldLocation.Y;
+            set => _oldLocation.Y = value;
+        }
+
+        public Point OldLocation
+        {
+            //TODO: Make auto property once obsolete removed
+            get => _oldLocation;
+            set => _oldLocation = value;
+        }
+
         public int ringCharges { get; set; }
         
         public int special { get; set; }
@@ -284,9 +318,26 @@ namespace P3Net.Arx
         // counter that is used for flashing teleport sequence
         public int teleporting { get; set; }                        
 
-        //TODO: Make a Point
-        public int x { get; set; } = 63;        
-        public int y { get; set; } = 63;        
+        [Obsolete("Use Location")]
+        public int x
+        {
+            get => _location.X;
+            set => _location.X = value;
+        }
+
+        [Obsolete("Use Location")]
+        public int y
+        {
+            get => _location.Y;
+            set => _location.Y = value;
+        }
+
+        public Point Location        
+        {
+            //TODO: Make auto property once obsolete removed
+            get => _location;
+            set => _location = value;
+        }
 
         public float z_offset { get; set; } = 1;           
         
@@ -333,6 +384,10 @@ namespace P3Net.Arx
             skl += statBonuses[5];
             speed += statBonuses[6];
         }
+
+        private Size _mapSize = new Size(64, 64);
+        private Point _location = new Point(63, 63);
+        private Point _oldLocation;
         #endregion
     }
 }

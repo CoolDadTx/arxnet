@@ -13,95 +13,12 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static InnJobOpening[] innJobOpenings = Arrays.InitializeWithDefaultInstances<InnJobOpening>(7);
-
-        //MLT: Double to float
-        public static InnJob[] innJobs =
-        {
-            new InnJob()
-            {
-                name = "Bellhop",
-                minIncome = 10,
-                maxIncome = 24,
-                statRequirementName = "Strength",
-                statRequirementValue = 18,
-                fatigueRate = 0.6875F,
-                minorWoundProbability = 15.95F,
-                majorWoundProbability = 3.97F
-            },
-            new InnJob()
-            {
-                name = "Desk Clerk",
-                minIncome = 18,
-                maxIncome = 20,
-                statRequirementName = "Charm",
-                statRequirementValue = 16,
-                fatigueRate = 0.5625F,
-                minorWoundProbability = 3.75F,
-                majorWoundProbability = 0.15F
-            },
-            new InnJob()
-            {
-                name = "Janitor",
-                minIncome = 12,
-                maxIncome = 15,
-                statRequirementName = "Stamina",
-                statRequirementValue = 17,
-                fatigueRate = 0.6250F,
-                minorWoundProbability = 8.50F,
-                majorWoundProbability = 0.88F
-            }
-        };
-
-        public static Inn[] Inns =
-        {
-            new Inn()
-            { name = "Green Boar Inn", costMultiplier = 1, jobProbability = 64, x = 9, y = 44 },
-            new Inn()
-            { name = "Lazy Griffin Inn", costMultiplier = 2, jobProbability = 154, x = 33, y = 11 },
-            new Inn()
-            { name = "Sleeping Dragon Inn", costMultiplier = 0.5F, jobProbability = 64, x = 60, y = 57 },
-            new Inn()
-            { name = "Traveller's Inn", costMultiplier = 6, jobProbability = 179, x = 32, y = 39 },
-            new Inn()
-            { name = "Midnight Inn", costMultiplier = 3, jobProbability = 56, x = 32, y = 40 },
-            new Inn()
-            { name = "Warrior's Retreat", costMultiplier = 0.75F, jobProbability = 77, x = 28, y = 9 },
-            new Inn()
-            { name = "Royal Resort Inn", costMultiplier = 8, jobProbability = 102, x = 31, y = 60 }
-        };
-
-        public static InnRoom[] Rooms =
-        {
-            new InnRoom()
-            { name = "the common area floor", baseCost = 10, fatigueRecoveryProbability = 30 },
-            new InnRoom()
-            { name = "a bed with no bath", baseCost = 20, fatigueRecoveryProbability = 45 },
-            new InnRoom()
-            { name = "a bed with common bath", baseCost = 30, fatigueRecoveryProbability = 60 },
-            new InnRoom()
-            { name = "a room with common bath", baseCost = 40, fatigueRecoveryProbability = 85 },
-            new InnRoom()
-            { name = "a room with bath", baseCost = 50, fatigueRecoveryProbability = 100 },
-            new InnRoom()
-            { name = "a Premium Room", baseCost = 100, fatigueRecoveryProbability = 140 },
-            new InnRoom()
-            { name = "a Deluxe Room", baseCost = 200, fatigueRecoveryProbability = 170 },
-            new InnRoom()
-            { name = "a Small Suite", baseCost = 400, fatigueRecoveryProbability = 200 },
-            new InnRoom()
-            { name = "a Suite", baseCost = 800, fatigueRecoveryProbability = 240 },
-            new InnRoom()
-            { name = "our BEST Suite", baseCost = 1600, fatigueRecoveryProbability = 255 }
-        };
-
         public static void CheckDailyInnJobOpenings ()
         {
             // Run at the start of each new day
-            var jobOpeningProbability = 0;
             for (var i = 0; i < 7; i++)
             {
-                jobOpeningProbability = Random(0, 255);
+                var jobOpeningProbability = Random(0, 255);
                 if (jobOpeningProbability <= Inns[i].jobProbability)
                 {
                     // Create a new job entry for the day
@@ -116,19 +33,6 @@ namespace P3Net.Arx
                     innJobOpenings[i].jobNumber = 255;
                 }
             }
-        }
-
-        public static int GetInnNo ()
-        {
-            var Inn_no = 0;
-            for (var i = 0; i <= 6; i++) // Max number of Inn objects
-            {
-                if ((Inns[i].x == plyr.x) && (Inns[i].y == plyr.y))
-                    Inn_no = i; // The number of the Inn you have entered
-            }
-            if ((plyr.x == 31) && (plyr.y == 38))
-                Inn_no = 3;
-            return Inn_no;
         }
 
         public static void ShopInn ()
@@ -177,12 +81,12 @@ namespace P3Net.Arx
                     BText(12, 6, " ) Apply for a job");
                     BText(12, 7, " ) Leave");
                     DisplayCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(12, 4, "1");
                     BText(12, 5, "2");
                     BText(12, 6, "3");
                     BText(12, 7, "0");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
                     UpdateDisplay();
 
                     var key = GetSingleKey();
@@ -224,14 +128,14 @@ namespace P3Net.Arx
                         BText(x, (i + 2), room_cost);
                     }
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(1, 2, "1");
                     BText(1, 3, "2");
                     BText(1, 4, "3");
                     BText(1, 5, "4");
                     BText(1, 6, "5");
                     BText(1, 7, "6");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -279,14 +183,14 @@ namespace P3Net.Arx
                     BText(1, 7, " ) Something cheaper");
                     DisplayCoins();
 
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     BText(1, 2, "1");
                     BText(1, 3, "2");
                     BText(1, 4, "3");
                     BText(1, 5, "4");
                     BText(1, 6, "5");
                     BText(1, 7, "6");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     for (var i = 5; i < 10; i++) // Max number of room prices in this menu display
                     {
@@ -344,9 +248,9 @@ namespace P3Net.Arx
                     CyText(3, "Do you wish to sign in?");
                     CyText(5, "( es or  o)");
                     DisplayCoins();
-                    SetFontColour(40, 96, 244, 255);
+                    SetFontColor(40, 96, 244, 255);
                     CyText(5, " Y      N  ");
-                    SetFontColour(215, 215, 215, 255);
+                    SetFontColor(215, 215, 215, 255);
 
                     UpdateDisplay();
 
@@ -381,12 +285,12 @@ namespace P3Net.Arx
                         BText(3, 5, " ) 4 hours   ) 5 hours   ) 6 hours");
                         BText(3, 6, " ) 7 hours   ) 8 hours   ) 9 hours");
                         BText(3, 7, " ) 10 hours  ) 11 hours  ) 12 hours");
-                        SetFontColour(40, 96, 244, 255);
+                        SetFontColor(40, 96, 244, 255);
                         BText(3, 4, "1           2           3");
                         BText(3, 5, "4           5           6");
                         BText(3, 6, "7           8           9");
                         BText(3, 7, "A           B           C");
-                        SetFontColour(215, 215, 215, 255);
+                        SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
                         var key = GetSingleKey();
 
@@ -593,9 +497,9 @@ namespace P3Net.Arx
                         CyText(1, $"for {innJobOpenings[InnNo].JobHoursRequired} hours at {innJobOpenings[InnNo].jobHourlyIncome} coppers per hour.");
                         CyText(3, "Would you like to apply?");
                         CyText(5, "( es or  o)");
-                        SetFontColour(40, 96, 244, 255);
+                        SetFontColor(40, 96, 244, 255);
                         CyText(5, " Y      N  ");
-                        SetFontColour(215, 215, 215, 255);
+                        SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
 
                         var key = GetSingleKey();
@@ -679,5 +583,110 @@ namespace P3Net.Arx
             }
             LeaveShop();
         }
+
+        #region Review Data
+
+        public static InnJobOpening[] innJobOpenings = Arrays.InitializeWithDefaultInstances<InnJobOpening>(7);
+
+        //TODO: Load as data for map
+        //MLT: Double to float        
+        public static InnJob[] innJobs =
+        {
+            new InnJob()
+            {
+                name = "Bellhop",
+                minIncome = 10,
+                maxIncome = 24,
+                statRequirementName = "Strength",
+                statRequirementValue = 18,
+                fatigueRate = 0.6875F,
+                minorWoundProbability = 15.95F,
+                majorWoundProbability = 3.97F
+            },
+            new InnJob()
+            {
+                name = "Desk Clerk",
+                minIncome = 18,
+                maxIncome = 20,
+                statRequirementName = "Charm",
+                statRequirementValue = 16,
+                fatigueRate = 0.5625F,
+                minorWoundProbability = 3.75F,
+                majorWoundProbability = 0.15F
+            },
+            new InnJob()
+            {
+                name = "Janitor",
+                minIncome = 12,
+                maxIncome = 15,
+                statRequirementName = "Stamina",
+                statRequirementValue = 17,
+                fatigueRate = 0.6250F,
+                minorWoundProbability = 8.50F,
+                majorWoundProbability = 0.88F
+            }
+        };
+
+        //TODO: Load as data for map
+        public static Inn[] Inns =
+        {
+            new Inn()
+            { name = "Green Boar Inn", costMultiplier = 1, jobProbability = 64, x = 9, y = 44 },
+            new Inn()
+            { name = "Lazy Griffin Inn", costMultiplier = 2, jobProbability = 154, x = 33, y = 11 },
+            new Inn()
+            { name = "Sleeping Dragon Inn", costMultiplier = 0.5F, jobProbability = 64, x = 60, y = 57 },
+            new Inn()
+            { name = "Traveller's Inn", costMultiplier = 6, jobProbability = 179, x = 32, y = 39 },
+            new Inn()
+            { name = "Midnight Inn", costMultiplier = 3, jobProbability = 56, x = 32, y = 40 },
+            new Inn()
+            { name = "Warrior's Retreat", costMultiplier = 0.75F, jobProbability = 77, x = 28, y = 9 },
+            new Inn()
+            { name = "Royal Resort Inn", costMultiplier = 8, jobProbability = 102, x = 31, y = 60 }
+        };
+
+        //TODO: Load as data for map
+        public static InnRoom[] Rooms =
+        {
+            new InnRoom()
+            { name = "the common area floor", baseCost = 10, fatigueRecoveryProbability = 30 },
+            new InnRoom()
+            { name = "a bed with no bath", baseCost = 20, fatigueRecoveryProbability = 45 },
+            new InnRoom()
+            { name = "a bed with common bath", baseCost = 30, fatigueRecoveryProbability = 60 },
+            new InnRoom()
+            { name = "a room with common bath", baseCost = 40, fatigueRecoveryProbability = 85 },
+            new InnRoom()
+            { name = "a room with bath", baseCost = 50, fatigueRecoveryProbability = 100 },
+            new InnRoom()
+            { name = "a Premium Room", baseCost = 100, fatigueRecoveryProbability = 140 },
+            new InnRoom()
+            { name = "a Deluxe Room", baseCost = 200, fatigueRecoveryProbability = 170 },
+            new InnRoom()
+            { name = "a Small Suite", baseCost = 400, fatigueRecoveryProbability = 200 },
+            new InnRoom()
+            { name = "a Suite", baseCost = 800, fatigueRecoveryProbability = 240 },
+            new InnRoom()
+            { name = "our BEST Suite", baseCost = 1600, fatigueRecoveryProbability = 255 }
+        };
+        #endregion
+        
+        #region Private Members
+
+        //TODO: Return Inn
+        private static int GetInnNo ()
+        {
+            var Inn_no = 0;
+            for (var i = 0; i <= 6; i++) // Max number of Inn objects
+            {
+                if ((Inns[i].x == plyr.x) && (Inns[i].y == plyr.y))
+                    Inn_no = i; // The number of the Inn you have entered
+            }
+            if ((plyr.x == 31) && (plyr.y == 38))
+                Inn_no = 3;
+            return Inn_no;
+        }        
+        #endregion
     }
 }

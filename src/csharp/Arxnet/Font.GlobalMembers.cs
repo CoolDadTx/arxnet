@@ -16,10 +16,14 @@ namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static Sprite CharImage = new Sprite();
-        public static Texture FontImage;
-
-        public static int yBase = 0;
+        public static void InitFont ()
+        {
+            if (plyr.fontStyle == 0)
+                FontImage = new Texture("data/images/arfontSmooth.png");
+            if (plyr.fontStyle == 1)
+                FontImage = new Texture("data/images/arfont.png");
+            CharImage.Texture = FontImage;
+        }
 
         public static void BText ( int x, int y, string text )
         {
@@ -105,7 +109,70 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DrawChar ( int topY, int x, int y, int initchar_no )
+        public static void DrawText ( int x, int y, string text )
+        {
+            for (var i = 0; i < text.Length; ++i)
+            {
+                var current_char = text[i];
+                var char_no = ((int)current_char);
+                if (plyr.status == GameStates.Module)
+                    DrawChar(shopStatsY, x, y, char_no);
+                else
+                    DrawChar(statPanelY, x, y, char_no);
+                x++;
+            }
+        }
+
+        public static void DrawText ( int x, int y, int number )
+        {
+            var text = number.ToString();
+
+            for (var i = 0; i < text.Length; ++i)
+            {
+                var current_char = text[i];
+                var char_no = ((int)current_char);
+
+                if (plyr.status == GameStates.Module)
+                    DrawChar(shopStatsY, x, y, char_no);
+                else
+                    DrawChar(statPanelY, x, y, char_no);
+                x++;
+            }
+        }
+
+        public static void SetFontColor ( int r, int g, int b, int a ) => CharImage.Color = new Color((byte)r, (byte)g, (byte)b, (byte)a);
+
+        //TODO: Only used in Items??
+        public static void Text ( int x, int y, string text )
+        {
+            for (var i = 0; i < text.Length; ++i)
+            {
+                var current_char = text[i];
+                var char_no = ((int)current_char);
+
+                DrawChar(16, x, y, char_no); // was 16
+                x++;
+            }
+        }
+
+        //TODO: Only used in Items??
+        public static void Text ( int x, int y, int number )
+        {
+            var text = number.ToString();
+
+            for (var i = 0; i < text.Length; ++i)
+            {
+                var current_char = text[i];
+                var char_no = ((int)current_char);
+
+                DrawChar(16, x, y, char_no); // was 0
+                x++;
+            }
+        }
+
+        #region Private Members
+
+        private static void DrawChar ( int topY, int x, int y, int initchar_no )
         {
             var char_no = initchar_no - 32;
 
@@ -139,39 +206,8 @@ namespace P3Net.Arx
 
             App.Draw(CharImage);
         }
-
-        public static void DrawText ( int x, int y, string text )
-        {
-            for (var i = 0; i < text.Length; ++i)
-            {
-                var current_char = text[i];
-                var char_no = ((int)current_char);
-                if (plyr.status == GameStates.Module)
-                    DrawChar(shopStatsY, x, y, char_no);
-                else
-                    DrawChar(statPanelY, x, y, char_no);
-                x++;
-            }
-        }
-
-        public static void DrawText ( int x, int y, int number )
-        {
-            var text = number.ToString();
-
-            for (var i = 0; i < text.Length; ++i)
-            {
-                var current_char = text[i];
-                var char_no = ((int)current_char);
-
-                if (plyr.status == GameStates.Module)
-                    DrawChar(shopStatsY, x, y, char_no);
-                else
-                    DrawChar(statPanelY, x, y, char_no);
-                x++;
-            }
-        }
-
-        public static void DrawText ( int area, int x, int y, string text )
+        
+        private static void DrawText ( int area, int x, int y, string text )
         {
             for (var i = 0; i < text.Length; ++i)
             {
@@ -184,52 +220,17 @@ namespace P3Net.Arx
                     DrawChar(consoleY, x, y, char_no);
                 x++;
             }
-        }
+        }                        
+        
+        #endregion
 
-        public static void InitFont ()
-        {
-            if (plyr.fontStyle == 0)
-                FontImage = new Texture("data/images/arfontSmooth.png");
-            if (plyr.fontStyle == 1)
-                FontImage = new Texture("data/images/arfont.png");
-            CharImage.Texture = FontImage;
-        }
+        #region Review Data
 
-        public static void SetFontColour ( int r, int g, int b, int a ) => SetFontColour((byte)r, (byte)g, (byte)b, (byte)a);
-        public static void SetFontColour ( byte r, byte g, byte b, byte a ) => CharImage.Color = new Color(r, g, b, a);
+        public static Sprite CharImage = new Sprite();
+        public static Texture FontImage;
 
-        /* Seem to only be used in item.h */
-        public static void Text ( int x, int y, string text )
-        {
-            for (var i = 0; i < text.Length; ++i)
-            {
-                var current_char = text[i];
-                var char_no = ((int)current_char);
+        public static int yBase = 0;
 
-                DrawChar(16, x, y, char_no); // was 16
-                x++;
-            }
-        }
-
-        public static void Text ( int x, int y, int number )
-        {
-            var text = number.ToString();
-
-            for (var i = 0; i < text.Length; ++i)
-            {
-                var current_char = text[i];
-                var char_no = ((int)current_char);
-
-                DrawChar(16, x, y, char_no); // was 0
-                x++;
-            }
-        }
-
-        //extern int consoleY; // y position for displaying the bottom screen info panel (in pixels???)
-        //extern int consoleX; // x starting position for displaying the panel for centering
-        //extern int statPanelY; // Used as top of Y for Stats panel
-        //extern int shopConsoleY;
-        //extern int shopStatsY;
-        //extern int charYBase;
+        #endregion
     }
 }

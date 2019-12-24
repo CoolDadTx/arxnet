@@ -53,10 +53,5 @@ namespace P3Net.Arx
             }
             return true;
         }
-
-        //extern int windowMode, graphicMode, windowWidth, windowHeight;
-
-        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-        //bool LoadConfig();
     }
 }

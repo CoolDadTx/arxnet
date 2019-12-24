@@ -13,10 +13,7 @@ namespace P3Net.Arx
 {
     public class Weapon
     {
-        public string article { get; set; }
         public string name { get; set; }
-        public string desc { get; set; }
-        public string descMon { get; set; }
         public int type { get; set; }
 
         public int flags { get; set; }

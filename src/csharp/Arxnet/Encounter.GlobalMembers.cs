@@ -8,561 +8,11 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
-using System.Xml.Schema;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static bool checkForTreasure;
-        public static string[] consoleMessages = new string[MAX_CONSOLE_MESSAGES];
-        public static int curOpponent; // 0-7
-
-        public static EncRecord[] dayEncTable =
-        {
-            new EncRecord()
-            { encProb = 41, encType = Encounters.Guard },
-            new EncRecord()
-            { encProb = 19, encType = Encounters.Commoner },
-            new EncRecord()
-            { encProb = 19, encType = Encounters.Merchant },
-            new EncRecord()
-            { encProb = 18, encType = Encounters.Apprentice },
-            new EncRecord()
-            { encProb = 18, encType = Encounters.Acolyte },
-            new EncRecord()
-            { encProb = 17, encType = Encounters.Archmage },
-            new EncRecord()
-            { encProb = 16, encType = Encounters.Courier },
-            new EncRecord()
-            { encProb = 12, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 10, encType = Encounters.Novice },
-            new EncRecord()
-            { encProb = 10, encType = Encounters.Mugger },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Wizard },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Champion },
-            new EncRecord()
-            { encProb = 7, encType = Encounters.Fighter },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Swordsman },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Warrior },
-            new EncRecord()
-            { encProb = 5, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 5, encType = Encounters.Nobleman },
-            new EncRecord()
-            { encProb = 4, encType = Encounters.Pauper },
-            new EncRecord()
-            { encProb = 4, encType = Encounters.Gladiator },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Guard },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Robber },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Mage },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Assassin },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Weaponmaster },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Noblewoman }
-        };
-
-        public static readonly int DUNGEON_TABLE_ENCOUNTERS = 64;
-
-        public static EncRecord[] dungeonTable =
-        {
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 5, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Goblin },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Troll },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Lich },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Guard },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.DarkKnight },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Champion },
-            new EncRecord()
-            { encProb = 13, encType = Encounters.Healer },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Pauper },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Nobleman },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Novice },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Apprentice },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Mage },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Wizard },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Acolyte },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Sage },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Orc },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Gnome },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Dwarf },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Slime },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Mold },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Homunculus },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Phoenix },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Sorceress },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Whirlwind },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.GiantRat },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.SmallDragon },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Skeleton },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Zombie },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Ghoul },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Ghost },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Spectre },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Wraith },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Vampire },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.GreatBat },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Hellhound },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Harpy },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Gremlin },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Imp },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.FlameDemon },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.StormDevil },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.GiantWolf },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Werewolf },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Warrior },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Weaponmaster },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Valkyrie },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Gladiator },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Mercenary },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Doppleganger },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Adventurer },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Watersprite },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Nightstalker },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Salamander },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Ronin },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Serpentman },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.BigSnake },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.GreatNaga },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Berserker },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.IceDemon },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.HornedDevil }
-        };
-        public static int encAnimation;
-        public static int encounterMenu;
-        public static bool encounterNotHostile;
-
-        public static int encounterQuantity;
-        public static bool encounterRunning;
-        public static int encounterTurns;
-        public static int flashCount;
-        public static bool flashTextOn;
-        public static int groundTurnsRemaining;
-
-        //TODO: Remove global variables
-        public static string key;
-        public static readonly int MAX_CONSOLE_MESSAGES = 10;
-
-        public static readonly int MAX_OPPONENTS = 8;
-
-        public static EncRecord[] nightEncTable =
-        {
-            new EncRecord()
-            { encProb = 19, encType = Encounters.Ghost },
-            new EncRecord()
-            { encProb = 17, encType = Encounters.Mugger },
-            new EncRecord()
-            { encProb = 17, encType = Encounters.GiantRat },
-            new EncRecord()
-            { encProb = 17, encType = Encounters.Skeleton },
-            new EncRecord()
-            { encProb = 16, encType = Encounters.Zombie },
-            new EncRecord()
-            { encProb = 15, encType = Encounters.Gremlin },
-            new EncRecord()
-            { encProb = 12, encType = Encounters.Mold },
-            new EncRecord()
-            { encProb = 10, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 9, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 9, encType = Encounters.Giant },
-            new EncRecord()
-            { encProb = 8, encType = Encounters.Slime },
-            new EncRecord()
-            { encProb = 7, encType = Encounters.GiantWolf },
-            new EncRecord()
-            { encProb = 7, encType = Encounters.Champion },
-            new EncRecord()
-            { encProb = 7, encType = Encounters.Imp },
-            new EncRecord()
-            { encProb = 7, encType = Encounters.Ghoul },
-            new EncRecord()
-            { encProb = 6, encType = Encounters.Fighter },
-            new EncRecord()
-            { encProb = 5, encType = Encounters.Swordsman },
-            new EncRecord()
-            { encProb = 5, encType = Encounters.Warrior },
-            new EncRecord()
-            { encProb = 4, encType = Encounters.Gnoll },
-            new EncRecord()
-            { encProb = 4, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.SmallGreenDragon },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Gladiator },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Goblin },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Hobbit },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Orc },
-            new EncRecord()
-            { encProb = 3, encType = Encounters.Dwarf },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Wraith },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Apprentice },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Acolyte },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Troll },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Archmage },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Robber },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Guard },
-            new EncRecord()
-            { encProb = 2, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Novice },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Nightstalker },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Spectre },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Wizard },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Commoner },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Merchant },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Courier },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Weaponmaster },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Nobleman },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Pauper },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Mage },
-            new EncRecord()
-            { encProb = 1, encType = Encounters.Assassin }
-        };
-
-        public static Monster opponent = new Monster();
-
-        public static int opponentNoAttacking;
-
-        public static Monster[] Opponents = Arrays.InitializeWithDefaultInstances<Monster>(8); // max 8 monsters against you
-
-        public static bool opponentSurprised;
-        public static Encounters opponentType;
-        public static bool playerOnGround;
-        public static bool playerRunsAway = false;
-        public static bool playerStunned;
-        public static bool playerSurprised;
-        public static bool playerTurn;
-        public static string prefix;
-
-        public static string str; // for message text
-        public static string str2;
-        public static bool waitingForAnyKey;
-        public static bool waitingForSpaceKey;
-
-        public static int[] weaponProbabilities = { 0, 0, 0, 0, 0, 0 };
-        public static int[] weaponReferences = { 0, 0, 0, 0, 0, 0 };
-
-        public static EncRecord[] wellLitEncTable =
-        {
-            new EncRecord()
-            { encProb = 30, encType = Encounters.Guard },
-            new EncRecord()
-            { encProb = 30, encType = Encounters.Thief },
-            new EncRecord()
-            { encProb = 30, encType = Encounters.GiantRat },
-            new EncRecord()
-            { encProb = 30, encType = Encounters.Nobleman },
-            new EncRecord()
-            { encProb = 15, encType = Encounters.Pauper },
-            new EncRecord()
-            { encProb = 30, encType = Encounters.Healer },
-            new EncRecord()
-            { encProb = 20, encType = Encounters.Knight },
-            new EncRecord()
-            { encProb = 20, encType = Encounters.GreatBat },
-            new EncRecord()
-            { encProb = 20, encType = Encounters.Slime },
-            new EncRecord()
-            { encProb = 15, encType = Encounters.Adventurer },
-            new EncRecord()
-            { encProb = 15, encType = Encounters.Acolyte }
-        };
-
-        public static void AwardExperience ( Encounters opponentNo )
-        {
-            // x2 is default experience multiplier value for defeating an opponent in the Dungeon
-            var experienceMultiplier = 2;
-
-            //TODO: Move this into Encounters type
-            if (opponentNo == Encounters.Ghost)
-                experienceMultiplier = 8;
-            if (opponentNo == Encounters.Doppleganger)
-                experienceMultiplier = 7;
-            if (opponentNo == Encounters.Mold)
-                experienceMultiplier = 3;
-
-            //TODO: This doesn't look right, shouldn't it be based upon maxHP of actual opponent, not first 
-            var opponentXP = Opponents[0].maxHP * experienceMultiplier;
-            plyr.IncreaseExperience(opponentXP);
-        }
-
-        public static int CalcOpponentWeaponDamage ( int weaponNo, float attackFactor, int attacker )
-        {
-            // CALCULATE MONSTER WEAPON / ATTACK DAMAGE
-
-            // attacker - 1 = monster
-            var weaponDamageValues = new int[11];
-            weaponDamageValues[0] = monsterWeapons[weaponNo].blunt;
-            weaponDamageValues[1] = monsterWeapons[weaponNo].sharp;
-            weaponDamageValues[2] = monsterWeapons[weaponNo].earth;
-            weaponDamageValues[3] = monsterWeapons[weaponNo].air;
-            weaponDamageValues[4] = monsterWeapons[weaponNo].fire;
-            weaponDamageValues[5] = monsterWeapons[weaponNo].water;
-            weaponDamageValues[6] = monsterWeapons[weaponNo].power;
-            weaponDamageValues[7] = monsterWeapons[weaponNo].magic;
-            weaponDamageValues[8] = monsterWeapons[weaponNo].good;
-            weaponDamageValues[9] = monsterWeapons[weaponNo].evil;
-            weaponDamageValues[10] = monsterWeapons[weaponNo].cold;
-
-            if (opponentType == Encounters.Doppleganger)
-            {
-                weaponDamageValues[0] = itemBuffer[weaponNo].blunt;
-                weaponDamageValues[1] = itemBuffer[weaponNo].sharp;
-                weaponDamageValues[2] = itemBuffer[weaponNo].earth;
-                weaponDamageValues[3] = itemBuffer[weaponNo].air;
-                weaponDamageValues[4] = itemBuffer[weaponNo].fire;
-                weaponDamageValues[5] = itemBuffer[weaponNo].water;
-                weaponDamageValues[6] = itemBuffer[weaponNo].power;
-                weaponDamageValues[7] = itemBuffer[weaponNo].magic;
-                weaponDamageValues[8] = itemBuffer[weaponNo].good;
-                weaponDamageValues[9] = itemBuffer[weaponNo].evil;
-                weaponDamageValues[10] = itemBuffer[weaponNo].cold;
-            }
-
-            var armorValues = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            // Need to add modifier for player armor values & armor body parts
-
-            var armors = new int[11]; // holds results of rolling for armor protection
-            if (attacker == 0) // Player attacking
-            {
-                armorValues[0] = Opponents[0].aBlunt;
-                armorValues[1] = Opponents[0].aSharp;
-                armorValues[2] = Opponents[0].aEarth;
-                armorValues[3] = Opponents[0].aAir;
-                armorValues[4] = Opponents[0].aFire;
-                armorValues[5] = Opponents[0].aWater;
-                armorValues[6] = Opponents[0].aPower;
-                armorValues[7] = Opponents[0].aMagic;
-                armorValues[8] = Opponents[0].aGood;
-                armorValues[9] = Opponents[0].aEvil;
-                armorValues[10] = Opponents[0].aCold;
-
-                var armorIndex = 0;
-                while (armorIndex < 11)
-                {
-                    int noDice = (armorValues[armorIndex] & 0xf0) >> 4;
-                    int noSides = (armorValues[armorIndex] & 0x0f);
-                    armors[armorIndex] = RollDice(noDice, noSides);
-                    armorIndex++;
-                }
-            }
-
-            var damages = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // holds results of rolling for damage
-
-            var damageIndex = 0; // 0 is blunt, 1 is sharp, 11 is cold - 11 damage types in total
-
-            while (damageIndex < 11)
-            {
-                var noDice = (weaponDamageValues[damageIndex] & 0xf0) >> 4;
-                var noSides = (weaponDamageValues[damageIndex] & 0x0f);
-
-                if (noDice > 0)
-                    damages[damageIndex] = RollDice(noDice, noSides);
-                damageIndex++;
-            }
-
-            // Compare weapon damages against ancounter armour values inc. vulnerabilities and invulnerabilities
-            // 0xff = invulnerable.
-            // 0xf0 = absorbs power from this damage type.
-            // 0x0f = takes double damage from this damage type.            
-
-            var totalDamage = damages[0] +
-                damages[1] +
-                damages[2] +
-                damages[3] +
-                damages[4] +
-                damages[5] +
-                damages[6] +
-                damages[7] +
-                damages[8] +
-                damages[9] +
-                damages[10];
-            return totalDamage;
-        }
-
-        public static int CalcPlayerWeaponDamage ( int weaponNo, float attackFactor, int attacker )
-        {
-            // CALCULATE PLAYER WEAPON / ATTACK DAMAGE
-
-            // attacker - 0 = player
-            var weaponDamageValues = new int[11];
-            weaponDamageValues[0] = itemBuffer[weaponNo].blunt;
-            weaponDamageValues[1] = itemBuffer[weaponNo].sharp;
-            weaponDamageValues[2] = itemBuffer[weaponNo].earth;
-            weaponDamageValues[3] = itemBuffer[weaponNo].air;
-            weaponDamageValues[4] = itemBuffer[weaponNo].fire;
-            weaponDamageValues[5] = itemBuffer[weaponNo].water;
-            weaponDamageValues[6] = itemBuffer[weaponNo].power;
-            weaponDamageValues[7] = itemBuffer[weaponNo].magic;
-            weaponDamageValues[8] = itemBuffer[weaponNo].good;
-            weaponDamageValues[9] = itemBuffer[weaponNo].evil;
-            weaponDamageValues[10] = itemBuffer[weaponNo].cold;
-
-            var armorValues = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            var armors = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-            var damages = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // holds results of rolling for damage
-
-            var damageIndex = 0; // 0 is blunt, 1 is sharp, 11 is cold - 11 damage types in total
-
-            while (damageIndex < 11)
-            {
-                var noDice = (weaponDamageValues[damageIndex] & 0xf0) >> 4;
-                var noSides = (weaponDamageValues[damageIndex] & 0x0f);
-
-                if (noDice > 0)
-                {
-                    damages[damageIndex] = RollDice(noDice, noSides);
-                    if (armorValues[damageIndex] == 0xff)
-                        damages[damageIndex] = 0;
-                    if (armorValues[damageIndex] == 0xf0)
-                        damages[damageIndex] = damages[damageIndex] * -1;
-                    if (armorValues[damageIndex] == 0xff)
-                        damages[damageIndex] = damages[damageIndex] * 2;
-                }
-                damageIndex++;
-            }
-
-            // Compare weapon damages against encounter armour values inc. vulnerabilities and invulnerabilities
-            // 0xff = invulnerable.
-            // 0xf0 = absorbs power from this damage type.
-            // 0x0f = takes double damage from this damage type.
-            if (attacker == 0) // Player attacking
-            {
-                for (var i = 0; i < 11; ++i) // number of damage slots to compare against armour slots
-                {
-                    damages[i] -= armors[i];
-                    if (damages[i] < 0)
-                        damages[i] = 0;
-                }
-            }
-
-            var totalDamage = damages[0] +
-                damages[1] +
-                damages[2] +
-                damages[3] +
-                damages[4] +
-                damages[5] +
-                damages[6] +
-                damages[7] +
-                damages[8] +
-                damages[9] +
-                damages[10];
-            return totalDamage;
-        }
-
         public static void CheckEncounter ()
         {
             if (EncounterThemeNotPlaying())
@@ -734,14 +184,659 @@ namespace P3Net.Arx
             }
         }
 
-        public static void CheckForActiveOpponents ()
+        public static void ChooseEncounter ()
+        {
+            Encounters monsterNo = 0;
+            plyr.status = GameStates.Encounter;
+
+            // CITY - Day
+            if ((plyr.timeOfDay != 1) && (plyr.scenario == Scenarios.City))
+            {
+                var encCount = 0;
+                var monsterProb = Random(0, 255);
+                for (var i = 0; i < 29; ++i) // 28???
+                {
+                    if ((monsterProb >= encCount) && (monsterProb < dayEncTable[i].encProb + encCount))
+                        monsterNo = dayEncTable[i].encType;
+                    encCount += dayEncTable[i].encProb;
+                }
+            }
+
+            // CITY - Night
+            if ((plyr.timeOfDay == 1) && (plyr.scenario == Scenarios.City))
+            {
+                var encCount = 0;
+                var monsterProb = Random(0, 255);
+                for (var i = 0; i < 48; ++i)
+                {
+                    if ((monsterProb >= encCount) && (monsterProb < nightEncTable[i].encProb + encCount))
+                        monsterNo = nightEncTable[i].encType;
+                    encCount += nightEncTable[i].encProb;
+                }
+            }
+
+            if ((plyr.scenario == Scenarios.Dungeon) && ((plyr.zone == 17) || (plyr.zone == 16))) // Dungeon - Well Lit Area
+            {
+                var encCount = 0;
+                var monsterProb = Random(0, 255);
+                for (var i = 0; i < 11; ++i)
+                {
+                    if ((monsterProb >= encCount) && (monsterProb < wellLitEncTable[i].encProb + encCount))
+                        monsterNo = wellLitEncTable[i].encType;
+                    encCount += wellLitEncTable[i].encProb;
+                }
+                if (monsterNo == 0)
+                {
+                    //TODO: Why are we erroring on this?
+                    monsterNo = Encounters.Thief;
+                    Console.Write("Error: Monster 0 rolled!\n");
+                }
+            }
+
+            if ((plyr.scenario == Scenarios.Dungeon) && !((plyr.zone == 17) || (plyr.zone == 16)))
+            {
+                var encCount = 0;
+                var monsterProb = Random(0, 255);
+                for (var i = 0; i < DUNGEON_TABLE_ENCOUNTERS; ++i)
+                {
+                    if ((monsterProb >= encCount) && (monsterProb < dungeonTable[i].encProb + encCount))
+                        monsterNo = dungeonTable[i].encType;
+                    encCount += dungeonTable[i].encProb;
+                }
+                if (monsterNo == 0)
+                {
+                    //TODO: Why are we erroring on this?
+                    monsterNo = Encounters.Thief;
+                    Console.Write("Error: Monster 0 rolled!\n");
+                }
+            }
+
+            if ((plyr.scenario == Scenarios.Dungeon) && (plyr.map == 4))
+                monsterNo = Encounters.Mage;
+
+            plyr.fixedEncounter = false;
+            EncounterLoop(monsterNo, 1); // Only one currently except for fixed encounters
+
+            //if (checkForTreasure) checkTreasure();
+            // FBI Agent and Basilisk images missing
+        }
+
+        public static void DrawEncounterView ()
+        {
+            DrawAtariAnimation();
+            UpdateEncounterStatusText();
+            if (waitingForSpaceKey)
+                CyText(3, consoleMessages[0]);
+
+            if (graphicMode == (int)DisplayOptions.AlternateLarge)
+                DrawConsoleBackground();
+        }
+
+        #region Review Data
+
+        public static bool checkForTreasure;
+        public static string[] consoleMessages = new string[MAX_CONSOLE_MESSAGES];
+        public static int curOpponent; // 0-7
+
+        //TODO: Move to map or random encounters or something
+        public static EncRecord[] dayEncTable =
+        {
+            new EncRecord()
+            { encProb = 41, encType = Encounters.Guard },
+            new EncRecord()
+            { encProb = 19, encType = Encounters.Commoner },
+            new EncRecord()
+            { encProb = 19, encType = Encounters.Merchant },
+            new EncRecord()
+            { encProb = 18, encType = Encounters.Apprentice },
+            new EncRecord()
+            { encProb = 18, encType = Encounters.Acolyte },
+            new EncRecord()
+            { encProb = 17, encType = Encounters.Archmage },
+            new EncRecord()
+            { encProb = 16, encType = Encounters.Courier },
+            new EncRecord()
+            { encProb = 12, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 10, encType = Encounters.Novice },
+            new EncRecord()
+            { encProb = 10, encType = Encounters.Mugger },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Wizard },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Champion },
+            new EncRecord()
+            { encProb = 7, encType = Encounters.Fighter },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Swordsman },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Warrior },
+            new EncRecord()
+            { encProb = 5, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 5, encType = Encounters.Nobleman },
+            new EncRecord()
+            { encProb = 4, encType = Encounters.Pauper },
+            new EncRecord()
+            { encProb = 4, encType = Encounters.Gladiator },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Guard },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Robber },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Mage },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Assassin },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Weaponmaster },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Noblewoman }
+        };
+
+        public static readonly int DUNGEON_TABLE_ENCOUNTERS = 64;
+
+        //TODO: Move to map or random encounters or something
+        public static EncRecord[] dungeonTable =
+        {
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 5, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Goblin },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Troll },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Lich },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Guard },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.DarkKnight },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Champion },
+            new EncRecord()
+            { encProb = 13, encType = Encounters.Healer },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Pauper },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Nobleman },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Novice },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Apprentice },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Mage },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Wizard },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Acolyte },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Sage },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Orc },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Gnome },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Dwarf },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Slime },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Mold },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Homunculus },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Phoenix },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Sorceress },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Whirlwind },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.GiantRat },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.SmallDragon },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Skeleton },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Zombie },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Ghoul },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Ghost },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Spectre },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Wraith },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Vampire },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.GreatBat },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Hellhound },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Harpy },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Gremlin },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Imp },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.FlameDemon },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.StormDevil },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.GiantWolf },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Werewolf },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Warrior },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Weaponmaster },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Valkyrie },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Gladiator },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Mercenary },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Doppleganger },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Adventurer },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Watersprite },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Nightstalker },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Salamander },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Ronin },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Serpentman },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.BigSnake },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.GreatNaga },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Berserker },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.IceDemon },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.HornedDevil }
+        };
+        public static int encAnimation;
+        public static int encounterMenu;
+        public static bool encounterNotHostile;
+
+        public static int encounterQuantity;
+        public static bool encounterRunning;
+        public static int encounterTurns;
+        public static int flashCount;
+        public static bool flashTextOn;
+        public static int groundTurnsRemaining;
+        
+        public static string key;
+        public static readonly int MAX_CONSOLE_MESSAGES = 10;
+
+        public static readonly int MAX_OPPONENTS = 8;
+
+        //TODO: Move to map or random encounters or something
+        public static EncRecord[] nightEncTable =
+        {
+            new EncRecord()
+            { encProb = 19, encType = Encounters.Ghost },
+            new EncRecord()
+            { encProb = 17, encType = Encounters.Mugger },
+            new EncRecord()
+            { encProb = 17, encType = Encounters.GiantRat },
+            new EncRecord()
+            { encProb = 17, encType = Encounters.Skeleton },
+            new EncRecord()
+            { encProb = 16, encType = Encounters.Zombie },
+            new EncRecord()
+            { encProb = 15, encType = Encounters.Gremlin },
+            new EncRecord()
+            { encProb = 12, encType = Encounters.Mold },
+            new EncRecord()
+            { encProb = 10, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 9, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 9, encType = Encounters.Giant },
+            new EncRecord()
+            { encProb = 8, encType = Encounters.Slime },
+            new EncRecord()
+            { encProb = 7, encType = Encounters.GiantWolf },
+            new EncRecord()
+            { encProb = 7, encType = Encounters.Champion },
+            new EncRecord()
+            { encProb = 7, encType = Encounters.Imp },
+            new EncRecord()
+            { encProb = 7, encType = Encounters.Ghoul },
+            new EncRecord()
+            { encProb = 6, encType = Encounters.Fighter },
+            new EncRecord()
+            { encProb = 5, encType = Encounters.Swordsman },
+            new EncRecord()
+            { encProb = 5, encType = Encounters.Warrior },
+            new EncRecord()
+            { encProb = 4, encType = Encounters.Gnoll },
+            new EncRecord()
+            { encProb = 4, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.SmallGreenDragon },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Gladiator },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Goblin },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Hobbit },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Orc },
+            new EncRecord()
+            { encProb = 3, encType = Encounters.Dwarf },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Wraith },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Apprentice },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Acolyte },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Troll },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Archmage },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Robber },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Guard },
+            new EncRecord()
+            { encProb = 2, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Novice },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Nightstalker },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Spectre },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Wizard },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Commoner },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Merchant },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Courier },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Weaponmaster },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Nobleman },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Pauper },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Mage },
+            new EncRecord()
+            { encProb = 1, encType = Encounters.Assassin }
+        };
+
+        public static Monster opponent = new Monster();
+
+        public static int opponentNoAttacking;
+
+        public static Monster[] Opponents = Arrays.InitializeWithDefaultInstances<Monster>(8); // max 8 monsters against you
+
+        public static bool opponentSurprised;
+        public static Encounters opponentType;
+        public static bool playerOnGround;
+        public static bool playerRunsAway = false;
+        public static bool playerStunned;
+        public static bool playerSurprised;
+        public static bool playerTurn;
+        public static string prefix;
+
+        public static string str; // for message text
+        public static string str2;
+        public static bool waitingForAnyKey;
+        public static bool waitingForSpaceKey;
+
+        public static int[] weaponProbabilities = { 0, 0, 0, 0, 0, 0 };
+        public static int[] weaponReferences = { 0, 0, 0, 0, 0, 0 };
+
+        //TODO: Move to map or random encounters or something
+        public static EncRecord[] wellLitEncTable =
+        {
+            new EncRecord()
+            { encProb = 30, encType = Encounters.Guard },
+            new EncRecord()
+            { encProb = 30, encType = Encounters.Thief },
+            new EncRecord()
+            { encProb = 30, encType = Encounters.GiantRat },
+            new EncRecord()
+            { encProb = 30, encType = Encounters.Nobleman },
+            new EncRecord()
+            { encProb = 15, encType = Encounters.Pauper },
+            new EncRecord()
+            { encProb = 30, encType = Encounters.Healer },
+            new EncRecord()
+            { encProb = 20, encType = Encounters.Knight },
+            new EncRecord()
+            { encProb = 20, encType = Encounters.GreatBat },
+            new EncRecord()
+            { encProb = 20, encType = Encounters.Slime },
+            new EncRecord()
+            { encProb = 15, encType = Encounters.Adventurer },
+            new EncRecord()
+            { encProb = 15, encType = Encounters.Acolyte }
+        };
+
+        #endregion
+
+        #region Private Members
+
+        private static void AwardExperience ( Encounters opponentNo )
+        {
+            // x2 is default experience multiplier value for defeating an opponent in the Dungeon
+            var experienceMultiplier = 2;
+
+            //TODO: Move this into Encounters type
+            if (opponentNo == Encounters.Ghost)
+                experienceMultiplier = 8;
+            if (opponentNo == Encounters.Doppleganger)
+                experienceMultiplier = 7;
+            if (opponentNo == Encounters.Mold)
+                experienceMultiplier = 3;
+
+            //TODO: This doesn't look right, shouldn't it be based upon maxHP of actual opponent, not first 
+            var opponentXP = Opponents[0].maxHP * experienceMultiplier;
+            plyr.IncreaseExperience(opponentXP);
+        }
+
+        private static int CalcOpponentWeaponDamage ( int weaponNo, float attackFactor, int attacker )
+        {
+            // CALCULATE MONSTER WEAPON / ATTACK DAMAGE
+
+            // attacker - 1 = monster
+            var weaponDamageValues = new int[11];
+            weaponDamageValues[0] = monsterWeapons[weaponNo].blunt;
+            weaponDamageValues[1] = monsterWeapons[weaponNo].sharp;
+            weaponDamageValues[2] = monsterWeapons[weaponNo].earth;
+            weaponDamageValues[3] = monsterWeapons[weaponNo].air;
+            weaponDamageValues[4] = monsterWeapons[weaponNo].fire;
+            weaponDamageValues[5] = monsterWeapons[weaponNo].water;
+            weaponDamageValues[6] = monsterWeapons[weaponNo].power;
+            weaponDamageValues[7] = monsterWeapons[weaponNo].magic;
+            weaponDamageValues[8] = monsterWeapons[weaponNo].good;
+            weaponDamageValues[9] = monsterWeapons[weaponNo].evil;
+            weaponDamageValues[10] = monsterWeapons[weaponNo].cold;
+
+            if (opponentType == Encounters.Doppleganger)
+            {
+                weaponDamageValues[0] = itemBuffer[weaponNo].blunt;
+                weaponDamageValues[1] = itemBuffer[weaponNo].sharp;
+                weaponDamageValues[2] = itemBuffer[weaponNo].earth;
+                weaponDamageValues[3] = itemBuffer[weaponNo].air;
+                weaponDamageValues[4] = itemBuffer[weaponNo].fire;
+                weaponDamageValues[5] = itemBuffer[weaponNo].water;
+                weaponDamageValues[6] = itemBuffer[weaponNo].power;
+                weaponDamageValues[7] = itemBuffer[weaponNo].magic;
+                weaponDamageValues[8] = itemBuffer[weaponNo].good;
+                weaponDamageValues[9] = itemBuffer[weaponNo].evil;
+                weaponDamageValues[10] = itemBuffer[weaponNo].cold;
+            }
+
+            var armorValues = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            // Need to add modifier for player armor values & armor body parts
+
+            var armors = new int[11]; // holds results of rolling for armor protection
+            if (attacker == 0) // Player attacking
+            {
+                armorValues[0] = Opponents[0].aBlunt;
+                armorValues[1] = Opponents[0].aSharp;
+                armorValues[2] = Opponents[0].aEarth;
+                armorValues[3] = Opponents[0].aAir;
+                armorValues[4] = Opponents[0].aFire;
+                armorValues[5] = Opponents[0].aWater;
+                armorValues[6] = Opponents[0].aPower;
+                armorValues[7] = Opponents[0].aMagic;
+                armorValues[8] = Opponents[0].aGood;
+                armorValues[9] = Opponents[0].aEvil;
+                armorValues[10] = Opponents[0].aCold;
+
+                var armorIndex = 0;
+                while (armorIndex < 11)
+                {
+                    int noDice = (armorValues[armorIndex] & 0xf0) >> 4;
+                    int noSides = (armorValues[armorIndex] & 0x0f);
+                    armors[armorIndex] = RollDice(noDice, noSides);
+                    armorIndex++;
+                }
+            }
+
+            var damages = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // holds results of rolling for damage
+
+            var damageIndex = 0; // 0 is blunt, 1 is sharp, 11 is cold - 11 damage types in total
+
+            while (damageIndex < 11)
+            {
+                var noDice = (weaponDamageValues[damageIndex] & 0xf0) >> 4;
+                var noSides = (weaponDamageValues[damageIndex] & 0x0f);
+
+                if (noDice > 0)
+                    damages[damageIndex] = RollDice(noDice, noSides);
+                damageIndex++;
+            }
+
+            // Compare weapon damages against ancounter armour values inc. vulnerabilities and invulnerabilities
+            // 0xff = invulnerable.
+            // 0xf0 = absorbs power from this damage type.
+            // 0x0f = takes double damage from this damage type.            
+
+            var totalDamage = damages[0] +
+                damages[1] +
+                damages[2] +
+                damages[3] +
+                damages[4] +
+                damages[5] +
+                damages[6] +
+                damages[7] +
+                damages[8] +
+                damages[9] +
+                damages[10];
+            return totalDamage;
+        }
+
+        private static int CalcPlayerWeaponDamage ( int weaponNo, float attackFactor, int attacker )
+        {
+            // CALCULATE PLAYER WEAPON / ATTACK DAMAGE
+
+            // attacker - 0 = player
+            var weaponDamageValues = new int[11];
+            weaponDamageValues[0] = itemBuffer[weaponNo].blunt;
+            weaponDamageValues[1] = itemBuffer[weaponNo].sharp;
+            weaponDamageValues[2] = itemBuffer[weaponNo].earth;
+            weaponDamageValues[3] = itemBuffer[weaponNo].air;
+            weaponDamageValues[4] = itemBuffer[weaponNo].fire;
+            weaponDamageValues[5] = itemBuffer[weaponNo].water;
+            weaponDamageValues[6] = itemBuffer[weaponNo].power;
+            weaponDamageValues[7] = itemBuffer[weaponNo].magic;
+            weaponDamageValues[8] = itemBuffer[weaponNo].good;
+            weaponDamageValues[9] = itemBuffer[weaponNo].evil;
+            weaponDamageValues[10] = itemBuffer[weaponNo].cold;
+
+            var armorValues = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            var armors = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            var damages = new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // holds results of rolling for damage
+
+            var damageIndex = 0; // 0 is blunt, 1 is sharp, 11 is cold - 11 damage types in total
+
+            while (damageIndex < 11)
+            {
+                var noDice = (weaponDamageValues[damageIndex] & 0xf0) >> 4;
+                var noSides = (weaponDamageValues[damageIndex] & 0x0f);
+
+                if (noDice > 0)
+                {
+                    damages[damageIndex] = RollDice(noDice, noSides);
+                    if (armorValues[damageIndex] == 0xff)
+                        damages[damageIndex] = 0;
+                    if (armorValues[damageIndex] == 0xf0)
+                        damages[damageIndex] = damages[damageIndex] * -1;
+                    if (armorValues[damageIndex] == 0xff)
+                        damages[damageIndex] = damages[damageIndex] * 2;
+                }
+                damageIndex++;
+            }
+
+            // Compare weapon damages against encounter armour values inc. vulnerabilities and invulnerabilities
+            // 0xff = invulnerable.
+            // 0xf0 = absorbs power from this damage type.
+            // 0x0f = takes double damage from this damage type.
+            if (attacker == 0) // Player attacking
+            {
+                for (var i = 0; i < 11; ++i) // number of damage slots to compare against armour slots
+                {
+                    damages[i] -= armors[i];
+                    if (damages[i] < 0)
+                        damages[i] = 0;
+                }
+            }
+
+            var totalDamage = damages[0] +
+                damages[1] +
+                damages[2] +
+                damages[3] +
+                damages[4] +
+                damages[5] +
+                damages[6] +
+                damages[7] +
+                damages[8] +
+                damages[9] +
+                damages[10];
+            return totalDamage;
+        }
+                
+        private static void CheckForActiveOpponents ()
         {
             // Check first encounter slot
             if (Opponents[0].hp == 0)
                 encounterRunning = false;
         }
 
-        public static void CheckHostility ()
+        private static void CheckHostility ()
         {
             encounterNotHostile = true;
 
@@ -762,7 +857,8 @@ namespace P3Net.Arx
             // Check anti-guild status - only applies to humans
         }
 
-        public static void CheckSurprise ()
+        //TODO: Not used but seems reasonable, leave for now
+        private static void CheckSurprise ()
         {
             // Determines whether the player or opponent have element of surprise
             // If player then go to encounterMenu 3
@@ -778,7 +874,7 @@ namespace P3Net.Arx
                 opponentSurprised = true;
         }
 
-        public static void CheckTreasure ()
+        private static void CheckTreasure ()
         {
             var foundTreasure = false;
             
@@ -960,92 +1056,15 @@ namespace P3Net.Arx
             if (foundTreasure)
                 GetItems();
         }
-
-        public static void ChooseEncounter ()
-        {
-            Encounters monsterNo = 0;
-            plyr.status = GameStates.Encounter;
-
-            // CITY - Day
-            if ((plyr.timeOfDay != 1) && (plyr.scenario == Scenarios.City))
-            {
-                var encCount = 0;
-                var monsterProb = Random(0, 255);
-                for (var i = 0; i < 29; ++i) // 28???
-                {
-                    if ((monsterProb >= encCount) && (monsterProb < dayEncTable[i].encProb + encCount))
-                        monsterNo = dayEncTable[i].encType;
-                    encCount += dayEncTable[i].encProb;
-                }
-            }
-
-            // CITY - Night
-            if ((plyr.timeOfDay == 1) && (plyr.scenario == Scenarios.City))
-            {
-                var encCount = 0;
-                var monsterProb = Random(0, 255);
-                for (var i = 0; i < 48; ++i)
-                {
-                    if ((monsterProb >= encCount) && (monsterProb < nightEncTable[i].encProb + encCount))
-                        monsterNo = nightEncTable[i].encType;
-                    encCount += nightEncTable[i].encProb;
-                }
-            }
-
-            if ((plyr.scenario == Scenarios.Dungeon) && ((plyr.zone == 17) || (plyr.zone == 16))) // Dungeon - Well Lit Area
-            {
-                var encCount = 0;
-                var monsterProb = Random(0, 255);
-                for (var i = 0; i < 11; ++i)
-                {
-                    if ((monsterProb >= encCount) && (monsterProb < wellLitEncTable[i].encProb + encCount))
-                        monsterNo = wellLitEncTable[i].encType;
-                    encCount += wellLitEncTable[i].encProb;
-                }
-                if (monsterNo == 0)
-                {
-                    //TODO: Why are we erroring on this?
-                    monsterNo = Encounters.Thief;
-                    Console.Write("Error: Monster 0 rolled!\n");
-                }
-            }
-
-            if ((plyr.scenario == Scenarios.Dungeon) && !((plyr.zone == 17) || (plyr.zone == 16)))
-            {
-                var encCount = 0;
-                var monsterProb = Random(0, 255);
-                for (var i = 0; i < DUNGEON_TABLE_ENCOUNTERS; ++i)
-                {
-                    if ((monsterProb >= encCount) && (monsterProb < dungeonTable[i].encProb + encCount))
-                        monsterNo = dungeonTable[i].encType;
-                    encCount += dungeonTable[i].encProb;
-                }
-                if (monsterNo == 0)
-                {
-                    //TODO: Why are we erroring on this?
-                    monsterNo = Encounters.Thief;
-                    Console.Write("Error: Monster 0 rolled!\n");
-                }
-            }
-
-            if ((plyr.scenario == Scenarios.Dungeon) && (plyr.map == 4))
-                monsterNo = Encounters.Mage;
-            
-            plyr.fixedEncounter = false;
-            EncounterLoop(monsterNo, 1); // Only one currently except for fixed encounters
-
-            //if (checkForTreasure) checkTreasure();
-            // FBI Agent and Basilisk images missing
-        }
-
-        public static void ClearConsoleMessages ()
+        
+        private static void ClearConsoleMessages ()
         {
             // Sets all console message slots to empty
             for (var i = 0; i < MAX_CONSOLE_MESSAGES; ++i)
                 consoleMessages[i] = "NO MESSAGE";
         }
 
-        public static void ConsoleMessage ( string messageText )
+        private static void ConsoleMessage ( string messageText )
         {
             var messageNotAddedToQueue = true;
             var messagesIndex = 0;
@@ -1067,7 +1086,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void DetermineOpponentOpeningMessage ()
+        private static void DetermineOpponentOpeningMessage ()
         {
             // Determines the following:
             // 1) Does the opponent have an opening message (e.g. thief, pauper, knight)
@@ -1092,19 +1111,8 @@ namespace P3Net.Arx
                 break;
             }
         }
-
-        public static void DrawEncounterView ()
-        {
-            DrawAtariAnimation();
-            UpdateEncounterStatusText();
-            if (waitingForSpaceKey)
-                CyText(3, consoleMessages[0]);
-
-            if (graphicMode == (int)DisplayOptions.AlternateLarge)
-                DrawConsoleBackground();
-        }
-
-        public static void EncounterLoop ( Encounters encounterType, int opponentQuantity )
+        
+        private static void EncounterLoop ( Encounters encounterType, int opponentQuantity )
         {
             opponentType = encounterType;
             checkForTreasure = false;
@@ -1201,7 +1209,7 @@ namespace P3Net.Arx
                 CheckTreasure();
         }
 
-        public static string GetAttackDesc ( int chosenWeapon, int damage )
+        private static string GetAttackDesc ( int chosenWeapon, int damage )
         {
             /*
 			    0x00 - hack/slash
@@ -1306,7 +1314,7 @@ namespace P3Net.Arx
             return result;
         }
 
-        public static string GetPlayerAttackDesc ( int damage )
+        private static string GetPlayerAttackDesc ( int damage )
         {
             /*
 			    0x00 - hack/slash
@@ -1367,7 +1375,8 @@ namespace P3Net.Arx
             return result;
         }
 
-        public static void HealerCureDiseases ()
+        //TODO: Move to Healer
+        private static void HealerCureDiseases ()
         {
             // Clear all the disease flags
             if (!CheckCoins(0, 100, 0))
@@ -1386,7 +1395,8 @@ namespace P3Net.Arx
             OpponentLeaves();
         }
 
-        public static void HealerCurePoisons ()
+        //TODO: Move to Healer
+        private static void HealerCurePoisons ()
         {
             // Clear all the poison flags
             if (!CheckCoins(0, 50, 0))
@@ -1408,7 +1418,8 @@ namespace P3Net.Arx
             OpponentLeaves();
         }
 
-        public static void HealerHealWounds ()
+        //TODO: Move to Healer
+        private static void HealerHealWounds ()
         {
             var hpToHeal = InputNumber();
 
@@ -1433,7 +1444,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void InitialiseOpponents ( Encounters opponentType, int opponentQuantity )
+        private static void InitialiseOpponents ( Encounters opponentType, int opponentQuantity )
         {
             // Clean out all 8 opponent slots with an empty monster object (using the unused FBI Agent for this)
             for (var i = 0; i < MAX_OPPONENTS; ++i)
@@ -1460,36 +1471,7 @@ namespace P3Net.Arx
             encounterQuantity = opponentQuantity;
         }
 
-        public static void InitMonster ( int monsterNo )
-        {
-            // Initialise a SINGLE monster - legacy City logic
-
-            /*
-			Opponents[a] = Monsters[monsterNo]; // copy monster details to current Opponents[a] object
-			Opponents[a].hp += randn(0,Monsters[monsterNo].randomHP);
-			Opponents[a].str += randn(0,Monsters[monsterNo].randomStrength);
-			Opponents[a].skl += randn(0,Monsters[monsterNo].randomSkill);
-			Opponents[a].inte += randn(0,Monsters[monsterNo].randomIntelligence);
-			Opponents[a].spd += randn(0,Monsters[monsterNo].randomSpeed);
-			Opponents[a].maxHP = Opponents[a].hp;
-		
-			if (monsterNo==DOPPLEGANGER)
-			{
-			    // Doppelganger
-			    Opponents[a].hp = plyr.hp;
-			    Opponents[a].maxHP = plyr.hp;
-			    Opponents[a].str = plyr.str;
-			    Opponents[a].skl = plyr.skl;
-			    Opponents[a].inte = plyr.inte;
-			    Opponents[a].spd = plyr.speed;
-			    Opponents[a].w1 = itemBuffer[plyr.priWeapon].index;
-			    if (plyr.priWeapon==255) Opponents[a].w1=0; // bare hands
-			    Opponents[a].c1 = 100;
-			}
-			*/
-        }
-
-        public static int InputNumber ()
+        private static int InputNumber ()
         {
             UpdateDisplay(); // Messy visual fix before the display loop below - probably break animation later
 
@@ -1534,7 +1516,7 @@ namespace P3Net.Arx
             return value;
         }
 
-        public static void OpponentAttack ()
+        private static void OpponentAttack ()
         {            
             var bPart = Random(0, 5);
             var bPartText = "you";
@@ -1646,7 +1628,8 @@ namespace P3Net.Arx
             }
         }
 
-        public static int OpponentChooseWeapon ()
+        //TODO: Not used but check to see if we need it
+        private static int OpponentChooseWeapon ()
         {
             weaponProbabilities[0] = Opponents[0].c1;
             weaponProbabilities[1] = Opponents[0].c2;
@@ -1678,7 +1661,7 @@ namespace P3Net.Arx
             return chosenWeaponNo;
         }
 
-        public static void OpponentDeath ()
+        private static void OpponentDeath ()
         {
             var str = $"The {Opponents[0].name} {Opponents[0].armorText}.";
             ConsoleMessage(str);
@@ -1687,16 +1670,17 @@ namespace P3Net.Arx
             checkForTreasure = true;
         }
 
-        public static void OpponentLeaves ()
+        private static void OpponentLeaves ()
         {
             var str = $"The {Opponents[0].name} leaves.";
             ConsoleMessage(str);
             encounterRunning = false;
         }
 
-        public static void PauseEncounter () => ConsoleMessage("(Paused)@@@@@(Press SPACE to continue)");
+        private static void PauseEncounter () => ConsoleMessage("(Paused)@@@@@(Press SPACE to continue)");
 
-        public static void PlayerAttack ( int attackType, float attackFactorBonus )
+        //TODO: Should this be with Player?
+        private static void PlayerAttack ( int attackType, float attackFactorBonus )
         {
             var str = "";
             var missileWeapon = false;
@@ -1823,11 +1807,11 @@ namespace P3Net.Arx
             playerTurn = false;
         }
 
-        public static void PlayerCharm ()
+        //TODO: Should this be with Player?
+        private static void PlayerCharm ()
         {
             UpdateDisplay(); // sloppy!
 
-            //C++ TO C# CONVERTER TODO TASK: The following line was determined to be a copy assignment (rather than a reference assignment) - this should be verified and a 'CopyFrom' method should be created:
             opponent.CopyFrom(Opponents[0]);
             encounterNotHostile = false;
             var charmSuccess = false;
@@ -1882,7 +1866,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void PlayerHail ()
+        private static void PlayerHail ()
         {
             var str = "";
 
@@ -1997,7 +1981,7 @@ namespace P3Net.Arx
             encounterRunning = false;
         }
 
-        public static void PlayerOffer ()
+        private static void PlayerOffer ()
         {
             UpdateDisplay(); // temporary - won't work when rain is added or for an animated character
             var offermade = false;
@@ -2120,9 +2104,9 @@ namespace P3Net.Arx
             encounterRunning = false;
         }
 
-        public static void PlayerSnatch () { }
+        private static void PlayerSnatch () { }
 
-        public static void PlayerSwitchWeapons ()
+        private static void PlayerSwitchWeapons ()
         {
             var str = "Switching to " + itemBuffer[plyr.secWeapon].name + ".";
             var oldPrimary = plyr.priWeapon;
@@ -2131,7 +2115,7 @@ namespace P3Net.Arx
             ConsoleMessage(str);
         }
 
-        public static void PlayerTransact ()
+        private static void PlayerTransact ()
         {
             if ((Opponents[0].alignment > 127) && (encounterNotHostile))
                 encounterMenu = 2;
@@ -2145,13 +2129,11 @@ namespace P3Net.Arx
             }
         }
 
-        public static void PlayerTrick ()
+        private static void PlayerTrick ()
         {
             UpdateDisplay();
             encounterNotHostile = false;
 
-            //C++ TO C# CONVERTER TODO TASK: The following line was determined to be a copy assignment (rather than a reference assignment) - this should be verified and a 'CopyFrom' method should be created:
-            //ORIGINAL LINE: opponent = Opponents[0];
             opponent.CopyFrom(Opponents[0]);
 
             var trickSuccess = false;
@@ -2212,9 +2194,9 @@ namespace P3Net.Arx
             }
         }
 
-        public static void PlayerWaylay () { }
+        private static void PlayerWaylay () { }
 
-        public static void ProcessOpponentAction ()
+        private static void ProcessOpponentAction ()
         {
             if (encounterNotHostile)
             {
@@ -2239,7 +2221,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void ProcessPlayerAction ()
+        private static void ProcessPlayerAction ()
         {
             if (opponentSurprised)
                 encounterMenu = 3;
@@ -2422,7 +2404,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void RemoveOpponent ()
+        private static void RemoveOpponent ()
         {
             // Removes Opponents[0], shuffles the other 7 and adds an Empty
 
@@ -2432,7 +2414,7 @@ namespace P3Net.Arx
             Opponents[(MAX_OPPONENTS - 1)] = Monsters[(int)Encounters.FbiAgent];
         }
 
-        public static void SelectEncounterTheme ()
+        private static void SelectEncounterTheme ()
         {            
             switch (plyr.scenario)
             {
@@ -2451,7 +2433,7 @@ namespace P3Net.Arx
             };
         }
 
-        public static void SurrenderToGuard ()
+        private static void SurrenderToGuard ()
         {
             ConsoleMessage("Enough of thy antics,@to the pokey with thee!");
             if (plyr.guildMemberships[0] > 0)
@@ -2467,21 +2449,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void Text ( string str )
-        {
-            var keynotpressed = true;
-            while (keynotpressed)
-            {
-                DrawEncounterView();
-                CyText(4, str);
-                UpdateDisplay();
-                var key = GetSingleKey();
-                if (key != "")
-                    keynotpressed = false;
-            }
-        }
-
-        public static void ThiefYield ()
+        private static void ThiefYield ()
         {
             var str = "";
             if ((plyr.gold == 0) && (plyr.silver == 0) && (plyr.copper == 0) && (plyr.gems == 0) && (plyr.jewels == 0))
@@ -2501,7 +2469,7 @@ namespace P3Net.Arx
             encounterRunning = false;
         }
 
-        public static void UpdateConsoleMessages ()
+        private static void UpdateConsoleMessages ()
         {
             // Moves messages along so index [0] contains next message to be printed (if any).
             for (var i = 0; i < MAX_CONSOLE_MESSAGES; ++i)
@@ -2513,11 +2481,11 @@ namespace P3Net.Arx
             }
         }
 
-        public static void UpdateEncounterStatusText ()
+        private static void UpdateEncounterStatusText ()
         {
             // Draw status line text
             var text = "";
-            SetFontColour(111, 159, 6, 255);
+            SetFontColor(111, 159, 6, 255);
 
             var turnText = (encounterTurns == 0) ? "encounter" : "face";
 
@@ -2544,10 +2512,10 @@ namespace P3Net.Arx
             var xpos = (40 - length) / 2;
 
             DrawText(xpos, 5, text);
-            SetFontColour(215, 215, 215, 255);
+            SetFontColor(215, 215, 215, 255);
         }
 
-        public static void UpdateOpponents ()
+        private static void UpdateOpponents ()
         {
             // Count total remaining opponents
             encounterQuantity = 0;
@@ -2557,7 +2525,9 @@ namespace P3Net.Arx
                     encounterQuantity++;
             }
         }
+        #endregion
 
+        //TODO: Fixed encounters, what do we do with this?
         // Level 1 - Fixed Encounters
         //51,4,88,
         //54,5,95,
@@ -2598,8 +2568,5 @@ namespace P3Net.Arx
         //11,9,9c
         //12,10,9b
         //14,13,87 basilisk
-
-        //extern int statPanelY;
-        //extern bool musicPlaying;
     }
 }

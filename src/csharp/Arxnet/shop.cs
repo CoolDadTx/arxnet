@@ -11,18 +11,22 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: This should be base type of other "shops"
     public class Shop
     {
+        //TODO: Use TimeRange
         public int closingHour { get; set; }
 
         public float initialPriceFactor { get; set; }
 
+        //TODO: What does this mean?
         public int location { get; set; } // match with location text description number
 
         public float minimumPriceFactor { get; set; }
 
         public string name { get; set; }
 
+        //TODO: Use TimeRange
         public int openingHour { get; set; }
     }
 }

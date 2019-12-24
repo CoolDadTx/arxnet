@@ -11,6 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: Should this be part of core Item type?
     public class ShopClothingItem
     {
         public int itemRef { get; set; }

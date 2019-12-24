@@ -8,7 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
-using System.Linq;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
@@ -20,8 +20,31 @@ namespace P3Net.Arx
 
         public string filename { get; set; }
 
-        public int height { get; set; }
+        //TODO: Should this really be settable?
+        public Size Size
+        {
+            //TODO: Use auto property once obsolete
+            get => _size;
+            set => _size = value;
+        }
 
-        public int width { get; set; }
+        [Obsolete("Use Size")]
+        public int height
+        {
+            get => _size.Height;
+            set => _size.Height = value;
+        }
+
+        [Obsolete("Use Size")]
+        public int width
+        {
+            get => _size.Width;
+            set => _size.Width = value;
+        }
+
+        #region Private Members
+
+        private Size _size;
+        #endregion
     }
 }
