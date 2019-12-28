@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using Drawing = System.Drawing;
 
 using SFML.Graphics;
 using SFML.System;
@@ -15,7 +16,7 @@ using SFML.Window;
 
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
-using OpenTK;
+
 using Arxnet.OpenTK.Compatibility;
 
 namespace P3Net.Arx
@@ -26,41 +27,26 @@ namespace P3Net.Arx
         {
             var title = "Alternate Reality X " + version;
 
-            var styles = windowMode == 0 ? Styles.Close : Styles.Fullscreen;
+            var styles = windowMode == WindowMode.Window ? Styles.Close : Styles.Fullscreen;
 
-            App = new RenderWindow(new VideoMode((uint)windowWidth, (uint)windowHeight), title, styles);
+            App = new RenderWindow(new VideoMode((uint)WindowSize.Width, (uint)WindowSize.Height), title, styles);
 
             // Print OpenGL settings to game console for information
             var settings = App.Settings;
-            Console.Write("Welcome to Alternate Reality X ");
-            Console.Write(version);
-            Console.Write(" ...");
-            Console.Write("\n");
-            Console.Write("\n");
-            Console.Write("OpenGL Settings:\n\n");
-            Console.Write("Depth bits:           ");
-            Console.Write(settings.DepthBits);
-            Console.Write("\n");
-            Console.Write("Stencil bits:         ");
-            Console.Write(settings.StencilBits);
-            Console.Write("\n");
-            Console.Write("Anti-aliasing level:  ");
-            Console.Write(settings.AntialiasingLevel);
-            Console.Write("\n");
-            Console.Write("OpenGL Version:       ");
-            Console.Write(settings.MajorVersion);
-            Console.Write(".");
-            Console.Write(settings.MinorVersion);
-            Console.Write("\n");
-            Console.Write("\n");
-            Console.Write("Window Size:          ");
-            Console.Write(windowWidth);
-            Console.Write(" x ");
-            Console.Write(windowHeight);
-            Console.Write("\n");
-            Console.Write("\n");
-            Console.Write("\n");
-            
+            Console.WriteLine($"Welcome to Alternate Reality X {version}");
+            Console.WriteLine(" ...");
+            Console.WriteLine();
+            Console.WriteLine("OpenGL Settings:");
+            Console.WriteLine();
+            Console.WriteLine($"Depth bits:           {settings.DepthBits}");
+            Console.WriteLine($"Stencil bits:         {settings.StencilBits}");
+            Console.WriteLine($"Anti-aliasing level:  {settings.AntialiasingLevel}");
+            Console.WriteLine($"OpenGL Version:       {settings.MajorVersion}{settings.MinorVersion}");
+            Console.WriteLine();
+            Console.WriteLine($"Window Size:          {WindowSize.Width} x {WindowSize.Height}");
+            Console.WriteLine();
+            Console.WriteLine();
+
             // Limit the framerate to 60 frames per second (this step is optional)
             App.SetFramerateLimit(60);
 
@@ -74,8 +60,7 @@ namespace P3Net.Arx
             if (animationNotStarted)
             {
                 currentFrame = firstFrame;
-                yOffset = encounterAnim[currentFrame].yOffset;
-                xOffset = encounterAnim[currentFrame].xOffset;
+                Offset = encounterAnim[currentFrame].Offset;
                 animImage = encounterAnim[currentFrame].image;
                 animDuration = encounterAnim[currentFrame].duration;
                 animationNotStarted = false;
@@ -86,8 +71,7 @@ namespace P3Net.Arx
                 currentFrame++;
                 if (currentFrame == (lastFrame+1))
                     currentFrame = firstFrame;
-                yOffset = encounterAnim[currentFrame].yOffset;
-                xOffset = encounterAnim[currentFrame].xOffset;
+                Offset = encounterAnim[currentFrame].Offset;
                 animImage = encounterAnim[currentFrame].image;
                 animDuration = encounterAnim[currentFrame].duration;
             }
@@ -104,20 +88,17 @@ namespace P3Net.Arx
             // Calculate new image width and height based on viewport size
             //var encWidth = (int)(viewWidth / 4.5);
             //var encHeight = (int)(viewHeight / 1.125);
-
+            
             /* SET POSITION OF RESIZED IMAGE ON SCREEN */
-            var encX = (windowWidth / 2) - 32;
-            var encY = (viewPortY + viewHeight) - 130;
+            var encX = (WindowSize.Width / 2) - 32;
+            var encY = (viewPortY + ViewSize.Height) - 130;
 
-            if ((xOffset == 0) && (yOffset == 0))
-                encImage.Position = new Vector2f(encX, encY);
-            else
-                encImage.Position = new Vector2f(viewPortX - 32 + (xOffset), viewPortY + (yOffset * 2));
+            encImage.Position = Offset.IsEmpty ? new Vector2f(encX, encY) : new Vector2f(viewPortX - 32 + Offset.X, viewPortY + (Offset.Y * 2));
 
             // DRAW DISPLAY AND FINAL ENCOUNTER IMAGE
             DispMain();
 
-            if (graphicMode == (int)DisplayOptions.AtariSmall)
+            if (graphicMode == DisplayOptions.AtariSmall)
                 App.Draw(encImage);
         }
 
@@ -260,12 +241,12 @@ namespace P3Net.Arx
             GL.LoadIdentity();
 
             /* Original small 3D view */
-            Glu.Perspective(45, (float)viewWidth / viewHeight, 0.1, 100);
-            if (graphicMode < 2)
+            Glu.Perspective(45, (float)(ViewSize.Width / ViewSize.Height), 0.1, 100);
+            if (graphicMode != DisplayOptions.AlternateLarge)
             {
-                var z = windowHeight - (viewPortY + viewHeight);
+                var z = WindowSize.Height - (viewPortY + ViewSize.Height);
 
-                GL.Viewport(viewPortX, z, viewWidth, viewHeight);
+                GL.Viewport(viewPortX, z, ViewSize.Width, ViewSize.Height);
                 GL.Translate(0.0, 0.0, -1.0);
             } else
             {
@@ -278,7 +259,7 @@ namespace P3Net.Arx
         public static void DrawConsoleBackground ()
         {
             /* Draws a transparent box with yellow border around the console window whilst exploring and in large 3D view mode */
-            if ((plyr.status != GameStates.Module) && (graphicMode == 2)) // Whilst not shopping
+            if ((plyr.status != GameStates.Module) && (graphicMode == DisplayOptions.AlternateLarge)) // Whilst not shopping
             {
                 var rectangle = new RectangleShape() {
                     Size = new Vector2f(670, 182),
@@ -304,7 +285,6 @@ namespace P3Net.Arx
         {
             DrawLogo();
 
-            //var tempy = (windowHeight - (180 + 240)) / 2;
             var z = (240) / 18;
             var x = 2;
 
@@ -436,11 +416,13 @@ namespace P3Net.Arx
             DrawStatsPanel();
             DrawCompass();
             DrawAutomap();
-            if ((graphicMode == (int)DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Encounter))
+            if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Encounter))
                 DrawConsoleBackground();
         }
 
         //TODO: Move to create character
+        public static void DrawImage ( string imagename, Drawing.Point pos ) => DrawImage(imagename, pos.X, pos.Y);
+            
         public static void DrawImage ( string imagename, int x, int y )
         {
             // Counter images for Dungeon gate character creation
@@ -493,8 +475,8 @@ namespace P3Net.Arx
         {
             LogoImage = new Texture("data/images/logo640x240.png");
             LogoSprite.Texture = LogoImage;
-            var x = (windowWidth - 640) / 2;
-            var y = (windowHeight - (180 + 240)) / 2;
+            var x = (WindowSize.Width - 640) / 2;
+            var y = (WindowSize.Height - (180 + 240)) / 2;
             LogoSprite.Position = new Vector2f(x, y);
         }
 
@@ -722,7 +704,7 @@ namespace P3Net.Arx
         public static void DrawStatsPanel ()
         {
             //TODO: What is state 5?
-            if ((graphicMode == 2) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
+            if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
             {
                 var rectangle = new RectangleShape() {
                     Size = new Vector2f(640, 110), // 640, 110
@@ -736,7 +718,7 @@ namespace P3Net.Arx
             Banner.Position = new Vector2f(statPanelX, statPanelY - 1);
             if (plyr.status == GameStates.Module)
             {
-                var statsX = (windowWidth - 640) / 2;
+                var statsX = (WindowSize.Width - 640) / 2;
                 //var statsY = ((windowHeight - 144) / 2) - 126; // 144 pixels for picture + 16 space + stats height
                 Banner.Position = new Vector2f(statsX, shopStatsY - 1);
             }
@@ -803,12 +785,12 @@ namespace P3Net.Arx
 
             if (plyr.diagOn)
             {
-                DrawText(2, 0, $"X:{plyr.x} Y:{plyr.y} Special:{plyr.special}  Zone:{plyr.zone} Set:{plyr.zoneSet}");
+                DrawText(2, 0, $"X:{plyr.Position.X} Y:{plyr.Position.Y} Special:{plyr.special}  Zone:{plyr.zone} Set:{plyr.zoneSet}");
                 DrawText(2, 1, $"Front:{plyr.front}  Left:{plyr.left} Right:{plyr.right}  Back:{plyr.back}");
 
                 DrawText(2, 5, $"Offset: {plyr.z_offset}");
                 DrawText(2, 2, $"Floor:{zones[plyr.zoneSet].floor}  Ceiling:{zones[plyr.zoneSet].ceiling}");
-                DrawText(2, 3, $"Location:{plyr.location}");
+                DrawText(2, 3, $"Position:{plyr.location}");
 
                 var e = ReturnCarriedWeight();
                 DrawText(2, 4, $"Encumbrance:{e}");
@@ -821,10 +803,10 @@ namespace P3Net.Arx
         {
             if (plyr.compasses > 0)
             {
-                if ((plyr.status != GameStates.Module) && (graphicMode == 2)) // if exploring and full screen draw a background
+                if ((plyr.status != GameStates.Module) && (graphicMode == DisplayOptions.AlternateLarge)) // if exploring and full screen draw a background
                 {
                     var x = 16;
-                    var y = (windowHeight - 128) / 2;
+                    var y = (WindowSize.Height - 128) / 2;
 
                     var rectangle = new RectangleShape() {
                         Size = new Vector2f(130, 130),
@@ -858,16 +840,16 @@ namespace P3Net.Arx
 
                 compass.Texture = texture;
 
-                if (graphicMode == 2)
+                if (graphicMode == DisplayOptions.AlternateLarge)
                 {
                     var x = 16;
-                    var y = (windowHeight - 128) / 2;
+                    var y = (WindowSize.Height - 128) / 2;
                     compass.Position = new Vector2f(x, y);
                 } else
                 {
                     /* Normal Small 3D view mode */
                     var x = (viewPortX - 128) / 2;
-                    var y = viewPortY + ((viewHeight - 128) / 2);
+                    var y = viewPortY + ((ViewSize.Height - 128) / 2);
                     compass.Position = new Vector2f(x, y);
                 }
                 App.Draw(compass);
@@ -886,7 +868,7 @@ namespace P3Net.Arx
         //TODO: Move to Shop
         public static void LoadShopImage ( int imageno )
         {
-            var useGraphics2 = graphicMode > 0;
+            var useGraphics2 = graphicMode.UseAlternateTextures();
             var texturePath = useGraphics2 ? "data/images/locations2/" : "data/images/locations";
 
             //TODO: Consolidate image names to eliminate the file checks
@@ -980,7 +962,7 @@ namespace P3Net.Arx
 
             ShopSprite.Texture = new Texture(texturePath);
             ShopSprite.Scale = new Vector2f(2.0F, 2.0F);
-            ShopSprite.Position = new Vector2f((windowWidth - 640) / 2, shopPictureY);
+            ShopSprite.Position = new Vector2f((WindowSize.Width - 640) / 2, shopPictureY);
         }
 
         public static int CheckCityDoors () => 0;
@@ -1011,59 +993,52 @@ namespace P3Net.Arx
             encImage.TextureRect = new IntRect(tileX, tileY, 64, 128);
         }
         
-        
+        //TODO: Clean this up
         private static void SetScreenValues ()
         {
             // Determines screen element locations based on window dimensions
-            gateX = (windowWidth - 640) / 2;
-            gateY = ((windowHeight - 384) / 2) - 78;
+            gateX = (WindowSize.Width - 640) / 2;
+            gateY = (WindowSize.Height - 384) / 2 - 78;
             loadingX = 16;
             loadingY = 11;
 
             var spacer = 0; // spacer value between screen elements - adjust here
             var consoleHeight = (16 + 2) * 10; // How tall is 10 lines of console text (16 pixels with 2 pixel space between lines)
-            statPanelX = (windowWidth - 640) / 2; // Center in middle of window width
-            consoleX = (windowWidth - 640) / 2; // Center in middle of window width
+            statPanelX = (WindowSize.Width - 640) / 2; // Center in middle of window width
+            consoleX = (WindowSize.Width - 640) / 2; // Center in middle of window width
 
             /* Original small 3D view */
-            if (graphicMode < 2)
+            if (graphicMode.UseOriginalSize())            
             {
-                viewWidth = 288;
-                viewHeight = 144;
-                viewPortX = (windowWidth - viewWidth) / 2;
-                var temp = 110 + spacer + viewHeight + spacer + consoleHeight;
-                statPanelY = (windowHeight - temp) / 2;
+                ViewSize = new Drawing.Size(288, 144);
+                viewPortX = (WindowSize.Width - ViewSize.Width) / 2;
+                var spacing = 110 + spacer + ViewSize.Height + spacer + consoleHeight;
+                statPanelY = (WindowSize.Height - spacing) / 2;
                 viewPortY = statPanelY + 110 + spacer;
-                consoleY = viewPortY + viewHeight + 4;
-                miniMapX = windowWidth - (((((windowWidth - viewWidth) / 2) - 144) / 2) + 144);
-                miniMapY = spacer + viewPortY + ((viewHeight - 144) / 2);
-            }
-
-            /* New large 3D view */
-            if (graphicMode == 2)
+                consoleY = viewPortY + ViewSize.Height + 4;
+                miniMapX = WindowSize.Width - (((((WindowSize.Width - ViewSize.Width) / 2) - 144) / 2) + 144);
+                miniMapY = spacer + viewPortY + ((ViewSize.Height - 144) / 2);
+            } else  /* New large 3D view */
             {
-                viewWidth = windowWidth;
-                viewHeight = windowHeight;
+                ViewSize = new Drawing.Size(WindowSize.Width, WindowSize.Height);
                 viewPortX = 0;
-                viewPortY = windowHeight - viewHeight;
+                viewPortY = WindowSize.Height - ViewSize.Height;
                 statPanelY = 16;
-                consoleY = (windowHeight - 32) - 144; // 16 x 10 not quite right
-                miniMapX = (windowWidth - 16) - 176;
-                miniMapY = (windowHeight - 176) / 2;
+                consoleY = (WindowSize.Height - 32) - 144; // 16 x 10 not quite right
+                miniMapX = (WindowSize.Width - 16) - 176;
+                miniMapY = (WindowSize.Height - 176) / 2;
             }
 
             /* Shop positions are the same regardless of small / large 3D view choice */
-            {
-                var temp = 110 + spacer + 144 + 16 + consoleHeight;
-                shopStatsY = ((windowHeight - temp) / 2);
-                shopStatsY = statPanelY;
-                shopPictureY = shopStatsY + 110 + spacer;
-                shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
-            };
+            var temp = 110 + spacer + 144 + 16 + consoleHeight;
+            shopStatsY = ((WindowSize.Height - temp) / 2);
+            shopStatsY = statPanelY;
+            shopPictureY = shopStatsY + 110 + spacer;
+            shopConsoleY = shopPictureY + 144 + spacer; // 16 to put space between image and console text
 
             /* Misc assignments for positioning */
 
-            lyricX = (windowWidth - 640) / 2;
+            lyricX = (WindowSize.Width - 640) / 2;
             lyricY = shopPictureY - 18;
 
         }        
@@ -1074,227 +1049,230 @@ namespace P3Net.Arx
 
         #region Review Data
 
-        public static Sprite encImage = new Sprite();
+        public static Sprite encImage { get; set; } = new Sprite();
 
-        public static string version = "0.82";
+        public const string version = "0.82";
 
-        public static int windowMode;
-        public static int graphicMode;
-        public static int windowWidth;
-        public static int windowHeight;
-        public static int viewWidth;
-        public static int viewHeight;
-        public static int viewPortX;
-        public static int viewPortY;
-        public static int statPanelX; // x starting position for displaying the stats banner for centering
-        public static int statPanelY;
-        public static int consoleY; // y position for displaying the bottom screen info panel
-        public static int consoleX; // x starting position for displaying the panel for centering
-        public static int miniMapY; // y position for displaying the bottom screen info panel
-        public static int miniMapX; // x starting position for displaying the panel for centering
-        public static int lyricX;
-        public static int lyricY;
-        public static int loadingX;
-        public static int loadingY;
-        public static int gateX;
-        public static int gateY;
-        public static int shopStatsY; // y position for stats in shops
-        public static int shopConsoleY; // y position for console in shops
-        public static int shopPictureY;
+        public static WindowMode windowMode { get; set; }
+
+        public static DisplayOptions graphicMode { get; set; }
+
+        public static Drawing.Size WindowSize { get; set; }
+
+        public static Drawing.Size ViewSize { get; set; }
+
+        public static int viewPortX { get; set; }
+        public static int viewPortY { get; set; }
+        public static int statPanelX { get; set; } // x starting position for displaying the stats banner for centering
+        public static int statPanelY { get; set; }
+        public static int consoleY { get; set; } // y position for displaying the bottom screen info panel
+        public static int consoleX { get; set; } // x starting position for displaying the panel for centering
+        public static int miniMapY { get; set; } // y position for displaying the bottom screen info panel
+        public static int miniMapX { get; set; } // x starting position for displaying the panel for centering
+        public static int lyricX { get; set; }
+        public static int lyricY { get; set; }
+        public static int loadingX { get; set; }
+        public static int loadingY { get; set; }
+        public static int gateX { get; set; }
+        public static int gateY { get; set; }
+        public static int shopStatsY { get; set; } // y position for stats in shops
+        public static int shopConsoleY { get; set; } // y position for console in shops
+        public static int shopPictureY { get; set; }
 
         // Main window
-        public static RenderWindow App;
+        public static RenderWindow App { get; set; }
 
-        public static bool mainMenuQuit = false;
+        public static bool mainMenuQuit { get; set; }
 
         //TODO: Put in a texture cache to lazy load and release this
         //TODO: Make this array or something so we can more quickly update it
-        public static Texture img0;
-        public static Texture img1;
-        public static Texture img2;
-        public static Texture img3;
-        public static Texture img4;
-        public static Texture img5;
-        public static Texture img6;
-        public static Texture img7;
-        public static Texture img8;
-        public static Texture img9;
-        public static Texture imgDungeonGate;
-        public static Texture imgCityGate;
-        public static Texture imgc0;
-        public static Texture imgc1;
-        public static Texture imgc2;
-        public static Texture imgc3;
-        public static Texture imgc4;
-        public static Texture imgc5;
-        public static Texture imgc6;
-        public static Texture imgc7;
-        public static Texture imgc8;
-        public static Texture imgc9;
-        public static Texture consoleImage;
-        public static Texture BannerImageCity;
-        public static Texture BannerImageStrip;
-        public static Texture compassN;
-        public static Texture compassS;
-        public static Texture compassW;
-        public static Texture compassE;
-        public static Texture ShopImage;
-        public static Texture LogoImage;
+        public static Texture img0 { get; set; }
+        public static Texture img1 { get; set; }
+        public static Texture img2 { get; set; }
+        public static Texture img3 { get; set; }
+        public static Texture img4 { get; set; }
+        public static Texture img5 { get; set; }
+        public static Texture img6 { get; set; }
+        public static Texture img7 { get; set; }
+        public static Texture img8 { get; set; }
+        public static Texture img9 { get; set; }
+        public static Texture imgDungeonGate { get; set; }
+        public static Texture imgCityGate { get; set; }
+        public static Texture imgc0 { get; set; }
+        public static Texture imgc1 { get; set; }
+        public static Texture imgc2 { get; set; }
+        public static Texture imgc3 { get; set; }
+        public static Texture imgc4 { get; set; }
+        public static Texture imgc5 { get; set; }
+        public static Texture imgc6 { get; set; }
+        public static Texture imgc7 { get; set; }
+        public static Texture imgc8 { get; set; }
+        public static Texture imgc9 { get; set; }
+        public static Texture consoleImage { get; set; }
+        public static Texture BannerImageCity { get; set; }
+        public static Texture BannerImageStrip { get; set; }
+        public static Texture compassN { get; set; }
+        public static Texture compassS { get; set; }
+        public static Texture compassW { get; set; }
+        public static Texture compassE { get; set; }
+        public static Texture ShopImage { get; set; }
+        public static Texture LogoImage { get; set; }
 
         //TODO: Use a sprite cache to lazy load, release these
-        public static Sprite Banner = new Sprite();
-        public static Sprite BannerStrip = new Sprite();
-        public static Sprite counterImage = new Sprite();
-        public static Sprite dungeonGate = new Sprite();
-        public static Sprite cityGate = new Sprite();
-        public static Sprite compass = new Sprite();
-        public static Sprite ShopSprite = new Sprite();
-        public static Sprite LogoSprite = new Sprite();
+        public static Sprite Banner { get; set; } = new Sprite();
+        public static Sprite BannerStrip { get; set; } = new Sprite();
+        public static Sprite counterImage { get; set; } = new Sprite();
+        public static Sprite dungeonGate { get; set; } = new Sprite();
+        public static Sprite cityGate { get; set; } = new Sprite();
+        public static Sprite compass { get; set; } = new Sprite();
+        public static Sprite ShopSprite { get; set; } = new Sprite();
+        public static Sprite LogoSprite { get; set; } = new Sprite();
         
-        public static string olddrawText; // text string used for setting and passing strings to the print routine
+        public static string olddrawText { get; set; } // text string used for setting and passing strings to the print routine
 
         // If image2 == 255 then just display image1 rather than use animations below
         //Dungeon Monster Animation Scripts
 
         //TODO: Move to data file
-        public static AnimFrame[] encounterAnim =
+        public static AnimFrame[] encounterAnim { get; set; } =
         {
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 0, duration = 12 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 1, duration = 12 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 2, duration = 12 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 3, duration = 111 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 3, duration = 111 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 6, duration = 100 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 7, duration = 36 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 8, duration = 36 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 9, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 10, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 11, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 12, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 13, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 14, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 15, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 16, duration = 36 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 17, duration = 100 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 18, duration = 50 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 19, duration = 50 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 20, duration = 144 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 21, duration = 144 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 22, duration = 144 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 23, duration = 144 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 24, duration = 20 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 25, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 26, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 27, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 28, duration = 88 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 29, duration = 88 },
-            new AnimFrame() { xOffset = 154, yOffset = 9, image = 30, duration = 20 },
-            new AnimFrame() { xOffset = 150, yOffset = 11, image = 31, duration = 24 },
-            new AnimFrame() { xOffset = 153, yOffset = 13, image = 30, duration = 20 },
-            new AnimFrame() { xOffset = 156, yOffset = 11, image = 31, duration = 24 },
-            new AnimFrame() { xOffset = 157, yOffset = 10, image = 30, duration = 20 },
-            new AnimFrame() { xOffset = 160, yOffset = 9, image = 31, duration = 24 },
-            new AnimFrame() { xOffset = 159, yOffset = 11, image = 30, duration = 20 },
-            new AnimFrame() { xOffset = 157, yOffset = 12, image = 31, duration = 24 },
-            new AnimFrame() { xOffset = 154, yOffset = 9, image = 32, duration = 20 },
-            new AnimFrame() { xOffset = 150, yOffset = 11, image = 33, duration = 24 },
-            new AnimFrame() { xOffset = 153, yOffset = 13, image = 32, duration = 20 },
-            new AnimFrame() { xOffset = 156, yOffset = 11, image = 33, duration = 24 },
-            new AnimFrame() { xOffset = 157, yOffset = 10, image = 32, duration = 20 },
-            new AnimFrame() { xOffset = 160, yOffset = 9, image = 33, duration = 24 },
-            new AnimFrame() { xOffset = 159, yOffset = 11, image = 32, duration = 20 },
-            new AnimFrame() { xOffset = 157, yOffset = 12, image = 33, duration = 24 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 34, duration = 88 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 35, duration = 88 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 36, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 37, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 38, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 39, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 38, duration = 16 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 40, duration = 42 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 41, duration = 42 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 43, duration = 20 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 44, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 45, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 42, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 46, duration = 35 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 47, duration = 35 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 48, duration = 35 },
-            new AnimFrame() { xOffset = 156, yOffset = 11, image = 49, duration = 42 },
-            new AnimFrame() { xOffset = 155, yOffset = 10, image = 49, duration = 42 },
-            new AnimFrame() { xOffset = 155, yOffset = 9, image = 49, duration = 42 },
-            new AnimFrame() { xOffset = 156, yOffset = 10, image = 49, duration = 42 },
-            new AnimFrame() { xOffset = 157, yOffset = 11, image = 49, duration = 42 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 50, duration = 22 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 51, duration = 22 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 52, duration = 22 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 53, duration = 22 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 54, duration = 40 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 55, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 56, duration = 56 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 57, duration = 28 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 58, duration = 33 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 59, duration = 33 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 60, duration = 64 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 61, duration = 64 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 62, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 63, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 64, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 65, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 66, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 67, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 68, duration = 56 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 69, duration = 28 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 70, duration = 40 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 71, duration = 40 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 72, duration = 40 },
-            new AnimFrame() { xOffset = 157, yOffset = 8, image = 73, duration = 18 },
-            new AnimFrame() { xOffset = 157, yOffset = 8, image = 74, duration = 19 },
-            new AnimFrame() { xOffset = 157, yOffset = 8, image = 75, duration = 19 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 76, duration = 100 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 77, duration = 100 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 78, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 79, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 80, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 81, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 82, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 83, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 84, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 85, duration = 18 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 86, duration = 10 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 87, duration = 14 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 88, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 89, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 90, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 91, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 92, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 93, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 94, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 95, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 96, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 97, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 98, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 99, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 100, duration = 32 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 101, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 102, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 101, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 102, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 103, duration = 48 },
-            new AnimFrame() { xOffset = 0, yOffset = 0, image = 102, duration = 48 }
+            new AnimFrame() { image = 0, duration = 12 },
+            new AnimFrame() { image = 1, duration = 12 },
+            new AnimFrame() { image = 2, duration = 12 },
+            new AnimFrame() { image = 3, duration = 111 },
+            new AnimFrame() { image = 3, duration = 111 },
+            new AnimFrame() { image = 6, duration = 100 },
+            new AnimFrame() { image = 7, duration = 36 },
+            new AnimFrame() { image = 8, duration = 36 },
+            new AnimFrame() { image = 9, duration = 48 },
+            new AnimFrame() { image = 10, duration = 48 },
+            new AnimFrame() { image = 11, duration = 32 },
+            new AnimFrame() { image = 12, duration = 16 },
+            new AnimFrame() { image = 13, duration = 16 },
+            new AnimFrame() { image = 14, duration = 16 },
+            new AnimFrame() { image = 15, duration = 16 },
+            new AnimFrame() { image = 16, duration = 36 },
+            new AnimFrame() { image = 17, duration = 100 },
+            new AnimFrame() { image = 18, duration = 50 },
+            new AnimFrame() { image = 19, duration = 50 },
+            new AnimFrame() { image = 20, duration = 144 },
+            new AnimFrame() { image = 21, duration = 144 },
+            new AnimFrame() { image = 22, duration = 144 },
+            new AnimFrame() { image = 23, duration = 144 },
+            new AnimFrame() { image = 24, duration = 20 },
+            new AnimFrame() { image = 25, duration = 18 },
+            new AnimFrame() { image = 26, duration = 18 },
+            new AnimFrame() { image = 27, duration = 18 },
+            new AnimFrame() { image = 28, duration = 88 },
+            new AnimFrame() { image = 29, duration = 88 },
+            new AnimFrame() { Offset = new Drawing.Point(154, 9), image = 30, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(150, 11), image = 31, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(153, 13), image = 30, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(156, 11), image = 31, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 10), image = 30, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(160, 9), image = 31, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(159, 11), image = 30, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 12), image = 31, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(154, 9), image = 32, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(150, 11), image = 33, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(153, 13), image = 32, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(156, 11), image = 33, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 10), image = 32, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(160, 9), image = 33, duration = 24 },
+            new AnimFrame() { Offset = new Drawing.Point(159, 11), image = 32, duration = 20 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 12), image = 33, duration = 24 },
+            new AnimFrame() { image = 34, duration = 88 },
+            new AnimFrame() { image = 35, duration = 88 },
+            new AnimFrame() { image = 36, duration = 16 },
+            new AnimFrame() { image = 37, duration = 16 },
+            new AnimFrame() { image = 38, duration = 16 },
+            new AnimFrame() { image = 39, duration = 16 },
+            new AnimFrame() { image = 38, duration = 16 },
+            new AnimFrame() { image = 40, duration = 42 },
+            new AnimFrame() { image = 41, duration = 42 },
+            new AnimFrame() { image = 43, duration = 20 },
+            new AnimFrame() { image = 44, duration = 18 },
+            new AnimFrame() { image = 45, duration = 18 },
+            new AnimFrame() { image = 42, duration = 18 },
+            new AnimFrame() { image = 46, duration = 35 },
+            new AnimFrame() { image = 47, duration = 35 },
+            new AnimFrame() { image = 48, duration = 35 },
+            new AnimFrame() { Offset = new Drawing.Point(156, 11), image = 49, duration = 42 },
+            new AnimFrame() { Offset = new Drawing.Point(155, 10), image = 49, duration = 42 },
+            new AnimFrame() { Offset = new Drawing.Point(155, 9), image = 49, duration = 42 },
+            new AnimFrame() { Offset = new Drawing.Point(156, 10), image = 49, duration = 42 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 11), image = 49, duration = 42 },
+            new AnimFrame() { image = 50, duration = 22 },
+            new AnimFrame() { image = 51, duration = 22 },
+            new AnimFrame() { image = 52, duration = 22 },
+            new AnimFrame() { image = 53, duration = 22 },
+            new AnimFrame() { image = 54, duration = 40 },
+            new AnimFrame() { image = 55, duration = 10 },
+            new AnimFrame() { image = 56, duration = 56 },
+            new AnimFrame() { image = 57, duration = 28 },
+            new AnimFrame() { image = 58, duration = 33 },
+            new AnimFrame() { image = 59, duration = 33 },
+            new AnimFrame() { image = 60, duration = 64 },
+            new AnimFrame() { image = 61, duration = 64 },
+            new AnimFrame() { image = 62, duration = 10 },
+            new AnimFrame() { image = 63, duration = 10 },
+            new AnimFrame() { image = 64, duration = 10 },
+            new AnimFrame() { image = 65, duration = 10 },
+            new AnimFrame() { image = 66, duration = 10 },
+            new AnimFrame() { image = 67, duration = 10 },
+            new AnimFrame() { image = 68, duration = 56 },
+            new AnimFrame() { image = 69, duration = 28 },
+            new AnimFrame() { image = 70, duration = 40 },
+            new AnimFrame() { image = 71, duration = 40 },
+            new AnimFrame() { image = 72, duration = 40 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 8), image = 73, duration = 18 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 8), image = 74, duration = 19 },
+            new AnimFrame() { Offset = new Drawing.Point(157, 8), image = 75, duration = 19 },
+            new AnimFrame() { image = 76, duration = 100 },
+            new AnimFrame() { image = 77, duration = 100 },
+            new AnimFrame() { image = 78, duration = 32 },
+            new AnimFrame() { image = 79, duration = 32 },
+            new AnimFrame() { image = 80, duration = 32 },
+            new AnimFrame() { image = 81, duration = 32 },
+            new AnimFrame() { image = 82, duration = 32 },
+            new AnimFrame() { image = 83, duration = 32 },
+            new AnimFrame() { image = 84, duration = 18 },
+            new AnimFrame() { image = 85, duration = 18 },
+            new AnimFrame() { image = 86, duration = 10 },
+            new AnimFrame() { image = 87, duration = 14 },
+            new AnimFrame() { image = 88, duration = 32 },
+            new AnimFrame() { image = 89, duration = 32 },
+            new AnimFrame() { image = 90, duration = 32 },
+            new AnimFrame() { image = 91, duration = 32 },
+            new AnimFrame() { image = 92, duration = 32 },
+            new AnimFrame() { image = 93, duration = 32 },
+            new AnimFrame() { image = 94, duration = 32 },
+            new AnimFrame() { image = 95, duration = 32 },
+            new AnimFrame() { image = 96, duration = 32 },
+            new AnimFrame() { image = 97, duration = 32 },
+            new AnimFrame() { image = 98, duration = 32 },
+            new AnimFrame() { image = 99, duration = 32 },
+            new AnimFrame() { image = 100, duration = 32 },
+            new AnimFrame() { image = 101, duration = 48 },
+            new AnimFrame() { image = 102, duration = 48 },
+            new AnimFrame() { image = 101, duration = 48 },
+            new AnimFrame() { image = 102, duration = 48 },
+            new AnimFrame() { image = 103, duration = 48 },
+            new AnimFrame() { image = 102, duration = 48 }
         };
         // end of animation sequences excluding city images        
 
-        public static bool animationNotStarted;
-        public static Texture encImageSheet;
-        public static int firstFrame;
-        public static int lastFrame;
-        public static int currentFrame; // within encounterAnim 0-7
-        public static int yOffset;
-        public static int xOffset;
-        public static int animImage;
-        public static int animDuration;
+        public static bool animationNotStarted { get; set; }
+        public static Texture encImageSheet { get; set; }
+        public static int firstFrame { get; set; }
+        public static int lastFrame { get; set; }
+        public static int currentFrame { get; set; } // within encounterAnim 0-7
 
-        #endregion
+        public static Drawing.Point Offset { get; set; }
+        
+        public static int animImage { get; set; }
+        public static int animDuration { get; set; }
+ 
+         #endregion
     }
 }

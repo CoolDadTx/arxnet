@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 
 namespace P3Net.Arx
 {
@@ -66,7 +67,8 @@ namespace P3Net.Arx
         {
             plyr.status = GameStates.Module; // special module
 
-            while (true)
+            var done = false;
+            while (!done)
             {
                 ClearShopDisplay();
                 CyText(1, "You are at the northern entrance");
@@ -76,26 +78,29 @@ namespace P3Net.Arx
                 BText(9, 8, "  (0) Leave the Arena");
                 UpdateDisplay();
 
-                var key = GetSingleKey();                
-                if (key == "0")
+                switch (GetSingleKey())
                 {
-                    plyr.x = 16;
-                    plyr.y = 1;
-                    plyr.z_offset = 1.0F;
-                    plyr.scenario = Scenarios.City;
-                    plyr.status = GameStates.Explore; // explore
-                    break;
-                }
+                    case "0":
+                    {
+                        plyr.Position = new Point(16, 1);
+                        plyr.z_offset = 1.0F;
+                        plyr.scenario = Scenarios.City;
+                        plyr.status = GameStates.Explore; // explore
 
-                if (key == "1")
-                {
-                    plyr.x = 16;
-                    plyr.y = 3;
-                    plyr.z_offset = 1.0F;
-                    plyr.scenario = Scenarios.Arena;
-                    plyr.status = GameStates.Explore; // explore
-                    break;
-                }                
+                        done = true;
+                        break;
+                    };
+
+                    case "1":
+                    {
+                        plyr.Position = new Point(16, 3);
+                        plyr.z_offset = 1.0F;
+                        plyr.scenario = Scenarios.Arena;
+                        plyr.status = GameStates.Explore; // explore
+                        done = true;
+                        break;
+                    };
+                };
             }
         }
 

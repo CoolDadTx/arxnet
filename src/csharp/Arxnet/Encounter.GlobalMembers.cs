@@ -268,7 +268,7 @@ namespace P3Net.Arx
             if (waitingForSpaceKey)
                 CyText(3, consoleMessages[0]);
 
-            if (graphicMode == (int)DisplayOptions.AlternateLarge)
+            if (graphicMode == DisplayOptions.AlternateLarge)
                 DrawConsoleBackground();
         }
 
@@ -1135,10 +1135,7 @@ namespace P3Net.Arx
 
             // Move to display!
             //MLT: Double to float
-            if (graphicMode == (int)DisplayOptions.AlternateLarge)
-                plyr.z_offset = 0.3F;
-            else
-                plyr.z_offset = 1.5F;
+            plyr.z_offset = (graphicMode == DisplayOptions.AlternateLarge) ? 0.3F : 1.5F;
 
             ClearConsoleMessages();
             InitialiseOpponents(opponentType, opponentQuantity);

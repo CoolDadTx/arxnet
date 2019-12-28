@@ -16,25 +16,24 @@ namespace P3Net.Arx
     {
         public string name { get; set; }
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int x
         {
-            get => _location.X;
-            set => _location.X = value;
+            get => _position.X;
+            set => _position.X = value;
         }
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int y 
         {
-            get => _location.Y;
-            set => _location.Y = value;
+            get => _position.Y;
+            set => _position.Y = value;
         }
 
-        public Point Location        
-        {
-            //TODO: Make auto once obsolete members are removed
-            get => _location;
-            set => _location = value;
+        public Point Position        
+        {            
+            get => _position;
+            set => _position = value;
         }
 
         //TODO: Use Range
@@ -54,8 +53,9 @@ namespace P3Net.Arx
         public int associateDues { get; set; }
 
         #region Private Members
-        
-        private Point _location;
+
+        //TODO: Make auto once obsolete members are removed
+        private Point _position;
         #endregion
     }
 }

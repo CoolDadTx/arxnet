@@ -8,13 +8,16 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 using System.IO;
 
 namespace P3Net.Arx
 {
     public partial class GlobalMembers
     {
-        public static int GetMapIndex ( int x, int y ) => (y * plyr.mapWidth) + x;
+        public static int GetMapIndex ( int x, int y ) => (y * plyr.MapSize.Width) + x;
+
+        public static int GetMapIndex ( Point pos ) => (pos.Y * plyr.MapSize.Width) + pos.X;
 
         public static void InitMaps ()
         {

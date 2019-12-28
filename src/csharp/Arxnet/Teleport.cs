@@ -20,25 +20,25 @@ namespace P3Net.Arx
 
         public int new_map { get; set; }
 
-        public Point Location
+        public Point Position
         {
             //TODO: Use auto property once obsolete is removed
-            get => _location;
-            set => _location = value;
+            get => _position;
+            set => _position = value;
         }
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int new_x
         {
-            get => _location.X;
-            set => _location.X = value;
+            get => _position.X;
+            set => _position.X = value;
         }
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int new_y
         {
-            get => _location.Y;
-            set => _location.Y = value;
+            get => _position.Y;
+            set => _position.Y = value;
         }
 
         //TODO: Rename this to something meaningful
@@ -46,7 +46,7 @@ namespace P3Net.Arx
 
         #region Private Members
 
-        private Point _location;
+        private Point _position;
         #endregion
     }
 }

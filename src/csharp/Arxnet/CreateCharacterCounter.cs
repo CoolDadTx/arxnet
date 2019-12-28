@@ -18,26 +18,26 @@ namespace P3Net.Arx
         public int value1 { get; set; }
         public int value2 { get; set; }
 
-        public Point Location
+        public Point Position
         {
-            get => _location;
-            set => _location = value;
+            get => _position;
+            set => _position = value;
         }
 
         // always constant
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int x
         {
-            get => _location.X;
-            set => _location.X = value;
+            get => _position.X;
+            set => _position.X = value;
         }
 
         // can be 1-8 , 2 can be 9-16?
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int y
         {
-            get => _location.Y;
-            set => _location.Y = value;
+            get => _position.Y;
+            set => _position.Y = value;
         }
 
         public int speed { get; set; } // decrement from this value until zero to slow down refresh of counter displat
@@ -46,7 +46,7 @@ namespace P3Net.Arx
         #region Private Members
 
         //TODO: Remove when obsolete removed
-        private Point _location;
+        private Point _position;
         #endregion
     }
 }

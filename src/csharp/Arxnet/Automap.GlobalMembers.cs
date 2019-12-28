@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using Drawing = System.Drawing;
 
 using SFML.Graphics;
 using SFML.System;
@@ -60,7 +61,7 @@ namespace P3Net.Arx
         {
             mapImage = new Texture("data/images/maptiles.png");
             cellImage.Texture = mapImage;
-
+            
             if (plyr.scenario == Scenarios.City)
                 legendImage = new Texture("data/images/cityLegend.png");
             if (plyr.scenario == Scenarios.Dungeon)
@@ -72,7 +73,7 @@ namespace P3Net.Arx
         {
             if (plyr.miniMapOn)
             {
-                if ((graphicMode == 2) && (plyr.status != GameStates.Module)) // shopping?
+                if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Module)) // shopping?
                 {
                     var rectangle2 = new RectangleShape() {
                                             Size = new Vector2f(176, 176),
@@ -85,20 +86,19 @@ namespace P3Net.Arx
                 }
 
                 pixelSize = 16;
-                var automapHeight = 9; // how many map cells displayed including central player cell + 1 for for loop
-                var automapWidth = 9; //was 9
+                var automapSize = new Drawing.Size(9, 9);// how many map cells displayed including central player cell + 1 for for loop 
 
-                var startx = plyr.x - ((automapWidth - 1) / 2);     // map cell coords for first x
-                var starty = plyr.y - ((automapHeight - 1) / 2);    // map cell coords for first y
+                var startx = plyr.Position.X - ((automapSize.Width - 1) / 2);     // map cell coords for first x
+                var starty = plyr.Position.Y - ((automapSize.Height - 1) / 2);    // map cell coords for first y
 
-                for (var y = 0; y < (automapHeight); y++)
+                for (var y = 0; y < automapSize.Height; y++)
                 {
-                    for (var x = 0; x < (automapWidth); x++)
+                    for (var x = 0; x < automapSize.Width; x++)
                     {
                         // check for valid on map square
                         var currentx = startx + x;
                         var currenty = starty + y;
-                        if ((currentx >= 0) && (currentx < plyr.mapWidth) && (currenty >= 0) && (currenty < plyr.mapHeight))
+                        if ((currentx >= 0) && (currentx < plyr.MapSize.Width) && (currenty >= 0) && (currenty < plyr.MapSize.Height))
                         {
                             var pixelx = miniMapX + (x * pixelSize); // 16 = pixels in cell image
                             var pixely = miniMapY + (y * pixelSize); // 16 = pixels in cell image
@@ -112,16 +112,16 @@ namespace P3Net.Arx
 
                 // Draw arrow to represent position and direction of player
                 {
-                    var pixelx = miniMapX + (((automapWidth - 1) / 2) * pixelSize);
-                    var pixely = miniMapY + (((automapHeight - 1) / 2) * pixelSize);
+                    var pixelPos = new Drawing.Point(miniMapX + (((automapSize.Width - 1) / 2) * pixelSize),
+                                             miniMapY + (((automapSize.Height - 1) / 2) * pixelSize));
                     if (plyr.facing == Directions.West)
-                        DrawImage(pixelx, pixely, 17);
+                        DrawImage(pixelPos, 17);
                     if (plyr.facing == Directions.North)
-                        DrawImage(pixelx, pixely, 14);
+                        DrawImage(pixelPos, 14);
                     if (plyr.facing == Directions.East)
-                        DrawImage(pixelx, pixely, 16);
+                        DrawImage(pixelPos, 16);
                     if (plyr.facing == Directions.South)
-                        DrawImage(pixelx, pixely, 15);
+                        DrawImage(pixelPos, 15);
                 }
             }
         }
@@ -242,7 +242,11 @@ namespace P3Net.Arx
             App.Draw(cellImage);
         }
 
+        private static void DrawImage ( Drawing.Point position, int tileNo ) => DrawImage(position.X, position.Y, tileNo);
+
         // Draw all the images required for a single cell on the automap
+        private static void DrawCell ( Drawing.Point position, Drawing.Point pixel ) => DrawCell(position.X, position.Y, pixel.X, pixel.Y);
+
         private static void DrawCell ( int x, int y, int pixelx, int pixely )
         {
             var idx = GetMapIndex(x, y);

@@ -1,4 +1,4 @@
-﻿/*
+﻿/* 
  * Copyright © Michael Taylor (P3Net)
  * All Rights Reserved
  *
@@ -11,10 +11,21 @@ using System;
 
 namespace P3Net.Arx
 {
+    //TODO: Make a class with options to control resolution, texture quality, etc
+
     public enum DisplayOptions
     {
-        AtariSmall,
-        AlternateSmall,
-        AlternateLarge
+        AtariSmall = 0,
+        AlternateSmall = 1,
+        AlternateLarge = 2
+    }
+
+    public static class DisplayOptionsExtensions
+    {
+        public static bool UseAlternateTextures ( this DisplayOptions source ) => source != DisplayOptions.AtariSmall;
+
+        public static bool UseLargeSize ( this DisplayOptions source ) => source == DisplayOptions.AlternateLarge;
+
+        public static bool UseOriginalSize ( this DisplayOptions source ) => source != DisplayOptions.AlternateLarge;
     }
 }

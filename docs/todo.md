@@ -21,7 +21,8 @@
 
 ## Enhancements
 
-- [ ] Switch to Winforms to allow hiding of console? [OpenTK](https://github.com/mono/opentk/blob/master/Source/Examples/OpenTK/GLControl/GLControlGameLoop.cs) [SFML](https://en.sfml-dev.org/forums/index.php?topic=9141.0)
+- [ ] ?Switch to Winforms to allow hiding of console? [OpenTK](https://github.com/mono/opentk/blob/master/Source/Examples/OpenTK/GLControl/GLControlGameLoop.cs) [SFML](https://en.sfml-dev.org/forums/index.php?topic=9141.0)
+- [ ] ?Switch to WPF [OpenTK](https://github.com/jayhf/OpenTkControl)
 - [ ] Make Scenarios a standalone type
 - [ ] Make Items a standalone type
 - [ ] Make Spells a standalone type
@@ -37,7 +38,7 @@
 - [ ] Add extensibility points for adding new stuff (items, spells, etc)
 - [ ] Normalize music/graphics files so the various filename/path logic can be simplified
 - [ ] DirectX or Vulkan support?
-- [ ] Expand support for resolutions
+- [ ] Expand support for resolutions and normalize access (Atari, new/old textures, size, etc)
 - [ ] Move all hard coded lists of stuff to data files
 - [ ] Make menu logic a standalone class that can be instantiated and used via delegates on demand
 - [ ] Lazy load data such as items so we can speed up the game (use a cache to prevent it from growing out of control)

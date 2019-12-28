@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 using System.IO;
 
 using SFML.Graphics;
@@ -39,14 +40,14 @@ namespace P3Net.Arx
             // We could directly use a sf::Image as an OpenGL texture (with its Bind() member function),
             // but here we want more control on it (generate mipmaps, ...) so we create a new one
 
-            var imagePath = (graphicMode == 0) ? "data/images/textures_original/" : "data/images/textures_alternate/";
+            var imagePath = graphicMode.UseAlternateTextures() ? "data/images/textures_alternate/" : "data/images/textures_original/";
             GL.GenTextures(numberOfTextures, out texture[0]);  // problem line - don't include in loop. Always 0???
 
             for (var i = 0; i < numberOfTextures; i++)
             {
                 var filename = textureNames[i];
 
-                var img = new Image($"{imagePath}{filename}.png");
+                var img = new SFML.Graphics.Image($"{imagePath}{filename}.png");
                 GL.BindTexture(TextureTarget.Texture2D, texture[i]);
 
                 //TODO: Does this work, X/Y are uints?
@@ -66,7 +67,7 @@ namespace P3Net.Arx
             for (var i = 0; i < numberOfBackgrounds; i++)
                 backgroundNames[i] = "";
 
-            var filename = (graphicMode == 0) ? "data/map/backgrounds.txt" : "data/map/backgroundsUpdated.txt";
+            var filename = graphicMode.UseAlternateTextures() ? "data/map/backgroundsUpdated.txt" : "data/map/backgrounds.txt";
 
             //TODO: Ignoring # of backgrounds - numberOfBackgrounds
             var lines = File.ReadAllLines(filename);
@@ -86,7 +87,7 @@ namespace P3Net.Arx
             for (var i = 0; i < numberOfTextures; i++)
                 textureNames[i] = "";
 
-            var filename = graphicMode == 0 ? "data/map/textures.txt" : "data/map/texturesUpdated.txt";
+            var filename = graphicMode.UseAlternateTextures() ? "data/map/texturesUpdated.txt" : "data/map/textures.txt";
 
             //TODO: Ignore fixed texture count - numberOfTextures
             var lines = File.ReadAllLines(filename);
@@ -99,35 +100,36 @@ namespace P3Net.Arx
             };
         }
 
-        #region Private Members
+#region Private Members
 
         private static void Draw3DBackground ()
         {
-            var Background = new Sprite();
-            Background.Scale = new Vector2f(1, 1);
+            float scaleX, scaleY;
 
-            if (graphicMode == 0) // Atari 8bit original textures and size
+            switch (graphicMode)
             {
-                var scaleX = viewWidth / 360F;
-                var scaleY = viewHeight / 190F;
-                Background.Scale = new Vector2f(scaleX, scaleY);
-                Background.Position = new Vector2f(viewPortX, viewPortY);
-            }
-            if (graphicMode == 1) // New textures and original size
-            {
-                var scaleX = viewWidth / 1024F;
-                var scaleY = (viewHeight / 2) / 384F;
-                Background.Scale = new Vector2f(scaleX, scaleY);
-                Background.Position = new Vector2f(viewPortX, viewPortY);
-            }
-            if (graphicMode == 2) // New textures and large size
-            {
-                Background.Position = new Vector2f(0, 0); // Assumes large 3D view
-                var scaleX = viewWidth / 1024F;
-                var scaleY = (viewHeight / 2) / 384F;
-                Background.Scale = new Vector2f(scaleX, scaleY);
-                Background.Position = new Vector2f(viewPortX, (viewPortY));
-            }
+                case DisplayOptions.AtariSmall:
+                {
+                    scaleX = ViewSize.Width / 360F;
+                    scaleY = ViewSize.Height / 190F;
+                    break;
+                };
+
+                case DisplayOptions.AlternateSmall:
+                case DisplayOptions.AlternateLarge:
+                {
+                    scaleX = ViewSize.Width / 1024F;
+                    scaleY = (ViewSize.Height / 2F) / 384F;
+                    break;
+                };
+
+                default: throw new NotSupportedException("Bad graphicMode");
+            };
+
+            var image = new Sprite() {
+                Scale = new Vector2f(scaleX, scaleY),
+                Position = new Vector2f(viewPortX, (viewPortY))
+            };
 
             //TODO: Encapsulate this
             var texture = (plyr.scenario == Scenarios.Arena) ? background[44] : null;
@@ -269,41 +271,41 @@ namespace P3Net.Arx
                 };                          
             };
 
-            Background.Texture = texture;
-            App.Draw(Background);
+            image.Texture = texture;
+            App.Draw(image);
         }
 
         private static void CalculateWallPositions ( int c, int d )
         {
             // Calculates the actual positions within OpenGL space to draw the 3 quads that make up a map cell
-            var x = 0;
-            var y = 0;
+            var pos = new Point();
             switch (plyr.facing)
             {
                 case Directions.North:
-                x = (plyr.x - ((columns - 1) / 2)) + c; // total colums -1 / 2
-                y = ((plyr.y - (depth - 1)) + d); // actual depth
-                break;
+                    pos.X = plyr.Position.X - ((columns - 1) / 2) + c;
+                    pos.Y = plyr.Position.Y - (depth - 1) + d; // actual depth
+                    break;
 
                 case Directions.West:
-                x = (plyr.x - (depth - 1)) + d;
-                y = (plyr.y + ((columns - 1) / 2)) - c;
-                break;
+                    pos.X = plyr.Position.X - (depth - 1) + d;
+                    pos.Y = plyr.Position.Y + ((columns - 1) / 2) - c;
+                    break;
 
                 case Directions.East:
-                x = (plyr.x + (depth - 1)) - d;
-                y = (plyr.y - ((columns - 1) / 2)) + c;
-                break;
+                    pos.X = plyr.Position.X + (depth - 1) - d;
+                    pos.Y = plyr.Position.Y - ((columns - 1) / 2) + c;
+                    break;
 
                 case Directions.South:
-                x = (plyr.x + ((columns - 1) / 2)) - c;
-                y = ((plyr.y + (depth - 1)) - d);
-                break;
-            }
+                    pos.X = plyr.Position.X + ((columns - 1) / 2) - c;
+                    pos.Y = plyr.Position.Y + (depth - 1) - d;
+                    break;
+            };
 
-            if ((x >= 0) && (x < (plyr.mapWidth)) && (y >= 0) && (y < (plyr.mapHeight))) // valid location on map? (64 x 64 in example)
+            // valid location on map? (64 x 64 in example)
+            if ((pos.X >= 0) && (pos.X < plyr.MapSize.Width) && (pos.Y >= 0) && (pos.Y < plyr.MapSize.Height)) 
             {
-                var ind = GetMapIndex(x, y);
+                var ind = GetMapIndex(pos);
                 TransMapIndex(ind);
                 frontwall = plyr.front; // front wall texture number
                 leftwall = plyr.left; // left wall texture number
@@ -314,12 +316,12 @@ namespace P3Net.Arx
                 rightheight = plyr.rightheight; // right wall texture number
 
                 specialwall = plyr.specialwall; // special used for guild sign etc in City
-                var xm = c * 2F; // x float value to be added to texture positioning co-ords
-                var zm = d * 2F; // z float value to be added to texture positioning co-ords
+                var xm = c * 2F; // x float value to be added to texture positioning coords
+                var zm = d * 2F; // z float value to be added to texture positioning coords
                 zm = (zm + plyr.z_offset) - 1.0f; //-1.0f;
 
                 // Draw front, left and right walls for current map cell
-                DrawCellWalls(c, d, xm, zm, frontwall, leftwall, rightwall, frontheight, leftheight, rightheight); // pass wall numbers and x and z mods
+                DrawCellWalls(c, xm, zm, frontwall, leftwall, rightwall, frontheight, leftheight, rightheight); // pass wall numbers and x and z mods
             }
         }
 
@@ -339,9 +341,12 @@ namespace P3Net.Arx
             {
                 switch (graphicMode)
                 {
-                    case 0: GL.Disable(EnableCap.Fog); break;
-                    case 1: 
-                    case 2: GL.Enable(EnableCap.Fog); break;
+                    case DisplayOptions.AtariSmall: GL.Disable(EnableCap.Fog); break;
+
+                    case DisplayOptions.AlternateSmall:
+                    case DisplayOptions.AlternateLarge: GL.Enable(EnableCap.Fog); break;
+
+                    default: throw new NotSupportedException("Unknown graphicMode");
                 };
             } else if (plyr.scenario == Scenarios.City)
                 GL.Disable(EnableCap.Fog);
@@ -375,7 +380,7 @@ namespace P3Net.Arx
                 CalculateWallPositions(x, d);
         }
 
-        private static void DrawCellWalls ( int c, int d, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
+        private static void DrawCellWalls ( int c, float xm, float zm, int frontwall, int leftwall, int rightwall, int frontheight, int leftheight, int rightheight )
         {
             var texture_no = 0;
             int wall_type;
@@ -383,7 +388,7 @@ namespace P3Net.Arx
             var depthdistantnear = (-depth * 2) + 3;
 
             // Original graphic style for standard height walls?
-            if (graphicMode == 0)
+            if (graphicMode == DisplayOptions.AtariSmall)
             {
                 frontheight = 1;
                 leftheight = 1;
@@ -423,7 +428,7 @@ namespace P3Net.Arx
                 texture_no = zones[plyr.zoneSet].floor;
             if (plyr.floorTexture > 0)
                 texture_no = plyr.floorTexture;
-            if ((plyr.scenario == 0) && (plyr.floorTexture == 0) && (graphicMode == 0))
+            if ((plyr.scenario == 0) && (plyr.floorTexture == 0) && (graphicMode == DisplayOptions.AtariSmall))
                 texture_no = 0;
             if (plyr.zone != 99)
                 texture_no = (plyr.floorTexture == 0) ? zones[plyr.zoneSet].floor : plyr.floorTexture;

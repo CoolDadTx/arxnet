@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Drawing;
 using System.IO;
 
 namespace P3Net.Arx
@@ -24,6 +25,8 @@ namespace P3Net.Arx
 
                 var iniSettings = 4; // number of settings in the ini file
 
+                var windowSize = new Size();
+
                 for (var a = 0; a < iniSettings; ++a) // number of settings in the ini file
                 {
                     var line = reader.ReadLine();
@@ -32,24 +35,25 @@ namespace P3Net.Arx
                     var text = line.Substring(idx + 2);
 
                     if (a == 0)
-                        windowMode = Convert.ToInt32(text);
+                        windowMode = (WindowMode)Convert.ToInt32(text);
                     if (a == 1)
-                        graphicMode = Convert.ToInt32(text);
+                        graphicMode = (DisplayOptions)Convert.ToInt32(text);
                     if (a == 2)
-                        windowWidth = Convert.ToInt32(text);
+                        windowSize.Width = Convert.ToInt32(text);
                     if (a == 3)
-                        windowHeight = Convert.ToInt32(text);
-                }
+                        windowSize.Height = Convert.ToInt32(text);
+                };
+
+                WindowSize = windowSize;
             };
 
             // Minimum window requirement is currently 640 x 480 pixels
-            if ((windowWidth < 640) || (windowHeight < 480))
+            if (WindowSize.Width < 640 || WindowSize.Height < 480)
             {
                 Console.Write("WARNING: A minimum window size of 640 x 480 pixels is required.");
                 Console.Write("\n");
                 Console.Write("\n");
-                windowWidth = 640;
-                windowHeight = 480;
+                WindowSize = new System.Drawing.Size(640, 480);
             }
             return true;
         }

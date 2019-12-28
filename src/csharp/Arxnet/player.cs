@@ -67,7 +67,7 @@ namespace P3Net.Arx
         public int protection1 { get; set; }
         public int protection2 { get; set; }        
 
-        // Location
+        // Position
         //TODO: Should location information be stored elsewhere or grouped together?
         public Directions facing { get; set; } = Directions.North;
 
@@ -318,25 +318,25 @@ namespace P3Net.Arx
         // counter that is used for flashing teleport sequence
         public int teleporting { get; set; }                        
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int x
         {
-            get => _location.X;
-            set => _location.X = value;
+            get => _position.X;
+            set => _position.X = value;
         }
 
-        [Obsolete("Use Location")]
+        [Obsolete("Use Position")]
         public int y
         {
-            get => _location.Y;
-            set => _location.Y = value;
+            get => _position.Y;
+            set => _position.Y = value;
         }
 
-        public Point Location        
+        public Point Position        
         {
             //TODO: Make auto property once obsolete removed
-            get => _location;
-            set => _location = value;
+            get => _position;
+            set => _position = value;
         }
 
         public float z_offset { get; set; } = 1;           
@@ -386,7 +386,7 @@ namespace P3Net.Arx
         }
 
         private Size _mapSize = new Size(64, 64);
-        private Point _location = new Point(63, 63);
+        private Point _position = new Point(63, 63);
         private Point _oldLocation;
         #endregion
     }
