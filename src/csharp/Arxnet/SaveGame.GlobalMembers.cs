@@ -8,6 +8,9 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Collections.Generic;
+using System.Data.OleDb;
+using System.Drawing;
 using System.IO;
 
 namespace P3Net.Arx
@@ -108,12 +111,12 @@ namespace P3Net.Arx
 
             plyr.scenario = (Scenarios)Convert.ToInt32(character[3]);
             plyr.map = Convert.ToInt32(character[4]);
-            plyr.mapWidth = Convert.ToInt32(character[5]);
-            plyr.mapHeight = Convert.ToInt32(character[6]);
-            plyr.x = Convert.ToInt32(character[7]);
-            plyr.oldx = Convert.ToInt32(character[8]);
-            plyr.y = Convert.ToInt32(character[9]);
-            plyr.oldy = Convert.ToInt32(character[10]);
+            plyr.MapSize = new Size(Convert.ToInt32(character[5]), Convert.ToInt32(character[6]));
+
+            //Cheating the system here but we'll set position to the "old" location first and then set the real position so it is cached
+            plyr.Position = new Point(Convert.ToInt32(character[8]), Convert.ToInt32(character[10]));
+            plyr.Position = new Point(Convert.ToInt32(character[7]), Convert.ToInt32(character[9]));
+            
             plyr.facing = (Directions)Convert.ToInt32(character[11]);
 
             plyr.front = Convert.ToInt32(character[12]);
@@ -192,11 +195,11 @@ namespace P3Net.Arx
             plyr.digestion = Convert.ToInt32(character[84]);
             plyr.alcohol = Convert.ToInt32(character[85]);
 
-            for (var y = 0; y < 12; ++y)
+            for (var y = 0; y < plyr.guildAwards.Length; ++y)
                 plyr.guildAwards[y] = Convert.ToInt32(character[86 + y]) != 0;
-            for (var y = 0; y < 32; ++y)
+            for (var y = 0; y < plyr.fixedEncounters.Length; ++y)
                 plyr.fixedEncounters[y] = Convert.ToInt32(character[98 + y]) != 0;
-            for (var y = 0; y < 14; ++y)
+            for (var y = 0; y < plyr.guildMemberships.Length; ++y)
                 plyr.guildMemberships[y] = Convert.ToInt32(character[130 + y]);
 
             plyr.ringCharges = Convert.ToInt32(character[144]);
@@ -218,6 +221,7 @@ namespace P3Net.Arx
             plyr.retreatFriendship = Convert.ToInt32(character[160]);
             plyr.damonFriendship = Convert.ToInt32(character[161]);
 
+            //TODO: Switch to not using fixed arrays
             plyr.smithyFriendships[0] = Convert.ToInt32(character[162]);
             plyr.smithyFriendships[1] = Convert.ToInt32(character[163]);
             plyr.smithyFriendships[2] = Convert.ToInt32(character[164]);
@@ -303,8 +307,7 @@ namespace P3Net.Arx
                 itemBuffer[z].level = Convert.ToInt32(character[loadGameIndex + 2]);
                 itemBuffer[z].location = Convert.ToInt32(character[loadGameIndex + 3]);
                 itemBuffer[z].type = Convert.ToInt32(character[loadGameIndex + 4]);
-                itemBuffer[z].x = Convert.ToInt32(character[loadGameIndex + 5]);
-                itemBuffer[z].y = Convert.ToInt32(character[loadGameIndex + 6]);
+                itemBuffer[z].Position = new Point(Convert.ToInt32(character[loadGameIndex + 5]), Convert.ToInt32(character[loadGameIndex + 6]));
 
                 itemBuffer[z].name = character[loadGameIndex + 7];
                 itemBuffer[z].maxHP = Convert.ToInt32(character[loadGameIndex + 8]);
@@ -329,29 +332,32 @@ namespace P3Net.Arx
                 itemBuffer[z].ammo = Convert.ToInt32(character[loadGameIndex + 27]);
                 itemBuffer[z].parry = Convert.ToInt32(character[loadGameIndex + 28]);
 
-                loadGameIndex = loadGameIndex + 28;
+                loadGameIndex += 28;
             }
 
+            //TODO: Move away from offsets
             // Copy spell buffer
             loadGameIndex = 7400; // start location for spell buffer items (70 bytes)
-            for (var z = 0; z < 35; ++z)
+            for (var z = 0; z < spellBuffer.Length; ++z)
             {
                 spellBuffer[z].no = Convert.ToInt32(character[loadGameIndex]);
                 spellBuffer[z].percentage = Convert.ToInt32(character[loadGameIndex + 1]);
-                loadGameIndex = loadGameIndex + 2;
+                loadGameIndex += 2;
             }
 
+            //TODO: Move away from offsets
             // Copy effect buffer
             loadGameIndex = 7470; // start location for effect buffer items (200 bytes)
-            for (var z = 0; z < 50; ++z)
+            for (var z = 0; z < effectBuffer.Length; ++z)
             {
                 effectBuffer[z].effect = Convert.ToInt32(character[loadGameIndex]);
                 effectBuffer[z].negativeValue = Convert.ToInt32(character[loadGameIndex + 1]);
                 effectBuffer[z].positiveValue = Convert.ToInt32(character[loadGameIndex + 2]);
                 effectBuffer[z].duration = Convert.ToInt32(character[loadGameIndex + 3]);
-                loadGameIndex = loadGameIndex + 4;
+                loadGameIndex += 4;
             }
 
+            //TODO: Move away from offsets
             // Smithy daily wares
             loadGameIndex = 7670;
             for (var z = 0; z < 4; ++z)
@@ -363,6 +369,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Move away from offsets
             loadGameIndex = 7710;
             for (var z = 0; z < 14; ++z)
             {
@@ -373,6 +380,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Move away from offsets
             loadGameIndex = 7794;
             for (var z = 0; z < 14; ++z)
             {
@@ -383,6 +391,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Move away from offsets
             loadGameIndex = 7878;
             for (var z = 0; z < 15; ++z)
             {
@@ -395,6 +404,7 @@ namespace P3Net.Arx
 
             // Currently inn and tavern job openings are not part of saved game
 
+            //TODO: Move away from offsets
             // load automap flags
             loadGameIndex = 8058; // start location for object buffer items
             for (var z = 0; z < 5; ++z)
@@ -407,9 +417,8 @@ namespace P3Net.Arx
             }
 
             plyr.name = character[28538];
-
-            //MLT: Double to float
-            plyr.z_offset = (float)Convert.ToDouble(character[28539]);
+            
+            plyr.z_offset = Convert.ToSingle(character[28539]);
 
             return true;
         }
@@ -443,19 +452,26 @@ namespace P3Net.Arx
             UpdateSaveGameDescriptions();
 
             Initcharacter(); // Clear out string array
-            
+
             // Copy character object data (except name) into the character[4096] int block
             character[0] = plyr.gender.ToString();
             character[1] = plyr.hp.ToString();
             character[2] = plyr.maxhp.ToString();
             character[3] = plyr.scenario.ToString();
             character[4] = plyr.map.ToString();
-            character[5] = plyr.mapWidth.ToString();
-            character[6] = plyr.mapHeight.ToString();
-            character[7] = plyr.x.ToString();
-            character[8] = plyr.oldx.ToString();
-            character[9] = plyr.y.ToString();
-            character[10] = plyr.oldy.ToString();
+
+            //TODO: Save struct
+            character[5] = plyr.MapSize.Width.ToString();
+            character[6] = plyr.MapSize.Height.ToString();
+
+            //TODO: Save struct
+            character[7] = plyr.Position.X.ToString();
+            character[9] = plyr.Position.Y.ToString();
+
+            //TODO: Save struct
+            character[8] = plyr.OldLocation.X.ToString();
+            character[10] = plyr.OldLocation.Y.ToString();
+
             character[11] = plyr.facing.ToString();
             character[12] = plyr.front.ToString();
             character[13] = plyr.back.ToString();
@@ -533,13 +549,15 @@ namespace P3Net.Arx
             character[84] = plyr.digestion.ToString();
             character[85] = plyr.alcohol.ToString();
 
-            for (var y = 0; y < 12; ++y)
+            //TODO: Do not use offsets
+            for (var y = 0; y < plyr.guildAwards.Length; ++y)
                 character[86 + y] = plyr.guildAwards[y].ToString();
-            for (var y = 0; y < 32; ++y)
+            for (var y = 0; y < plyr.fixedEncounters.Length; ++y)
                 character[98 + y] = plyr.fixedEncounters[y].ToString();
-            for (var y = 0; y < 14; ++y)
+            for (var y = 0; y < plyr.guildMemberships.Length; ++y)
                 character[130 + y] = plyr.guildMemberships[y].ToString();
 
+            //TODO: Do not use offsets
             character[144] = plyr.ringCharges.ToString();
             character[145] = plyr.alignment.ToString();
             character[146] = plyr.lfood.ToString();
@@ -559,36 +577,17 @@ namespace P3Net.Arx
             character[160] = plyr.retreatFriendship.ToString();
             character[161] = plyr.damonFriendship.ToString();
 
-            character[162] = plyr.smithyFriendships[0].ToString();
-            character[163] = plyr.smithyFriendships[1].ToString();
-            character[164] = plyr.smithyFriendships[2].ToString();
-            character[165] = plyr.smithyFriendships[3].ToString();
+            //TODO: Do not use offsets
+            for (var y = 0; y < plyr.smithyFriendships.Length; ++y)
+                character[162 + y] = plyr.smithyFriendships[y].ToString();
+            for (var y = 0; y < plyr.bankAccountStatuses.Length; ++y)
+                character[166 + y] = plyr.bankAccountStatuses[y].ToString();
+            for (var y = 0; y < plyr.bankAccountBalances.Length; ++y)
+                character[175 + y] = plyr.bankAccountBalances[y].ToString();
+            for (var y = 0; y < plyr.clothing.Length; ++y)
+                character[184 + y] = plyr.clothing[y].ToString();
 
-            character[166] = plyr.bankAccountStatuses[0].ToString();
-            character[167] = plyr.bankAccountStatuses[1].ToString();
-            character[168] = plyr.bankAccountStatuses[2].ToString();
-            character[169] = plyr.bankAccountStatuses[3].ToString();
-            character[170] = plyr.bankAccountStatuses[4].ToString();
-            character[171] = plyr.bankAccountStatuses[5].ToString();
-            character[172] = plyr.bankAccountStatuses[6].ToString();
-            character[173] = plyr.bankAccountStatuses[7].ToString();
-            character[174] = plyr.bankAccountStatuses[8].ToString();
-
-            character[175] = plyr.bankAccountBalances[0].ToString();
-            character[176] = plyr.bankAccountBalances[1].ToString();
-            character[177] = plyr.bankAccountBalances[2].ToString();
-            character[178] = plyr.bankAccountBalances[3].ToString();
-            character[179] = plyr.bankAccountBalances[4].ToString();
-            character[180] = plyr.bankAccountBalances[5].ToString();
-            character[181] = plyr.bankAccountBalances[6].ToString();
-            character[182] = plyr.bankAccountBalances[7].ToString();
-            character[183] = plyr.bankAccountBalances[8].ToString();
-
-            character[184] = plyr.clothing[0].ToString();
-            character[185] = plyr.clothing[1].ToString();
-            character[186] = plyr.clothing[2].ToString();
-            character[187] = plyr.clothing[3].ToString();
-
+            //TODO: Do not use offsets
             character[188] = plyr.goblinsVisited.ToString();
             character[189] = plyr.goblinsChallenged.ToString();
             character[190] = plyr.goblinsDefeated.ToString();
@@ -605,25 +604,28 @@ namespace P3Net.Arx
             character[200] = plyr.oracleMonth.ToString();
             character[201] = plyr.oracleYear.ToString();
             character[202] = plyr.oracleQuestNo.ToString();
-            character[203] = plyr.healerDays[0].ToString();
-            character[204] = plyr.healerDays[1].ToString();
-            character[205] = plyr.healerHours[0].ToString();
-            character[206] = plyr.healerHours[1].ToString();
-            character[207] = plyr.healerMinutes[0].ToString();
-            character[208] = plyr.healerMinutes[1].ToString();
+
+            //TODO: Do not use offsets
+            //TODO: Save TimeSpan
+            for (var y = 0; y < plyr.healerDays.Length; ++y)
+                character[203 + y] = plyr.healerDays[y].ToString();
+            for (var y = 0; y < plyr.healerHours.Length; ++y)
+                character[205 + y] = plyr.healerHours[y].ToString();
+            for (var y = 0; y < plyr.healerMinutes.Length; ++y)
+                character[207 + y] = plyr.healerMinutes[y].ToString();
+            
             character[209] = plyr.treasureFinding.ToString();
             character[210] = plyr.invisibility.ToString();
-            character[211] = plyr.diseases[0].ToString();
-            character[212] = plyr.diseases[1].ToString();
-            character[213] = plyr.diseases[2].ToString();
-            character[214] = plyr.diseases[3].ToString();
-            character[215] = plyr.poison[0].ToString();
-            character[216] = plyr.poison[1].ToString();
-            character[217] = plyr.poison[2].ToString();
-            character[218] = plyr.poison[3].ToString();
+
+            //TODO: Do not use offsets
+            for (var y = 0; y < plyr.diseases.Length; ++y)
+                character[211 + y] = plyr.diseases[y].ToString();
+            for (var y = 0; y < plyr.poison.Length; ++y)
+                character[215 + y] = plyr.poison[y].ToString();
             character[219] = plyr.delusion.ToString();
 
-            for (var y = 0; y < 9; ++y)
+            //TODO: Do not use offsets
+            for (var y = 0; y < plyr.invulnerability.Length; ++y)
                 character[220 + y] = plyr.invulnerability[y].ToString();
             character[229] = plyr.noticeability.ToString();
             character[230] = plyr.protection1.ToString();
@@ -638,17 +640,18 @@ namespace P3Net.Arx
             character[399] = "Line 400: Item Buffer follows";
 
             // Copy item buffer
-
+            //TODO: Do not use offsets
+            //TODO: Save struct
             var saveGameIndex = 400; // start location for object buffer items
-            for (var z = 0; z < itemBufferSize; ++z)
+            for (var z = 0; z < itemBuffer.Length; ++z)
             {
                 character[saveGameIndex] = itemBuffer[z].hp.ToString();
                 character[saveGameIndex + 1] = itemBuffer[z].index.ToString();
                 character[saveGameIndex + 2] = itemBuffer[z].level.ToString();
                 character[saveGameIndex + 3] = itemBuffer[z].location.ToString();
                 character[saveGameIndex + 4] = itemBuffer[z].type.ToString();
-                character[saveGameIndex + 5] = itemBuffer[z].x.ToString();
-                character[saveGameIndex + 6] = itemBuffer[z].y.ToString();
+                character[saveGameIndex + 5] = itemBuffer[z].Position.X.ToString();
+                character[saveGameIndex + 6] = itemBuffer[z].Position.Y.ToString();
 
                 character[saveGameIndex + 7] = itemBuffer[z].name;
                 character[saveGameIndex + 8] = itemBuffer[z].maxHP.ToString();
@@ -673,29 +676,34 @@ namespace P3Net.Arx
                 character[saveGameIndex + 27] = itemBuffer[z].ammo.ToString();
                 character[saveGameIndex + 28] = itemBuffer[z].parry.ToString();
 
-                saveGameIndex = saveGameIndex + 28;
+                saveGameIndex += 28;
             }
 
             // Copy spell buffer
+            //TODO: Do not use offsets
+            //TODO: Save struct
             saveGameIndex = 7400; // start location for spell buffer items (70 bytes)
-            for (var z = 0; z < 35; ++z)
+            for (var z = 0; z < spellBuffer.Length; ++z)
             {
                 character[saveGameIndex] = spellBuffer[z].no.ToString();
                 character[saveGameIndex + 1] = spellBuffer[z].percentage.ToString();
-                saveGameIndex = saveGameIndex + 2;
+                saveGameIndex += 2;
             }
 
             // Copy effect buffer
+            //TODO: Do not use offsets
+            //TODO: Save struct
             saveGameIndex = 7470; // start location for effect buffer items (200 bytes)
-            for (var z = 0; z < 50; ++z)
+            for (var z = 0; z < effectBuffer.Length; ++z)
             {
                 character[saveGameIndex] = effectBuffer[z].effect.ToString();
                 character[saveGameIndex + 1] = effectBuffer[z].negativeValue.ToString();
                 character[saveGameIndex + 2] = effectBuffer[z].positiveValue.ToString();
                 character[saveGameIndex + 3] = effectBuffer[z].duration.ToString();
-                saveGameIndex = saveGameIndex + 4;
+                saveGameIndex += 4;
             }
 
+            //TODO: Do not use offsets
             saveGameIndex = 7670; // start location for object buffer items
             for (var z = 0; z < 4; ++z)
             {
@@ -706,6 +714,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Do not use offsets
             saveGameIndex = 7710; // start location for object buffer items
             for (var z = 0; z < 14; ++z)
             {
@@ -716,6 +725,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Do not use offsets
             saveGameIndex = 7794; // start location for object buffer items
             for (var z = 0; z < 14; ++z)
             {
@@ -726,6 +736,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Do not use offsets
             saveGameIndex = 7878; // start location for object buffer items
             for (var z = 0; z < 15; ++z)
             {
@@ -736,6 +747,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Do not use offsets
             // Currently inn and tavern job openings are not part of saved game
             saveGameIndex = 8058; // start location for automapexplored
             for (var z = 0; z < 5; ++z)
@@ -747,6 +759,7 @@ namespace P3Net.Arx
                 }
             }
 
+            //TODO: Do not use offsets
             character[28538] = plyr.name;
             character[28539] = plyr.z_offset.ToString();
             character[28540] = "Release 0.80";

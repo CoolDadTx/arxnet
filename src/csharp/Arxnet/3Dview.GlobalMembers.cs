@@ -351,7 +351,7 @@ namespace P3Net.Arx
             } else if (plyr.scenario == Scenarios.City)
                 GL.Disable(EnableCap.Fog);
 
-            // Start with 5 variables - columns, depth, plyr.x, plyr.y, plyr.facing
+            // Start with 5 variables - columns, depth, plyr.Position.X, plyr.Position.Y, plyr.facing
             // c and d hold current column and current depth value
 
             // Draw left hand block of quads

@@ -1164,7 +1164,7 @@ namespace P3Net.Arx
             {
                 for (var i = 0; i < numberOfGuilds; i++) // Max number of guild objects
                 {
-                    if ((guilds[i].x == plyr.x) && (guilds[i].y == plyr.y))
+                    if ((guilds[i].x == plyr.Position.X) && (guilds[i].y == plyr.Position.Y))
                         guild_no = i; // The number of the guild you have entered
                 }
             } else if (plyr.scenario == Scenarios.Dungeon) // Dungeon

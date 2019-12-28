@@ -129,15 +129,13 @@ namespace P3Net.Arx
                     {
                         // Take the player ACROSS the river to the Undead Regions
                         ModuleMessage("The mysterious boatman takes his@@fee and places it in his pouch.@@He then rows you across the@@river in his boat.");
-                        plyr.x = 28;
-                        plyr.y = 20;
+                        plyr.Position = new System.Drawing.Point(28, 20);
                         // Add forced facing south?
                     } else
                     {
                         // Take the player down river if not midnight or correct offer
                         ModuleMessage($"The mysterious boatman takes@@your {offerText} and proceeds to@@take you down the river in his boat.");
-                        plyr.x = 11;
-                        plyr.y = 30;
+                        plyr.Position = new System.Drawing.Point(11, 30);
                     }
 
                     ferryMenu = 0;

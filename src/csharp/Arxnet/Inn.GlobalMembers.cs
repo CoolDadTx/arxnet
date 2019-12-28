@@ -8,6 +8,7 @@
  * Code converted using C++ to C# Code Converter, Tangible Software (https://www.tangiblesoftwaresolutions.com/)
  */
 using System;
+using System.Linq;
 
 namespace P3Net.Arx
 {
@@ -38,26 +39,33 @@ namespace P3Net.Arx
         public static void ShopInn ()
         {
             var InnNo = GetInnNo();
-            if (InnNo == 0)
+            switch (InnNo)
             {
-                SetAutoMapFlag(plyr.map, 8, 44);
-                SetAutoMapFlag(plyr.map, 9, 44);
-                SetAutoMapFlag(plyr.map, 10, 44);
-                SetAutoMapFlag(plyr.map, 8, 45);
-            }
-            if (InnNo == 3)
-            {
-                SetAutoMapFlag(plyr.map, 31, 38);
-                SetAutoMapFlag(plyr.map, 32, 39);
-                SetAutoMapFlag(plyr.map, 31, 39);
-            }
-            if (InnNo == 4)
-            {
-                SetAutoMapFlag(plyr.map, 31, 40);
-                SetAutoMapFlag(plyr.map, 32, 40);
-                SetAutoMapFlag(plyr.map, 33, 40);
-                SetAutoMapFlag(plyr.map, 31, 41);
-            }
+                case 0:
+                {
+                    SetAutoMapFlag(plyr.map, 8, 44);
+                    SetAutoMapFlag(plyr.map, 9, 44);
+                    SetAutoMapFlag(plyr.map, 10, 44);
+                    SetAutoMapFlag(plyr.map, 8, 45);
+                    break;
+                }
+
+                case 3:
+                {
+                    SetAutoMapFlag(plyr.map, 31, 38);
+                    SetAutoMapFlag(plyr.map, 32, 39);
+                    SetAutoMapFlag(plyr.map, 31, 39);
+                    break;
+                }
+                case 4:
+                {
+                    SetAutoMapFlag(plyr.map, 31, 40);
+                    SetAutoMapFlag(plyr.map, 32, 40);
+                    SetAutoMapFlag(plyr.map, 33, 40);
+                    SetAutoMapFlag(plyr.map, 31, 41);
+                    break;
+                }
+            };               
 
             var InnMenu = 1; // high level menu
             var roomChoice = 0;
@@ -69,6 +77,7 @@ namespace P3Net.Arx
 
             plyr.status = GameStates.Module; // shopping
 
+            //TODO: Convert to actual menu code
             while (InnMenu > 0)
             {
                 while (InnMenu == 1) // main menu
@@ -89,18 +98,14 @@ namespace P3Net.Arx
                     SetFontColor(215, 215, 215, 255);
                     UpdateDisplay();
 
-                    var key = GetSingleKey();
-
-                    if (key == "1")
-                        InnMenu = 2;
-                    if (key == "2")
-                        InnMenu = 7;
-                    if (key == "3")
-                        InnMenu = 8;
-                    if (key == "0")
-                        InnMenu = 0;
-                    if (key == "down")
-                        InnMenu = 0;
+                    switch (GetSingleKey())
+                    {
+                        case "1": InnMenu = 2; break;
+                        case "2": InnMenu = 7; break;
+                        case "3": InnMenu = 8; break;
+                        case "0": 
+                        case "down": InnMenu = 0; break;
+                    }
                 }
 
                 while (InnMenu == 2) // first room booking menu
@@ -139,36 +144,17 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    var key = GetSingleKey();
-                    if (key == "1")
+                    InnMenu = 4;  //Moved outside switch so may behave differently
+                    switch (GetSingleKey())
                     {
-                        roomChoice = 0;
-                        InnMenu = 4;
+                        case "1": roomChoice = 0; break;
+                        case "2": roomChoice = 1; break;
+                        case "3": roomChoice = 2; break; //Original code did not set InnMenu = 4
+                        case "4": roomChoice = 3; break;
+                        case "5": roomChoice = 4; break;
+                        case "6": InnMenu = 3; break;
+                        case "0": InnMenu = 0; break;
                     }
-                    if (key == "2")
-                    {
-                        roomChoice = 1;
-                        InnMenu = 4;
-                    }
-                    if (key == "3")
-                    {
-                        roomChoice = 2;
-                        InnMenu = 4;
-                    }
-                    if (key == "4")
-                    {
-                        roomChoice = 3;
-                        InnMenu = 4;
-                    }
-                    if (key == "5")
-                    {
-                        roomChoice = 4;
-                        InnMenu = 4;
-                    }
-                    if (key == "6")
-                        InnMenu = 3;
-                    if (key == "0")
-                        InnMenu = 0;
                 }
 
                 while (InnMenu == 3) // Join Inn menu
@@ -205,36 +191,17 @@ namespace P3Net.Arx
 
                     UpdateDisplay();
 
-                    var key = GetSingleKey();
-                    if (key == "6")
-                        InnMenu = 2;
-                    if (key == "1")
+                    InnMenu = 4;
+                    switch(GetSingleKey())
                     {
-                        roomChoice = 5;
-                        InnMenu = 4;
-                    }
-                    if (key == "2")
-                    {
-                        roomChoice = 6;
-                        InnMenu = 4;
-                    }
-                    if (key == "3")
-                    {
-                        roomChoice = 7;
-                        InnMenu = 4;
-                    }
-                    if (key == "4")
-                    {
-                        roomChoice = 8;
-                        InnMenu = 4;
-                    }
-                    if (key == "5")
-                    {
-                        roomChoice = 9;
-                        InnMenu = 4;
-                    }
-                    if (key == "0")
-                        InnMenu = 0;
+                        case "1": roomChoice = 5; break;
+                        case "2": roomChoice = 6; break;
+                        case "3": roomChoice = 7; break;
+                        case "4": roomChoice = 8; break;
+                        case "5": roomChoice = 9; break;
+                        case "6": InnMenu = 2; break;
+                        case "0": InnMenu = 0; break;                        
+                    };
                 }
 
                 while (InnMenu == 4) // Confirm room choice and rate
@@ -243,8 +210,7 @@ namespace P3Net.Arx
                     CyText(0, "Our rate for sleeping in");
 
                     //MLT: Downcast to int
-                    var str = $"{Rooms[roomChoice].name} is {ToCurrency((int)(Rooms[roomChoice].baseCost * Inns[InnNo].costMultiplier))} coppers.";
-                    CyText(1, str);
+                    CyText(1, $"{Rooms[roomChoice].name} is {ToCurrency((int)(Rooms[roomChoice].baseCost * Inns[InnNo].costMultiplier))} coppers.");
                     CyText(3, "Do you wish to sign in?");
                     CyText(5, "( es or  o)");
                     DisplayCoins();
@@ -273,8 +239,7 @@ namespace P3Net.Arx
                         CText("I'm sorry, you have not the funds.");
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
-                        var key = GetSingleKey();
-                        if (key != "")
+                        if (GetSingleKey() != "")
                             InnMenu = 1;
                     } else
                     {
@@ -292,67 +257,22 @@ namespace P3Net.Arx
                         BText(3, 7, "A           B           C");
                         SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
-                        var key = GetSingleKey();
 
-                        if (key == "1")
+                        InnMenu = 6;
+                        switch (GetSingleKey())
                         {
-                            sleepingHours = 1;
-                            InnMenu = 6;
-                        }
-                        if (key == "2")
-                        {
-                            sleepingHours = 2;
-                            InnMenu = 6;
-                        }
-                        if (key == "3")
-                        {
-                            sleepingHours = 3;
-                            InnMenu = 6;
-                        }
-                        if (key == "4")
-                        {
-                            sleepingHours = 4;
-                            InnMenu = 6;
-                        }
-                        if (key == "5")
-                        {
-                            sleepingHours = 5;
-                            InnMenu = 6;
-                        }
-                        if (key == "6")
-                        {
-                            sleepingHours = 6;
-                            InnMenu = 6;
-                        }
-                        if (key == "7")
-                        {
-                            sleepingHours = 7;
-                            InnMenu = 6;
-                        }
-                        if (key == "8")
-                        {
-                            sleepingHours = 8;
-                            InnMenu = 6;
-                        }
-                        if (key == "9")
-                        {
-                            sleepingHours = 9;
-                            InnMenu = 6;
-                        }
-                        if (key == "A")
-                        {
-                            sleepingHours = 10;
-                            InnMenu = 6;
-                        }
-                        if (key == "B")
-                        {
-                            sleepingHours = 11;
-                            InnMenu = 6;
-                        }
-                        if (key == "C")
-                        {
-                            sleepingHours = 12;
-                            InnMenu = 6;
+                            case "1": sleepingHours = 1; break;
+                            case "2": sleepingHours = 2; break;
+                            case "3": sleepingHours = 3; break;
+                            case "4": sleepingHours = 4; break;
+                            case "5": sleepingHours = 5; break;
+                            case "6": sleepingHours = 6; break;
+                            case "7": sleepingHours = 7; break;
+                            case "8": sleepingHours = 8; break;
+                            case "9": sleepingHours = 9; break;
+                            case "A": sleepingHours = 10; break;
+                            case "B": sleepingHours = 11; break;
+                            case "C": sleepingHours = 12; break;                            
                         }
                     }
                 }
@@ -363,8 +283,7 @@ namespace P3Net.Arx
                     {
                         ClearShopDisplay();
                         CyText(2, "You are sleeping in");
-                        var str = $"{Rooms[roomChoice].name}.";
-                        CyText(3, str);
+                        CyText(3, $"{Rooms[roomChoice].name}.");
                         UpdateDisplay();
                         Sleep(TimeSpan.FromSeconds(1));
                         // check for diseases
@@ -395,7 +314,7 @@ namespace P3Net.Arx
                         var actualSleepProb = Random(0, 255);
                         if (actualSleepProb <= roomProb)
                         {
-                            plyr.hp = plyr.hp + 6;
+                            plyr.hp += 6;
                             if (plyr.hp > plyr.maxhp)
                                 plyr.hp = plyr.maxhp;
                         }
@@ -410,8 +329,7 @@ namespace P3Net.Arx
                     CyText(4, "I hope you rested well.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    var key = GetSingleKey();
-                    if (key != "")
+                    if (GetSingleKey() != "")
                     {
                         DeductCoins(0, 0, roomCost);
                         InnMenu = 1;
@@ -421,8 +339,7 @@ namespace P3Net.Arx
                 while (InnMenu == 7) // Check time menu
                 {
                     ClearShopDisplay();
-                    var str = $"Hour {plyr.hours} of day {plyr.days}";
-                    BText(7, 2, str);
+                    BText(7, 2, $"Hour {plyr.hours} of day {plyr.days}");
 
                     var monthDesc = "";
                     switch (plyr.months)
@@ -464,15 +381,12 @@ namespace P3Net.Arx
                         monthDesc = "Lights";
                         break;
                     }
-                    str = $"In the month of {monthDesc}";
-                    BText(7, 4, str);
-                    str = $"In year {plyr.years} since abduction";
-                    BText(7, 6, str);
+                    BText(7, 4, $"In the month of {monthDesc}");
+                    BText(7, 6, $"In year {plyr.years} since abduction");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
 
-                    var key = GetSingleKey();
-                    if (key != "")
+                    if (GetSingleKey() != "")
                         InnMenu = 1;
                 }
 
@@ -488,8 +402,7 @@ namespace P3Net.Arx
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        var key = GetSingleKey();
-                        if (key != "")
+                        if (GetSingleKey() != "")
                             InnMenu = 1;
                     } else
                     {
@@ -502,11 +415,11 @@ namespace P3Net.Arx
                         SetFontColor(215, 215, 215, 255);
                         UpdateDisplay();
 
-                        var key = GetSingleKey();
-                        if (key == "Y")
-                            InnMenu = 9;
-                        if (key == "N")
-                            InnMenu = 1;
+                        switch (GetSingleKey())
+                        {
+                            case "Y": InnMenu = 9; break;
+                            case "N": InnMenu = 1; break;
+                        };
                     }
                 }
 
@@ -534,9 +447,7 @@ namespace P3Net.Arx
                         CyText(9, "( Press a key )");
                         UpdateDisplay();
 
-                        var key = GetSingleKey();
-
-                        if (key != "")
+                        if (GetSingleKey() != "")
                             InnMenu = 1;
                     } else
                     {
@@ -572,8 +483,7 @@ namespace P3Net.Arx
                     CyText(3, $"You have earned {jobIncome} coppers.");
                     CyText(9, "( Press a key )");
                     UpdateDisplay();
-                    var key = GetSingleKey();
-                    if (key != "")
+                    if (GetSingleKey() != "")
                     {
                         plyr.copper += jobIncome;
                         innJobOpenings[InnNo].jobNumber = 255;
@@ -582,15 +492,30 @@ namespace P3Net.Arx
                 }
             }
             LeaveShop();
+        }        
+        
+        #region Private Members
+
+        //TODO: Return Inn
+        private static int GetInnNo ()
+        {
+            var inn = 0;
+            for (var i = 0; i <= Inns.Length; i++) // Max number of Inn objects
+            {
+                if (Inns[i].Position == plyr.Position)
+                    inn = i; // The number of the Inn you have entered
+            }
+            if ((plyr.Position.X == 31) && (plyr.Position.Y == 38))
+                inn = 3;
+
+            return inn;
         }
 
-        #region Review Data
-
-        public static InnJobOpening[] innJobOpenings = Arrays.InitializeWithDefaultInstances<InnJobOpening>(7);
+        private static InnJobOpening[] innJobOpenings = Arrays.InitializeWithDefaultInstances<InnJobOpening>(7);
 
         //TODO: Load as data for map
         //MLT: Double to float        
-        public static InnJob[] innJobs =
+        private static InnJob[] innJobs =
         {
             new InnJob()
             {
@@ -628,7 +553,7 @@ namespace P3Net.Arx
         };
 
         //TODO: Load as data for map
-        public static Inn[] Inns =
+        private static Inn[] Inns =
         {
             new Inn()
             { name = "Green Boar Inn", costMultiplier = 1, jobProbability = 64, x = 9, y = 44 },
@@ -647,7 +572,7 @@ namespace P3Net.Arx
         };
 
         //TODO: Load as data for map
-        public static InnRoom[] Rooms =
+        private static InnRoom[] Rooms =
         {
             new InnRoom()
             { name = "the common area floor", baseCost = 10, fatigueRecoveryProbability = 30 },
@@ -670,23 +595,6 @@ namespace P3Net.Arx
             new InnRoom()
             { name = "our BEST Suite", baseCost = 1600, fatigueRecoveryProbability = 255 }
         };
-        #endregion
-        
-        #region Private Members
-
-        //TODO: Return Inn
-        private static int GetInnNo ()
-        {
-            var Inn_no = 0;
-            for (var i = 0; i <= 6; i++) // Max number of Inn objects
-            {
-                if ((Inns[i].x == plyr.x) && (Inns[i].y == plyr.y))
-                    Inn_no = i; // The number of the Inn you have entered
-            }
-            if ((plyr.x == 31) && (plyr.y == 38))
-                Inn_no = 3;
-            return Inn_no;
-        }        
         #endregion
     }
 }

@@ -65,12 +65,12 @@ namespace P3Net.Arx
 
         private static void AddVaultToMap ()
         {
-            if (plyr.x == 2)
+            if (plyr.Position.X == 2)
             {
                 SetAutoMapFlag(plyr.map, 2, 2);
                 vaultName = "Gram's Gold Exchange vault.";
             }
-            if (plyr.x == 30)
+            if (plyr.Position.X == 30)
             {
                 SetAutoMapFlag(plyr.map, 30, 57);
                 vaultName = "the First City vault.";

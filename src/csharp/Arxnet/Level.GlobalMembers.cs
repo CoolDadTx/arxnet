@@ -71,7 +71,7 @@ namespace P3Net.Arx
 
             using (var reader = new StreamReader(filename))
             {
-                var totalMapCells = plyr.mapWidth * plyr.mapHeight;
+                var totalMapCells = plyr.MapSize.Width * plyr.MapSize.Height;
                 for (var i = 0; i < totalMapCells; ++i)
                 {
                     var mapCell_attributes = 13; // should be 12
@@ -169,10 +169,9 @@ namespace P3Net.Arx
         public static void MoveMapLevel ()
         {
             //TODO: Make this data-bound
-            if ((plyr.x == 50) && (plyr.y == 3) && (plyr.map == 1)) // to the city from dungeon 1
+            if ((plyr.Position.X == 50) && (plyr.Position.Y == 3) && (plyr.map == 1)) // to the city from dungeon 1
             {
-                plyr.x = 49;
-                plyr.y = 3;
+                plyr.Position = new Point(49, 3);
                 plyr.facing = Directions.West;
                 plyr.map = 0; // The City
                 plyr.scenario = Scenarios.City;
@@ -183,10 +182,9 @@ namespace P3Net.Arx
                 LoadMessages(0);
             }
 
-            if ((plyr.x == 59) && (plyr.y == 62) && (plyr.map == 1)) // to the city from dungeon 1
+            if ((plyr.Position.X == 59) && (plyr.Position.Y == 62) && (plyr.map == 1)) // to the city from dungeon 1
             {
-                plyr.x = 59;
-                plyr.y = 63;
+                plyr.Position = new Point(59, 63);
                 plyr.facing = Directions.South;
                 plyr.map = 0; // The City
                 plyr.scenario = Scenarios.City;
@@ -197,10 +195,9 @@ namespace P3Net.Arx
                 LoadMessages(0);
             }
 
-            if ((plyr.x == 50) && (plyr.y == 3) && (plyr.map == 0)) // to the dungeon 1 from city
+            if ((plyr.Position.X == 50) && (plyr.Position.Y == 3) && (plyr.map == 0)) // to the dungeon 1 from city
             {
-                plyr.x = 49;
-                plyr.y = 3;
+                plyr.Position = new Point(49, 3);
                 plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
@@ -211,10 +208,9 @@ namespace P3Net.Arx
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 59) && (plyr.y == 62) && (plyr.map == 0)) // to the dungeon 1 from city
+            if ((plyr.Position.X == 59) && (plyr.Position.Y == 62) && (plyr.map == 0)) // to the dungeon 1 from city
             {
-                plyr.x = 59;
-                plyr.y = 61;
+                plyr.Position = new Point(59, 61);
                 plyr.facing = Directions.North;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
@@ -225,176 +221,157 @@ namespace P3Net.Arx
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 48) && (plyr.y == 48) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 se fix
+            if ((plyr.Position.X == 48) && (plyr.Position.Y == 48) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 se fix
             {
-                plyr.x = 30;
-                plyr.y = 31;
+                plyr.Position = new Point(30, 31);
                 plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                
+                //TODO: Shouldn't this come from the map itself, not stored as part of the player
+                plyr.MapSize = new Size(32, 32);
+
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2);
                 LoadMessages(2);
             }
 
-            if ((plyr.x == 31) && (plyr.y == 31) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 se fix
+            if ((plyr.Position.X == 31) && (plyr.Position.Y == 31) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 se fix
             {
-                plyr.x = 47;
-                plyr.y = 48;
+                plyr.Position = new Point(47, 48);
                 plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 64;
-                plyr.mapHeight = 64;
+                plyr.MapSize = new Size(64, 64);
                 LoadMapData(1);
                 LoadDescriptions(1);
                 LoadZoneData(1);
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 16) && (plyr.y == 48) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 sw fix
+            if ((plyr.Position.X == 16) && (plyr.Position.Y == 48) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 sw fix
             {
-                plyr.x = 1;
-                plyr.y = 31;
+                plyr.Position = new Point(1, 31);
                 plyr.facing = Directions.East;
                 plyr.map = 2; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2);
                 LoadMessages(2);
             }
 
-            if ((plyr.x == 0) && (plyr.y == 31) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 ne fix
+            if ((plyr.Position.X == 0) && (plyr.Position.Y == 31) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 ne fix
             {
-                plyr.x = 17;
-                plyr.y = 48;
+                plyr.Position = new Point(17, 48);                
                 plyr.facing = Directions.East;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 64;
-                plyr.mapHeight = 64;
+                plyr.MapSize = new Size(64, 64);
                 LoadMapData(1);
                 LoadDescriptions(1);
                 LoadZoneData(1);
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 49) && (plyr.y == 17) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 fix
+            if ((plyr.Position.X == 49) && (plyr.Position.Y == 17) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 fix
             {
-                plyr.x = 30;
-                plyr.y = 0;
+                plyr.Position = new Point(30, 0);
                 plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2);
                 LoadMessages(2);
             }
 
-            if ((plyr.x == 16) && (plyr.y == 17) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 nw - fix
+            if ((plyr.Position.X == 16) && (plyr.Position.Y == 17) && (plyr.map == 1)) // from dungeon 1 to dungeon 2 nw - fix
             {
-                plyr.x = 0;
-                plyr.y = 0;
+                plyr.Position = new Point(0, 0);
                 plyr.facing = Directions.North;
                 plyr.map = 2; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2);
                 LoadMessages(2);
             }
 
-            if ((plyr.x == 0) && (plyr.y == 1) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 nw fix
+            if ((plyr.Position.X == 0) && (plyr.Position.Y == 1) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 nw fix
             {
-                plyr.x = 16;
-                plyr.y = 16;
+                plyr.Position = new Point(16, 16);
                 plyr.facing = Directions.North;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 64;
-                plyr.mapHeight = 64;
+                plyr.MapSize = new Size(64, 64);
                 LoadMapData(1);
                 LoadDescriptions(1);
                 LoadZoneData(1);
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 31) && (plyr.y == 0) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 ne fix
+            if ((plyr.Position.X == 31) && (plyr.Position.Y == 0) && (plyr.map == 2)) // from dungeon 2 to dungeon 1 ne fix
             {
-                plyr.x = 48;
-                plyr.y = 17;
+                plyr.Position = new Point(48, 17);
                 plyr.facing = Directions.West;
                 plyr.map = 1; // The Dungeon
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 64;
-                plyr.mapHeight = 64;
+                plyr.MapSize = new Size(64, 64);
                 LoadMapData(1);
                 LoadDescriptions(1);
                 LoadZoneData(1);
                 LoadMessages(1);
             }
 
-            if ((plyr.x == 17) && (plyr.y == 12) && (plyr.map == 2)) // from dungeon 2 to dungeon 3 fix
+            if ((plyr.Position.X == 17) && (plyr.Position.Y == 12) && (plyr.map == 2)) // from dungeon 2 to dungeon 3 fix
             {
-                plyr.x = 9;
-                plyr.y = 3;
+                plyr.Position = new Point(9, 3);
                 plyr.facing = Directions.West;
                 plyr.map = 3; // The Dungeon level 3
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32; // due to rooms of confusion
-                plyr.mapHeight = 32; // due to rooms of confusion
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(3);
                 LoadDescriptions(3);
                 LoadZoneData(3); // temp
                 LoadMessages(2); // temp
             }
 
-            if ((plyr.x == 10) && (plyr.y == 3) && (plyr.map == 3)) // from dungeon 3 to dungeon 2
+            if ((plyr.Position.X == 10) && (plyr.Position.Y == 3) && (plyr.map == 3)) // from dungeon 3 to dungeon 2
             {
-                plyr.x = 16;
-                plyr.y = 12;
+                plyr.Position = new Point(16, 12);
                 plyr.facing = Directions.West;
                 plyr.map = 2; // The Dungeon level 2
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2); // temp
                 LoadMessages(2); // temp
             }
 
-            if ((plyr.x == 6) && (plyr.y == 15) && (plyr.map == 3)) // from dungeon 3 to dungeon 2
+            if ((plyr.Position.X == 6) && (plyr.Position.Y == 15) && (plyr.map == 3)) // from dungeon 3 to dungeon 2
             {
-                plyr.x = 14;
-                plyr.y = 22;
+                plyr.Position = new Point(14, 22);
                 plyr.facing = Directions.North;
                 plyr.map = 2; // The Dungeon level 2
                 plyr.scenario = Scenarios.Dungeon;
                 plyr.z_offset = 1.0f;
-                plyr.mapWidth = 32;
-                plyr.mapHeight = 32;
+                plyr.MapSize = new Size(32, 32);
                 LoadMapData(2);
                 LoadDescriptions(2);
                 LoadZoneData(2); // temp
@@ -406,8 +383,7 @@ namespace P3Net.Arx
         public static void MoveMapLevelTeleport ()
         {
             plyr.z_offset = 1.0f;
-            plyr.mapWidth = maps[plyr.map].width;
-            plyr.mapHeight = maps[plyr.map].height;
+            plyr.MapSize = maps[plyr.map].Size;
             LoadMapData(plyr.map);
             LoadDescriptions(plyr.map);
             LoadZoneData(plyr.map);
@@ -422,12 +398,12 @@ namespace P3Net.Arx
             // y < entry 2 y2
 
             var identifiedZone = 99; // 99 used to represent not part of a zone - default
-            var x = plyr.x;
-            var y = plyr.y;
+            var x = plyr.Position.X;
+            var y = plyr.Position.Y;
 
             for (var z = 0; z < 255; ++z) // 44
             {
-                if ((zones2[z].y1 <= y) && (zones2[z].y2 > y) && (zones2[z].x1 > x) && (zones2[z].x2 <= x))
+                if ((zones2[z].TopLeft.Y <= y) && (zones2[z].BottomRight.Y > y) && (zones2[z].TopLeft.X > x) && (zones2[z].BottomRight.X <= x))
                     identifiedZone = z;
             }
 

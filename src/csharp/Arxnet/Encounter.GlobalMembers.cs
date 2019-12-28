@@ -82,26 +82,13 @@ namespace P3Net.Arx
                     switch (plyr.special)
                     {
                         case 0x80:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
                         case 0x81:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
                         case 0x82:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
                         case 0x83:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
                         case 0x84:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
                         case 0x85:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
-                        case 0x86:
-                        EncounterLoop(Encounters.UndeadKnight, 1);
-                        break;
+                        case 0x86: EncounterLoop(Encounters.UndeadKnight, 1); break;
+
                         case 0x87:
                         EncounterLoop(Encounters.Basilisk, 1);
                         break;
@@ -189,6 +176,7 @@ namespace P3Net.Arx
             Encounters monsterNo = 0;
             plyr.status = GameStates.Encounter;
 
+            //TODO: Clean up this logic
             // CITY - Day
             if ((plyr.timeOfDay != 1) && (plyr.scenario == Scenarios.City))
             {
@@ -1187,10 +1175,10 @@ namespace P3Net.Arx
                     switch (plyr.facing)
                     {
                         case Directions.West:
-                        case Directions.East: plyr.x = plyr.oldx; break;
+                        case Directions.East: plyr.Position = plyr.Position.WithX(plyr.OldLocation.X); break;
 
                         case Directions.North:
-                        case Directions.South: plyr.y = plyr.oldy; break;
+                        case Directions.South: plyr.Position = plyr.Position.WithY(plyr.OldLocation.Y); break;
                     }
                     plyr.z_offset = 1.0F;
                 } else
@@ -1313,61 +1301,23 @@ namespace P3Net.Arx
 
         private static string GetPlayerAttackDesc ( int damage )
         {
-            /*
-			    0x00 - hack/slash
-			    0x01 - poke/stab
-			    0x02 - bash/wallop
-			    0x03 - spear/impale
-			    0x04 - whip/lash
-			    0x05 - blast
-			    0x06 - punch/whomp
-			    0x07 - hit
-			*/
-
-            var result = "hit";
             var value = (itemBuffer[plyr.priWeapon].flags) & 7;
 
-            if (damage < 4)
+            //TODO: Move this to weapon instead
+            string result;
+            switch (value)
             {
-                if (value == 0)
-                    result = "hack";
-                if (value == 1)
-                    result = "poke";
-                if (value == 2)
-                    result = "bash";
-                if (value == 3)
-                    result = "spear";
-                if (value == 4)
-                    result = "whip";
-                if (value == 5)
-                    result = "blast";
-                if (value == 6)
-                    result = "punch";
-                if (value == 7)
-                    result = "hit";
-                if (value > 7)
-                    result = "greater than 7";
-            } else
-            {
-                if (value == 0)
-                    result = "slash";
-                if (value == 1)
-                    result = "stab";
-                if (value == 2)
-                    result = "wallop";
-                if (value == 3)
-                    result = "impale";
-                if (value == 4)
-                    result = "lash";
-                if (value == 5)
-                    result = "blast";
-                if (value == 6)
-                    result = "whomp";
-                if (value == 7)
-                    result = "hit";
-                if (value > 7)
-                    result = "greater than 7";
-            }
+                case 0: result = (damage < 4) ? "hack" : "slash"; break;
+                case 1: result = (damage < 4) ? "poke" : "stab"; break;
+                case 2: result = (damage < 4) ? "bash" : "wallop"; break;
+                case 3: result = (damage < 4) ? "spear": "impale"; break;
+                case 4: result = (damage < 4) ? "whip" : "lash"; break;
+                case 5: result = "blast"; break;
+                case 6: result = (damage < 4) ? "punch" : "whomp"; break;
+                case 7: result = "hit"; break;
+
+                default: result = "greater than 7"; break;
+            };
 
             return result;
         }
@@ -2437,8 +2387,7 @@ namespace P3Net.Arx
             {
                 ConsoleMessage("Fellow Thieves Guild members rescue@you from prison before your trial.");
                 encounterRunning = false;
-                plyr.x = 43;
-                plyr.y = 30;
+                plyr.Position = new System.Drawing.Point(43, 30);
             } else
             {
                 ConsoleMessage("You receive a swift trial,@and a slow execution.");
@@ -2447,22 +2396,21 @@ namespace P3Net.Arx
         }
 
         private static void ThiefYield ()
-        {
-            var str = "";
+        {            
             if ((plyr.gold == 0) && (plyr.silver == 0) && (plyr.copper == 0) && (plyr.gems == 0) && (plyr.jewels == 0))
             {
-                str = "\"Thou pitiful fool! Have a copper.\"";
+                ConsoleMessage("\"Thou pitiful fool! Have a copper.\"");
                 plyr.copper++;
             } else
             {
-                str = "\"Farewell pidgeon.\"";
+                ConsoleMessage("\"Farewell pidgeon.\"");
                 plyr.gold = 0;
                 plyr.silver = 0;
                 plyr.copper = 0;
                 plyr.gems = 0;
                 plyr.jewels = 0;
             }
-            ConsoleMessage(str);
+            
             encounterRunning = false;
         }
 

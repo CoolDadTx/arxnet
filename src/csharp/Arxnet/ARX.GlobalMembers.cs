@@ -93,7 +93,7 @@ namespace P3Net.Arx
             CheckDailyTavernJobOpenings();
             CheckDailybankJobOpenings();
 
-            InitialiseNewGame(); // Only sound and graphic resources
+            InitializeNewGame(); // Only sound and graphic resources
             plyr.status = GameStates.Explore;
 
             LoadDungeonItems(); // Sets up the Dungeon items char array

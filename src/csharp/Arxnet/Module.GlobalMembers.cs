@@ -18,14 +18,15 @@ namespace P3Net.Arx
         {
             plyr.status = GameStates.Module;
             UpdateModule(module);
-            if (plyr.facing == Directions.West)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.East)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.North)
-                plyr.y = plyr.oldy;
-            if (plyr.facing == Directions.South)
-                plyr.y = plyr.oldy;
+
+            switch (plyr.facing)
+            {
+                case Directions.East:
+                case Directions.West: plyr.Position = plyr.Position.WithX(plyr.OldLocation.X); break;
+
+                case Directions.North:
+                case Directions.South: plyr.Position = plyr.Position.WithY(plyr.OldLocation.Y); break;
+            };
 
             //MLT: Double to float
             plyr.z_offset = 1.6F; // position player just outside door

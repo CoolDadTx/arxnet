@@ -20,19 +20,19 @@ namespace P3Net.Arx
             plyr.status = GameStates.Module; //shopping
 
             var stairwayUp = true;
-            if ((plyr.x == 50) && (plyr.y == 3) && (plyr.map == 0))
+            if ((plyr.Position.X == 50) && (plyr.Position.Y == 3) && (plyr.map == 0))
                 stairwayUp = false;
-            if ((plyr.x == 59) && (plyr.y == 62) && (plyr.map == 0))
+            if ((plyr.Position.X == 59) && (plyr.Position.Y == 62) && (plyr.map == 0))
                 stairwayUp = false;
-            if ((plyr.x == 49) && (plyr.y == 17) && (plyr.map == 1))
+            if ((plyr.Position.X == 49) && (plyr.Position.Y == 17) && (plyr.map == 1))
                 stairwayUp = false;
-            if ((plyr.x == 16) && (plyr.y == 17) && (plyr.map == 1))
+            if ((plyr.Position.X == 16) && (plyr.Position.Y == 17) && (plyr.map == 1))
                 stairwayUp = false;
-            if ((plyr.x == 16) && (plyr.y == 48) && (plyr.map == 1))
+            if ((plyr.Position.X == 16) && (plyr.Position.Y == 48) && (plyr.map == 1))
                 stairwayUp = false;
-            if ((plyr.x == 48) && (plyr.y == 48) && (plyr.map == 1))
+            if ((plyr.Position.X == 48) && (plyr.Position.Y == 48) && (plyr.map == 1))
                 stairwayUp = false;
-            if ((plyr.x == 17) && (plyr.y == 12) && (plyr.map == 2))
+            if ((plyr.Position.X == 17) && (plyr.Position.Y == 12) && (plyr.map == 2))
                 stairwayUp = false;
 
             // Need to determine if up or down staircase            

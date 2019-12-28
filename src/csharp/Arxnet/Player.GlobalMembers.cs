@@ -210,19 +210,23 @@ namespace P3Net.Arx
             switch (scenario)
             {
                 case Scenarios.City:
-                plyr.x = 35;
-                plyr.y = 36;
-                plyr.scenario = Scenarios.City;
-                plyr.map = 0;
-                plyr.facing = Directions.North;
-                break;
+                {
+                    plyr.Position = new System.Drawing.Point(35, 36);                    
+                    plyr.scenario = Scenarios.City;
+                    plyr.map = 0;
+                    plyr.facing = Directions.North;
+                    break;
+                }
                 case Scenarios.Dungeon:
-                plyr.scenario = Scenarios.Dungeon;
-                plyr.map = 1;
-                plyr.x = 49;
-                plyr.y = 3;
-                plyr.facing = Directions.West;
-                break;
+                {
+                    plyr.scenario = Scenarios.Dungeon;
+                    plyr.map = 1;
+                    plyr.Position = new System.Drawing.Point(49, 3);                    
+                    plyr.facing = Directions.West;
+                    break;
+                };
+
+                default: throw new NotSupportedException();
             }
 
             StockSmithyWares();
@@ -235,12 +239,8 @@ namespace P3Net.Arx
                 GetPlayerName();
                 switch (scenario)
                 {
-                    case Scenarios.City:
-                    CityGate();
-                    break;
-                    case Scenarios.Dungeon:
-                    DungeonGate();
-                    break;
+                    case Scenarios.City: CityGate(); break;
+                    case Scenarios.Dungeon: DungeonGate(); break;
                 }
             }
         }

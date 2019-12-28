@@ -33,8 +33,8 @@ namespace P3Net.Arx
                 type = 177, // temporary object type to indicate armor
                 index = armor_no,
                 location = 10, // carried in inventory but not in use
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map,
                 hp = 12 // temp value to act as breakable value
             };
@@ -69,8 +69,8 @@ namespace P3Net.Arx
                 type = type, // gold, crystals, keys, gems
                              //new_item.index = weapon_no;
                 location = 1, // the floor
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map,
 
                 hp = value // for generic items sets number e.g. 4 food packets, 3 gold
@@ -126,8 +126,8 @@ namespace P3Net.Arx
 
                 // Set location attributes
                 location = 1, // the floor
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map
             };
 
@@ -152,8 +152,8 @@ namespace P3Net.Arx
                 type = 176, // object type to indicate potion
                 index = potion_no, // Index will define which of 42 potion types this is
                 location = 1, // On floor after encounter
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map,
                 hp = 0 // For potions 0 indicates unidentified
             };
@@ -178,8 +178,8 @@ namespace P3Net.Arx
                 type = 200, // type for quest items e.g ring halves, silver key etc
                 index = questItemNo, // for quest items index is used to identify the object
                 location = 1, // the floor
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map,
             };
             itemBuffer[plyr.buffer_index] = new_item;
@@ -235,8 +235,8 @@ namespace P3Net.Arx
 
                 // Set weapon location
                 location = 1, // the floor
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map
             };
 
@@ -259,8 +259,8 @@ namespace P3Net.Arx
                 type = 180, // clothing type
                 index = clothing_no,
                 location = 10, // carried in inventory but not in use
-                x = plyr.x,
-                y = plyr.y,
+                x = plyr.Position.X,
+                y = plyr.Position.Y,
                 level = plyr.map,
                 hp = 12, // temp value to act as breakable value
             };
@@ -276,7 +276,7 @@ namespace P3Net.Arx
         {
             var levelDesc = "";
             var keynotpressed = true;
-            var squaresNorth = 63 - plyr.y;
+            var squaresNorth = 63 - plyr.Position.Y;
             while (keynotpressed)
             {
                 switch (plyr.map)
@@ -289,15 +289,15 @@ namespace P3Net.Arx
                     break;
                     case 2:
                     levelDesc = "level 2";
-                    squaresNorth = 31 - plyr.y;
+                    squaresNorth = 31 - plyr.Position.Y;
                     break;
                     case 3:
                     levelDesc = "level 3";
-                    squaresNorth = 15 - plyr.y;
+                    squaresNorth = 15 - plyr.Position.Y;
                     break;
                     case 4:
                     levelDesc = "level 4";
-                    squaresNorth = 7 - plyr.y;
+                    squaresNorth = 7 - plyr.Position.Y;
                     break;
                 };
 
@@ -307,7 +307,7 @@ namespace P3Net.Arx
                     DispMain();
                 else if (plyr.status == (GameStates)0)
                     DispMain();
-                CyText(3, $"You are {squaresNorth} squares North@and {plyr.x} squares East from the SouthWest@corner of {levelDesc}.");
+                CyText(3, $"You are {squaresNorth} squares North@and {plyr.Position.X} squares East from the SouthWest@corner of {levelDesc}.");
                 CyText(8, "<<< Press any key to continue >>>");
                 UpdateDisplay();
                 var key = GetSingleKey();
@@ -403,7 +403,7 @@ namespace P3Net.Arx
             var noGetQuit = true;
             while ((cur_idx <= plyr.buffer_index) && (noGetQuit))
             {
-                if ((itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
+                if ((itemBuffer[cur_idx].x == plyr.Position.X) && (itemBuffer[cur_idx].y == plyr.Position.Y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
                 {
                     var keypressed = false;
 
@@ -1200,7 +1200,7 @@ namespace P3Net.Arx
             var cur_idx = 0;
             while (cur_idx < plyr.buffer_index)
             {
-                if ((itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
+                if ((itemBuffer[cur_idx].x == plyr.Position.X) && (itemBuffer[cur_idx].y == plyr.Position.Y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
                     no_items++;
                 cur_idx++;
             }
@@ -2103,7 +2103,7 @@ namespace P3Net.Arx
             var cur_idx = 0;
             while (cur_idx < plyr.buffer_index)
             {
-                if ((itemBuffer[cur_idx].type == type) && (itemBuffer[cur_idx].x == plyr.x) && (itemBuffer[cur_idx].y == plyr.y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
+                if ((itemBuffer[cur_idx].type == type) && (itemBuffer[cur_idx].x == plyr.Position.X) && (itemBuffer[cur_idx].y == plyr.Position.Y) && (itemBuffer[cur_idx].level == plyr.map) && (itemBuffer[cur_idx].location == 1))
                     value = cur_idx;
                 cur_idx++;
 
@@ -2531,8 +2531,8 @@ namespace P3Net.Arx
         {
             // Turn lit torch to stick when dropped
             itemBuffer[object_ref].location = 1;
-            itemBuffer[object_ref].x = plyr.x;
-            itemBuffer[object_ref].y = plyr.y;
+            itemBuffer[object_ref].x = plyr.Position.X;
+            itemBuffer[object_ref].y = plyr.Position.Y;
             itemBuffer[object_ref].level = plyr.map;
             if (plyr.headArmour == object_ref)
                 plyr.headArmour = 255;

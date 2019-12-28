@@ -229,6 +229,7 @@ namespace P3Net.Arx
         //TODO: Move to input
         public static bool KeyPressed () => ReadKey() != "";
 
+        //TODO: Return key enum instead of string
         public static string ReadKey ()
         {
             // Process events            

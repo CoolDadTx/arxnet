@@ -20,24 +20,24 @@ namespace P3Net.Arx
         public static void Automap ()
         {
             plyr.status = 0;
-            var mapComplete = false;
 
-            while (!mapComplete)
+            var done = false;
+
+            do
             {
                 ClearDisplay();
                 DrawFullAutomap();
                 UpdateDisplay();
 
-                var single_key = GetSingleKey();
-                if (single_key == "SPACE")
-                    mapComplete = true;
-                if (single_key == "RETURN")
-                    mapComplete = true;
-                if (single_key == "M")
-                    mapComplete = true;
-                if (single_key == "ESC")
-                    mapComplete = true;
-            }
+                switch (GetSingleKey())
+                {
+                    case "SPACE":
+                    case "RETURN":
+                    case "M":
+                    case "ESC": done = true; break;
+                };
+            } while (!done);
+
             plyr.status = GameStates.Explore;
         }
 
@@ -48,25 +48,26 @@ namespace P3Net.Arx
         }
 
         //TODO: Not used but we'll leave it for now
-        public static void ClearAutoMaps ()
-        {
-            for (var y = 0; y < 5; y++)
-            {
-                for (var x = 0; x < 4096; x++)
-                    autoMapExplored[y, x] = false;
-            }
-        }
+        //public static void ClearAutoMaps ()
+        //{       
+        //    for (var y = 0; y < 5; y++)
+        //    {
+        //        for (var x = 0; x < 4096; x++)
+        //            autoMapExplored[y, x] = false;
+        //    }
+        //}
 
         public static void InitMap ()
         {
-            mapImage = new Texture("data/images/maptiles.png");
-            cellImage.Texture = mapImage;
-            
-            if (plyr.scenario == Scenarios.City)
-                legendImage = new Texture("data/images/cityLegend.png");
-            if (plyr.scenario == Scenarios.Dungeon)
-                legendImage = new Texture("data/images/dungeonLegend.png");
-            mapLegend.Texture = legendImage;
+            cellImage.Texture = new Texture("data/images/maptiles.png");
+
+            switch (plyr.scenario)
+            {
+                case Scenarios.City: mapLegend.Texture = new Texture("data/images/cityLegend.png"); break;
+                case Scenarios.Dungeon: mapLegend.Texture = new Texture("data/images/dungeonLegend.png"); break;
+
+                default: throw new NotSupportedException();
+            };
         }
 
         public static void DrawAutomap ()
@@ -84,8 +85,7 @@ namespace P3Net.Arx
                                     };
                     App.Draw(rectangle2);
                 }
-
-                pixelSize = 16;
+                                
                 var automapSize = new Drawing.Size(9, 9);// how many map cells displayed including central player cell + 1 for for loop 
 
                 var startx = plyr.Position.X - ((automapSize.Width - 1) / 2);     // map cell coords for first x
@@ -100,8 +100,8 @@ namespace P3Net.Arx
                         var currenty = starty + y;
                         if ((currentx >= 0) && (currentx < plyr.MapSize.Width) && (currenty >= 0) && (currenty < plyr.MapSize.Height))
                         {
-                            var pixelx = miniMapX + (x * pixelSize); // 16 = pixels in cell image
-                            var pixely = miniMapY + (y * pixelSize); // 16 = pixels in cell image
+                            var pixelx = miniMapX + (x * s_pixelSize); // 16 = pixels in cell image
+                            var pixely = miniMapY + (y * s_pixelSize); // 16 = pixels in cell image
                             mapLocation = GetMapIndex(currentx, currenty);
                             DrawCell(currentx, currenty, pixelx, pixely);
                             if (!autoMapExplored[plyr.map, mapLocation])
@@ -110,105 +110,75 @@ namespace P3Net.Arx
                     }
                 }
 
-                // Draw arrow to represent position and direction of player
+                // Draw arrow to represent position and direction of player                
+                int tile;
+                switch (plyr.facing)
                 {
-                    var pixelPos = new Drawing.Point(miniMapX + (((automapSize.Width - 1) / 2) * pixelSize),
-                                             miniMapY + (((automapSize.Height - 1) / 2) * pixelSize));
-                    if (plyr.facing == Directions.West)
-                        DrawImage(pixelPos, 17);
-                    if (plyr.facing == Directions.North)
-                        DrawImage(pixelPos, 14);
-                    if (plyr.facing == Directions.East)
-                        DrawImage(pixelPos, 16);
-                    if (plyr.facing == Directions.South)
-                        DrawImage(pixelPos, 15);
-                }
+                    case Directions.West: tile = 17; break;
+                    case Directions.North: tile = 14; break;
+                    case Directions.East: tile = 16; break;
+                    case Directions.South: tile = 15; break;
+                    default: throw new NotSupportedException();
+                };
+
+                var pixelPos = new Drawing.Point(miniMapX + (((automapSize.Width - 1) / 2) * s_pixelSize),
+                                            miniMapY + (((automapSize.Height - 1) / 2) * s_pixelSize));
+                DrawImage(pixelPos, tile);
             }
-        }
+        }        
         
-        #region Review Data
-
-        public static Texture mapImage;
-        public static Texture legendImage;
-        public static Sprite cellImage = new Sprite();
-
-        public static Sprite mapLegend = new Sprite();
-        
-        public static int pixelSize;
-        public static int mapLocation;
-        #endregion
-
-        #region Private Members
+         #region Private Members
 
         //TODO: Probably should be tied to map
         private static void DrawFullAutomap ()
-        {
-            plyr.drawingBigAutomap = true;
-            pixelSize = 16;
-            var automapHeight = 32; // how many map cells displayed including central player cell + 1 for for loop
-            var automapWidth = 32;
-            var cornerX = 0; // top left pixel coordinate for automap 522
-            var cornerY = 0; // top left pixel coordinate for automap
-            var startx = 0; // map cell coords for first x
-            var starty = 0; // map cell coords for first y
+        {            
+            plyr.drawingBigAutomap = true;            
 
-            if ((plyr.x < 32) && (plyr.y < 32))
-            {
-                startx = 0;
-                starty = 0;
-            }
-            if ((plyr.x > 31) && (plyr.y < 32))
-            {
-                startx = 32;
-                starty = 0;
-            }
-            if ((plyr.x > 31) && (plyr.y > 31))
-            {
-                startx = 32;
-                starty = 32;
-            }
-            if ((plyr.x < 32) && (plyr.y>31))
-            {
-                startx = 0;
-                starty = 32;
-            }
+            var automapSize = new Drawing.Size(32, 32);  // how many map cells displayed including central player cell + 1 for for loop
 
-            for (var y = 0; y < (automapHeight); y++)
+            // top left pixel coordinate for automap
+            var corner = Drawing.Point.Empty;
+
+            var startx = (plyr.Position.X < 32) ? 0 : 32;
+            var starty = (plyr.Position.Y < 32) ? 0 : 32;
+
+            for (var y = 0; y < automapSize.Height; y++)
             {
-                for (var x = 0; x < (automapWidth); x++)
+                for (var x = 0; x < automapSize.Width; x++)
                 {
                     // check for valid on map square
-                    var currentx = startx + x;
-                    var currenty = starty + y;
-                    var pixelx = cornerX + (x * pixelSize); // 16 = pixels in cell image
-                    var pixely = cornerY + (y * pixelSize); // 16 = pixels in cell image
-                    mapLocation = GetMapIndex(currentx, currenty);
-                    DrawCell(currentx, currenty, pixelx, pixely);
+                    var current = new Drawing.Point(startx + x, starty + y);
+                    mapLocation = GetMapIndex(current);                    
+
+                    // 16 = pixels in cell image
+                    var pixel = new Drawing.Point(corner.X + (x * s_pixelSize), corner.Y + (y * s_pixelSize));                                        
+                    DrawCell(current, pixel);
+
                     if (!autoMapExplored[plyr.map, mapLocation])
-                        DrawImage(pixelx, pixely, 24);
+                        DrawImage(pixel, 24);
                 }
             }
 
+            //TODO: Seems like Min/Max would work here but what if X/Y is > 64?
             // Draw arrow to represent position and direction of player
+            var arrowPos = new Drawing.Point((plyr.Position.X > 31 ? (plyr.Position.X - 32) : plyr.Position.X) * s_pixelSize,
+                                            (plyr.Position.Y > 31 ? (plyr.Position.Y - 32) : plyr.Position.Y) * s_pixelSize
+                                            );            
+            int tile;
+            switch (plyr.facing)
             {
-                var pixelx = (plyr.x) * pixelSize+16;
-                var pixely = (plyr.y) * pixelSize;
-                if (plyr.y > 31)
-                    pixely = (plyr.y - 32) * pixelSize;
-                if (plyr.x > 31)
-                    pixelx = (plyr.x - 32) * pixelSize;
-                if (plyr.facing == Directions.West)
-                    DrawImage(pixelx, pixely, 17);
-                if (plyr.facing == Directions.North)
-                    DrawImage(pixelx, pixely, 14);
-                if (plyr.facing == Directions.East)
-                    DrawImage(pixelx, pixely, 16);
-                if (plyr.facing == Directions.South)
-                    DrawImage(pixelx, pixely, 15);
-            };
+                case Directions.West: tile = 17; break;
+                case Directions.North: tile = 14; break;
+                case Directions.East: tile = 16; break;
+                case Directions.South: tile = 15; break;
+
+                default: throw new NotSupportedException();
+            }
+            
+            DrawImage(arrowPos, tile);            
 
             // Draw legend sprite
-            mapLegend.Position = new SFML.System.Vector2f(512 + 16, 16);
+            mapLegend.Position = new Vector2f(512 + 16, 16);
             App.Draw(mapLegend);
 
             plyr.drawingBigAutomap = false;
@@ -250,52 +220,45 @@ namespace P3Net.Arx
         private static void DrawCell ( int x, int y, int pixelx, int pixely )
         {
             var idx = GetMapIndex(x, y);
-            var north = levelmap[idx].north;
-            var west = levelmap[idx].west;
-            var east = levelmap[idx].east;
-            var south = levelmap[idx].south;
             var special = levelmap[idx].special;
-            int tile;
 
-            // Draw cell background colour
+            // Draw cell background color
             if (autoMapExplored[plyr.map, mapLocation])
             {
                 DrawImage(pixelx, pixely, 0);
-                if (special == 144)
-                    DrawImage(pixelx, pixely, 13);
-                if (special == 21)
-                    DrawImage(pixelx, pixely, 13);
-                if (special == 112)
-                    DrawImage(pixelx, pixely, 12);
-                if (special == 80)
-                    DrawImage(pixelx, pixely, 9);
-                if (special == 16)
-                    DrawImage(pixelx, pixely, 10);
-                if (special == 48)
-                    DrawImage(pixelx, pixely, 11);
-                if ((special == 208) && (plyr.scenario == 0))
-                    DrawImage(pixelx, pixely, 25);
-                if (special == 3)
-                    DrawImage(pixelx, pixely, 11);
-                if (special == 35)
-                    DrawImage(pixelx, pixely, 11);
-                if ((special == 0xF0) && (plyr.scenario == 0))
-                    DrawImage(pixelx, pixely, 9);
-                if (special == 0x0F)
-                    DrawImage(pixelx, pixely, 10);
-                if (special == 0x1D)
-                    DrawImage(pixelx, pixely, 11);
-                if (special == 0x0C)
-                    DrawImage(pixelx, pixely, 9);
-                if (special == 0x0D)
-                    DrawImage(pixelx, pixely, 12);
-                if (special == 7)
-                    DrawImage(pixelx, pixely, 11);
-                if (special == 19)
-                    DrawImage(pixelx, pixely, 25);
-                if (special == 87)
-                    DrawImage(pixelx, pixely, 25);
-            }
+
+                var specialTile = 0;
+                switch (special)
+                {
+                    case 144:
+                    case 21: specialTile = 13; break;
+
+                    case 112:
+                    case 0x0D: specialTile = 12; break;
+
+                    case 80:
+                    case 0x0C: specialTile = 9; break;
+
+                    case 16:
+                    case 0x0F: specialTile = 10; break;
+
+                    case 48:
+                    case 3:
+                    case 35:
+                    case 0x1D:
+                    case 7: specialTile = 11; break;
+
+                    case 19:
+                    case 87: specialTile = 25; break;
+
+                    case 208: specialTile = plyr.scenario == Scenarios.City ? 25 : 0; break;
+
+                    case 0xF0: specialTile = plyr.scenario == Scenarios.City ? 9 : 0; break;
+                };
+
+                if (specialTile != 0)
+                    DrawImage(pixelx, pixely, specialTile);
+            };
 
             if (!autoMapExplored[plyr.map, mapLocation])
                 DrawImage(pixelx, pixely, 24);
@@ -304,116 +267,97 @@ namespace P3Net.Arx
             if ((special >= 0xE0) && (special <= 0xFF) && (plyr.scenario == Scenarios.Dungeon))
                 DrawImage(pixelx, pixely, 22);
 
+            //TODO: All these switch statements are identical (ignoring North which is probably a bug) reacting to fixed values and picking 1 of 3 tile options - simplify this
             // switch statement to set value to image tile
-            tile = 0;
-            if (north == 3)
-                tile = 8;
-            if (north == 4)
-                tile = 8;
-            if (north == 5)
-                tile = 4;
-            if (north == 6)
-                tile = 4;
-            if (north == 8)
-                tile = 8;
-            if (north == 9)
-                tile = 8;
-            if (north == 10)
-                tile = 8;
-            if (north > 19)
-                tile = 8;
-            if (north == 13)
-                tile = 4;
-            if (north == 37)
-                tile = 4;
-            if (north == 14)
-                tile = 4;
+            var tile = 0;
+            switch (levelmap[idx].north)
+            {
+                case 3:
+                case 4:
+                case 8:
+                case 9:
+                case 10:
+                case 19: tile = 8; break;
 
+                case 5:
+                case 6:
+                case 13:
+                case 14:
+                case 37: tile = 4; break;
+            };
+            if (tile != 0)
+                DrawImage(pixelx, pixely, tile);
+
+            // switch statement to set value to image tile
+            var south = levelmap[idx].south;
+            switch (south)
+            {
+                case 3:
+                case 4:
+                case 8:
+                case 9:
+                case 10: tile = 6; break;
+
+                case 5:
+                case 6:
+                case 13:
+                case 14:
+                case 37: tile = 2; break;
+
+                default: tile = (south > 19) ? 6 : 0; break;
+            };
             if (tile != 0)
                 DrawImage(pixelx, pixely, tile);
 
             // switch statement to set value to image tile
             tile = 0;
-            if (south == 3)
-                tile = 6;
-            if (south == 4)
-                tile = 6;
-            if (south == 5)
-                tile = 2;
-            if (south == 6)
-                tile = 2;
-            if (south == 8)
-                tile = 6;
-            if (south == 9)
-                tile = 6;
-            if (south == 10)
-                tile = 6;
-            if (south > 19)
-                tile = 6;
-            if (south == 13)
-                tile = 2;
-            if (south == 37)
-                tile = 2;
-            if (south == 14)
-                tile = 2;
+            var west = levelmap[idx].west;
+            switch (west)
+            {
+                case 3:
+                case 4:
+                case 8:
+                case 9:
+                case 10: tile = 5; break;
 
+                case 5:
+                case 6:
+                case 13:
+                case 14:
+                case 37: tile = 1; break;
+
+                default: tile = (west > 19) ? 5 : 0; break;
+            };
             if (tile != 0)
                 DrawImage(pixelx, pixely, tile);
 
             // switch statement to set value to image tile
-            tile = 0;
-            if (west == 3)
-                tile = 5;
-            if (west == 4)
-                tile = 5;
-            if (west == 5)
-                tile = 1;
-            if (west == 6)
-                tile = 1;
-            if (west == 8)
-                tile = 5;
-            if (west == 9)
-                tile = 5;
-            if (west == 10)
-                tile = 5;
-            if (west > 19)
-                tile = 5;
-            if (west == 13)
-                tile = 1;
-            if (west == 37)
-                tile = 1;
-            if (west == 14)
-                tile = 1;
-            if (tile != 0)
-                DrawImage(pixelx, pixely, tile);
+            var east = levelmap[idx].east;
+            switch (east)
+            {
+                case 3:
+                case 4:
+                case 8:
+                case 9:
+                case 10: tile = 7; break;
 
-            // switch statement to set value to image tile
-            tile = 0;
-            if (east == 3)
-                tile = 7;
-            if (east == 4)
-                tile = 7;
-            if (east == 5)
-                tile = 3;
-            if (east == 6)
-                tile = 3;
-            if (east == 8)
-                tile = 7;
-            if (east == 9)
-                tile = 7;
-            if (east == 10)
-                tile = 7;
-            if (east > 19)
-                tile = 7;
-            if (east == 13)
-                tile = 3;
-            if (east == 37)
-                tile = 3;
-            if (east == 14)
-                tile = 3;
+                case 5:
+                case 6:
+                case 13:
+                case 14:
+                case 37: tile = 3; break;
+
+                default: tile = (east > 19) ? 7 : 0; break;                                };
             if (tile != 0)
                 DrawImage(pixelx, pixely, tile);
         }
+
+        private static int mapLocation;
+        private static Sprite cellImage = new Sprite();
+        private static Sprite mapLegend = new Sprite();
+
+        private const int s_pixelSize = 16;
+        
         #endregion
     }
 }

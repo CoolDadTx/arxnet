@@ -43,7 +43,7 @@ namespace P3Net.Arx
 
                     /* Update player loc details */
 
-                    var ind = GetMapIndex(plyr.x, plyr.y);
+                    var ind = GetMapIndex(plyr.Position.X, plyr.Position.Y);
                     autoMapExplored[plyr.map, ind] = true;
                     TransMapIndex(ind);
                     plyr.special = levelmap[ind].special;
@@ -80,86 +80,58 @@ namespace P3Net.Arx
                         smithyPlaying = false;
                     }
 
-                    var key = ReadKey();
-                    if (key == "left")
-                        TurnLeft();
-                    if (key == "right")
-                        TurnRight();
-                    if (key == "up")
-                        MoveForward();
-                    if (key == "down")
-                        MoveBack();
-                    if (key == "J")
-                        TurnLeft();
-                    if (key == "L")
-                        TurnRight();
-                    if (key == "I")
-                        MoveForward();
-                    if (key == "K")
-                        MoveBack();
-                    if (key == "U")
-                        SelectItem(1);
-                    if (key == "D")
-                        SelectItem(2);
-                    if (key == "C")
-                        CastSpells();
-                    if (key == "B")
-                        DisplayObjectBuffer();
-                    if (key == "G")
-                        GetItems();
-                    if (key == "P")
-                        PauseGame();
-                    if (key == ",")
-                        TogglePanelsBackward();
-                    if (key == ".")
-                        TogglePanelsForward();
-                    if (key == "F12")
-                        plyr.diagOn = !plyr.diagOn;
-                    if (key == "F11")
-                        TidyObjectBuffer();
-                    if (key == "F1")
-                        plyr.infoPanel = 1;
-                    if (key == "F2")
-                        plyr.infoPanel = 2;
-                    if (key == "F3")
-                        plyr.infoPanel = 3;
-                    if (key == "F4")
-                        plyr.infoPanel = 4;
-                    if (key == "F5")
-                        plyr.infoPanel = 5;
-                    if (key == "F6")
-                        plyr.infoPanel = 6;
-                    if (key == "F7")
-                        plyr.infoPanel = 7;
-                    if (key == "F8")
-                        plyr.infoPanel = 8;
-
-                    if (key == "F")
-                        plyr.fpsOn = !plyr.fpsOn;
-                    if (key == "A")
+                    //TODO: Switch to "command" pattern so bindings can be changed
+                    switch (ReadKey())
                     {
-                        if (plyr.miniMapOn)
-                            plyr.miniMapOn = false;
-                        else
-                            plyr.miniMapOn = true;
-                    }
-                    if (key == "M")
-                        Automap();
+                        case "left":
+                        case "J": TurnLeft(); break;
 
-                    if (key == "W")
-                        ChooseEncounter();
+                        case "right":
+                        case "L": TurnRight(); break;
 
-                    if (key == "T")
-                    {
-                        if (AR_DEV.EnableTeleporting)
-                            Teleport();
-                    }
+                        case "up": 
+                        case "I": MoveForward(); break;
 
-                    if (key == "ESC")
-                        OptionsMenu();
-                    if (key == "QUIT")
-                        OptionsMenu();
-                }
+                        case "down":
+                        case "K": MoveBack(); break;                        
+                        
+                        case "A": plyr.miniMapOn = !plyr.miniMapOn; break;
+                        case "C": CastSpells(); break;
+                        case "D": SelectItem(2); break;
+                        case "B": DisplayObjectBuffer(); break;
+                        case "F": plyr.fpsOn = !plyr.fpsOn; break;
+                        case "G": GetItems(); break;
+                        case "M": Automap(); break;
+                        case "U": SelectItem(1); break;
+                        case "W": ChooseEncounter(); break;
+                        case "P": PauseGame(); break;
+                        case "T":
+                        {
+                            if (AR_DEV.EnableTeleporting)
+                                Teleport();
+                            break;
+                        }
+
+                        case ",": TogglePanelsBackward(); break;
+                        case ".": TogglePanelsForward(); break;
+
+                        case "F1": plyr.infoPanel = 1; break;
+                        case "F2": plyr.infoPanel = 2; break;
+                        case "F3": plyr.infoPanel = 3; break;
+                        case "F4": plyr.infoPanel = 4; break;
+                        case "F5": plyr.infoPanel = 5; break;
+                        case "F6": plyr.infoPanel = 6; break;
+                        case "F7": plyr.infoPanel = 7; break;
+                        case "F8": plyr.infoPanel = 8; break;
+
+                        case "F11": TidyObjectBuffer(); break;
+                        case "F12": plyr.diagOn = !plyr.diagOn; break;
+
+                        case "ESC": 
+                        case "QUIT": OptionsMenu(); break;
+                    };
+                };
+
                 // Check smithy sounds and encounter music not playing
                 if (!gameQuit)
                 {
@@ -170,7 +142,7 @@ namespace P3Net.Arx
             }
         }
 
-        public static void InitialiseNewGame ()
+        public static void InitializeNewGame ()
         {
             //TODO: Lazy load
             // Prepare shop stock etc...
@@ -197,14 +169,14 @@ namespace P3Net.Arx
 
         public static void LeaveShop ()
         {
-            if (plyr.facing == Directions.West)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.East)
-                plyr.x = plyr.oldx;
-            if (plyr.facing == Directions.North)
-                plyr.y = plyr.oldy;
-            if (plyr.facing == Directions.South)
-                plyr.y = plyr.oldy;
+            switch (plyr.facing)
+            {
+                case Directions.West:
+                case Directions.East: plyr.Position = plyr.Position.WithX(plyr.OldLocation.X); break;
+
+                case Directions.North:
+                case Directions.South: plyr.Position = plyr.Position.WithY(plyr.OldLocation.Y); break;
+            };
 
             //MLT: Double to float
             plyr.z_offset = 1.6F; // position player just outside door
@@ -389,8 +361,8 @@ namespace P3Net.Arx
             }
             for (var i = 0; i < 20; i++)
             {
-                if ((plyr.doorDetails[i].x == plyr.x) &&
-                    (plyr.doorDetails[i].y == plyr.y) &&
+                if ((plyr.doorDetails[i].x == plyr.Position.X) &&
+                    (plyr.doorDetails[i].y == plyr.Position.Y) &&
                     (plyr.doorDetails[i].level == plyr.map) &&
                     (plyr.doorDetails[i].direction == doorFacing))
                     doorAlreadyOpened = true;
@@ -540,9 +512,9 @@ namespace P3Net.Arx
                 RunModule(Modules.VAULT); // Vault
                 break;
                 case 7:
-                if ((plyr.x == 2) && (plyr.y == 14) && (plyr.map == 1))
+                if ((plyr.Position.X == 2) && (plyr.Position.Y == 14) && (plyr.map == 1))
                     ShopGoblins();
-                if ((plyr.x == 56) && (plyr.y == 57) && (plyr.map == 1))
+                if ((plyr.Position.X == 56) && (plyr.Position.Y == 57) && (plyr.map == 1))
                     ShopTrolls();
                 break;
                 case 10:
@@ -578,42 +550,22 @@ namespace P3Net.Arx
                 {
                     if (plyr.special == teleports[i].@ref)
                     {
-                        if (teleports[i].new_map == 0)
+                        var new_map = 0;
+                        var teleport = teleports[i];
+                        switch (teleport.new_map)
                         {
-                            plyr.x = (teleports[i].new_x);
-                            plyr.y = (teleports[i].new_y);
-                        }
-                        if (teleports[i].new_map == 1)
-                        {
-                            plyr.x = (teleports[i].new_x) + 32;
-                            plyr.y = (teleports[i].new_y);
-                        }
-                        if (teleports[i].new_map == 2)
-                        {
-                            plyr.x = (teleports[i].new_x);
-                            plyr.y = (teleports[i].new_y) + 32;
-                        }
-                        if (teleports[i].new_map == 3)
-                        {
-                            plyr.x = (teleports[i].new_x) + 32;
-                            plyr.y = (teleports[i].new_y) + 32;
-                        }
+                            case 0: plyr.Position = teleport.Position; new_map = 1; break;
+                            case 1: plyr.Position = teleport.Position.AdjustX(32); new_map = 1; break;
+                            case 2: plyr.Position = teleport.Position.AdjustY(32); new_map = 1; break;
+                            case 3: plyr.Position = teleport.Position.AdjustXY(32, 32); new_map = 1; break;
 
-                        int new_map = 0;
-                        // Change map level to new_map value accounting for level 1 now being single 64x64 map
-                        if (teleports[i].new_map == 0)
-                            new_map = 1;
-                        if (teleports[i].new_map == 1)
-                            new_map = 1;
-                        if (teleports[i].new_map == 2)
-                            new_map = 1;
-                        if (teleports[i].new_map == 3)
-                            new_map = 1;
-                        if (teleports[i].new_map == 4)
-                            new_map = 2;
-                        if (teleports[i].new_map == 5)
-                            new_map = 3;
+                            case 4: new_map = 2; break;
+                            case 5: new_map = 3; break;
 
+                            default: throw new NotSupportedException();
+                        };                        
+
+                        // Change map level to new_map value accounting for level 1 now being single 64x64 map                        
                         if (plyr.map != new_map)
                         {
                             plyr.map = new_map;
@@ -623,7 +575,7 @@ namespace P3Net.Arx
                         // Display flashing sequence for teleport.
                         plyr.teleporting = 20;
 
-                        var location_index = GetMapIndex(plyr.x, plyr.y);
+                        var location_index = GetMapIndex(plyr.Position.X, plyr.Position.Y);
                         TransMapIndex(location_index);
                     }
                 }
@@ -634,16 +586,15 @@ namespace P3Net.Arx
         private static void DoorMessage ( string str )
         {
             var keyNotPressed = true;
-            while (keyNotPressed)
+            do
             {
                 DispMain();
                 DrawConsoleBackground();
                 CyText(1, str);
                 UpdateDisplay();
-                var key = GetSingleKey();
-                if (key == "SPACE")
+                if (GetSingleKey() == "SPACE")
                     keyNotPressed = false;
-            }
+            } while (keyNotPressed);
         }
 
         //TODO: Move to Door stuff
@@ -665,22 +616,22 @@ namespace P3Net.Arx
             if (plyr.doorDetailIndex == 19)
                 plyr.doorDetailIndex = 0;
 
-            plyr.doorDetails[plyr.doorDetailIndex].x = plyr.x;
-            plyr.doorDetails[plyr.doorDetailIndex].y = plyr.y;
+            plyr.doorDetails[plyr.doorDetailIndex].Position = plyr.Position;
             plyr.doorDetails[plyr.doorDetailIndex].level = plyr.map;
 
             if (plyr.movingForward)
                 plyr.doorDetails[plyr.doorDetailIndex].direction = (int)plyr.facing;
-            if (!plyr.movingForward)
+            else
             {
-                if (plyr.facing == Directions.West)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 3; // actually moving east
-                if (plyr.facing == Directions.North)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 4; // actually moving south
-                if (plyr.facing == Directions.East)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 1; // actually moving west
-                if (plyr.facing == Directions.South)
-                    plyr.doorDetails[plyr.doorDetailIndex].direction = 2; // actually moving north
+                var newDirection = 0;
+                switch (plyr.facing)
+                {
+                    case Directions.West: newDirection = 3; break;  // actually moving east
+                    case Directions.North: newDirection = 4; break; // actually moving south
+                    case Directions.East: newDirection = 1; break;  // actually moving west
+                    case Directions.South: newDirection = 2; break; // actually moving north
+                };
+                plyr.doorDetails[plyr.doorDetailIndex].direction = newDirection;
             }
             plyr.doorDetailIndex++;
         }
@@ -727,26 +678,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y++;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y--; 
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(-1); break;
+                    };
 
                     if (plyr.scenario == 0)
                         citySecretSound.Play();
@@ -760,26 +696,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y++;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y--; 
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(-1); break;
+                    };
                     if (plyr.scenario == 0)
                         cityDoorSound.Play();
                     else
@@ -792,26 +713,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y++;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y--; 
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(-1); break;
+                    };
                     if (plyr.scenario == 0)
                         cityDoorSound.Play();
                     else
@@ -828,11 +734,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset > 1.9f)
                 {
                     plyr.z_offset = 0.0f;
-                    plyr.oldx = plyr.x;
-                    plyr.x++;
+                    plyr.Position.AdjustX(1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset + 0.1f;
+                    plyr.z_offset += 0.1f;
                 }
             }
 
@@ -841,11 +746,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset < 0.1f)
                 {
                     plyr.z_offset = 1.9f;
-                    plyr.oldx = plyr.x;
-                    plyr.x++;
+                    plyr.Position = plyr.Position.AdjustX(1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset - 0.1f;
+                    plyr.z_offset -= 0.1f;
                 }
             }
         }
@@ -903,26 +807,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y--;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y++; // s
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(-1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(1); break;
+                    };                    
 
                     if (plyr.scenario == 0)
                         citySecretSound.Play();
@@ -936,26 +825,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y--;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y++; 
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(-1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(1); break;
+                    };
                     if (plyr.scenario == 0)
                         cityDoorSound.Play();
                     else
@@ -968,26 +842,11 @@ namespace P3Net.Arx
 
                     switch (plyr.facing)
                     {
-                        case Directions.West:
-                        plyr.oldx = plyr.x;
-                        plyr.x--;
-                        break;
-
-                        case Directions.North:
-                        plyr.oldy = plyr.y;
-                        plyr.y--;
-                        break;
-
-                        case Directions.East:
-                        plyr.oldx = plyr.x;
-                        plyr.x++;
-                        break;
-
-                        case Directions.South:
-                        plyr.oldy = plyr.y;
-                        plyr.y++; // s
-                        break;
-                    }
+                        case Directions.West: plyr.Position = plyr.Position.AdjustX(-1); break;
+                        case Directions.North: plyr.Position = plyr.Position.AdjustY(-1); break;                        
+                        case Directions.East: plyr.Position = plyr.Position.AdjustX(1); break;
+                        case Directions.South: plyr.Position = plyr.Position.AdjustY(1); break;
+                    };
                     if (plyr.scenario == 0)
                         cityDoorSound.Play();
                     else
@@ -995,7 +854,7 @@ namespace P3Net.Arx
                 }
             }
 
-            if ((plyr.x == -1) || (plyr.x == 64) || (plyr.y == -1) || (plyr.y == 64))
+            if ((plyr.Position.X == -1) || (plyr.Position.X == 64) || (plyr.Position.Y == -1) || (plyr.Position.Y == 64))
                 ScenarioEntrance(300);
         }
 
@@ -1007,11 +866,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset > 1.9f)
                 {
                     plyr.z_offset = 0.0f;
-                    plyr.oldy = plyr.y;
-                    plyr.y--;
+                    plyr.Position = plyr.Position.AdjustY(-1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset + 0.1f;
+                    plyr.z_offset += 0.1f;
                 }
             }
 
@@ -1020,11 +878,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset < 0.1f)
                 {
                     plyr.z_offset = 1.9f;
-                    plyr.oldy = plyr.y;
-                    plyr.y--;
+                    plyr.Position = plyr.Position.AdjustY(-1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset - 0.1f;
+                    plyr.z_offset -= 0.1f;
                 }
             }
         }
@@ -1037,11 +894,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset > 1.9f)
                 {
                     plyr.z_offset = 0.0f;
-                    plyr.oldy = plyr.y;
-                    plyr.y++;
+                    plyr.Position = plyr.Position.AdjustY(1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset + 0.1f;
+                    plyr.z_offset += 0.1f;
                 }
             }
 
@@ -1050,11 +906,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset < 0.1f)
                 {
                     plyr.z_offset = 1.9f;
-                    plyr.oldy = plyr.y;
-                    plyr.y++;
+                    plyr.Position = plyr.Position.AdjustY(1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset - 0.1f;
+                    plyr.z_offset -= 0.1f;
                 }
             }
         }
@@ -1063,22 +918,41 @@ namespace P3Net.Arx
         private static void MoveThroughBarredDoor ()
         {
             plyr.z_offset = plyr.movingForward ? 2 : 0;
-            if ((plyr.facing == Directions.West) && plyr.movingForward)
-                MoveWest();
-            if ((plyr.facing == Directions.North) && plyr.movingForward)
-                MoveNorth();
-            if ((plyr.facing == Directions.East) && plyr.movingForward)
-                MoveEast();
-            if ((plyr.facing == Directions.South) && plyr.movingForward)
-                MoveSouth();
-            if ((plyr.facing == Directions.West) && !plyr.movingForward)
-                MoveEast();
-            if ((plyr.facing == Directions.North) && !plyr.movingForward)
-                MoveSouth();
-            if ((plyr.facing == Directions.East) && !plyr.movingForward)
-                MoveWest();
-            if ((plyr.facing == Directions.South) && !plyr.movingForward)
-                MoveNorth();
+            switch (plyr.facing)
+            {
+                case Directions.West:
+                {
+                    if (plyr.movingForward)
+                        MoveWest();
+                    else
+                        MoveEast();
+                    break;
+                }
+                case Directions.North:
+                {
+                    if (plyr.movingForward)
+                        MoveNorth();
+                    else
+                        MoveSouth(); 
+                    break; 
+                }
+                case Directions.East: 
+                {
+                    if (plyr.movingForward)
+                        MoveEast();
+                    else
+                        MoveWest(); 
+                    break; 
+                }
+                case Directions.South: 
+                {
+                    if (plyr.movingForward)
+                        MoveSouth();
+                    else
+                        MoveNorth(); 
+                    break; 
+                }
+            };
         }
 
         //TODO: Move to navigation
@@ -1089,11 +963,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset > 1.9f)
                 {
                     plyr.z_offset = 0.0f;
-                    plyr.oldx = plyr.x;
-                    plyr.x--;
+                    plyr.Position = plyr.Position.AdjustX(-1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset + 0.1f;
+                    plyr.z_offset += 0.1f;
                 }
             }
 
@@ -1102,11 +975,10 @@ namespace P3Net.Arx
                 if (plyr.z_offset < 0.1f)
                 {
                     plyr.z_offset = 1.9f;
-                    plyr.oldx = plyr.x;
-                    plyr.x--;
+                    plyr.Position = plyr.Position.AdjustX(-1);
                 } else
                 {
-                    plyr.z_offset = plyr.z_offset - 0.1f;
+                    plyr.z_offset -= 0.1f;
                 }
             }
         }
@@ -1121,32 +993,36 @@ namespace P3Net.Arx
                 DisplayOptionsMenu();
                 UpdateDisplay();
 
-                var key_value = GetSingleKey();
+                switch (GetSingleKey())
+                {
+                    case "ESC":
+                    {
+                        keypressed = true;
+                        plyr.status = GameStates.Explore;
+                        break;
+                    };
 
-                if (key_value == "ESC")
-                {
-                    keypressed = true;
-                    plyr.status = GameStates.Explore;
-                }
-                if (key_value == "S")
-                {
-                    keypressed = true;
-                    DisplaySaveGame();
-                } // Needs updating to reflect slot
-                if (key_value == "Q")
-                    QuitMenu();
+                    case "S":
+                    {
+                        keypressed = true;
+                        DisplaySaveGame();
+                        break;
+                    };
+
+                    case "Q": QuitMenu(); break;
+                };
             }
         }
 
         private static void PauseGame ()
         {
+            string key;
             do
             {
                 DispMain();
-                var txt = "(Paused)@@@@@(Press SPACE to continue)";
-                CText(txt);
+                CText("(Paused)@@@@@(Press SPACE to continue)");
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
 
@@ -1330,8 +1206,7 @@ namespace P3Net.Arx
                 x = 0;
             if (!((y >= 0) && (y <= 63)))
                 y = 0;
-            plyr.x = x;
-            plyr.y = y;
+            plyr.Position = new System.Drawing.Point(x, y);
             // load new content?
             // teleport sound
             // validate!
@@ -1353,13 +1228,13 @@ namespace P3Net.Arx
 
         private static void TreasureMessage ( string str )
         {
+            string key;
             do
             {
                 DispMain();
-                var txt = $"{str}@@<<< Press SPACE to continue >>>";
-                CyText(1, txt);
+                CyText(1, $"{str}@@<<< Press SPACE to continue >>>");
                 UpdateDisplay();
-                var key = GetSingleKey();
+                key = GetSingleKey();
             } while (key != "SPACE");
         }
 
@@ -1368,30 +1243,13 @@ namespace P3Net.Arx
         {
             switch (plyr.facing)
             {
-                case Directions.North:
+                case Directions.North: plyr.facing = Directions.West; break;
+                case Directions.West: plyr.facing = Directions.South; break;
+                case Directions.East: plyr.facing = Directions.North; break;
+                case Directions.South: plyr.facing = Directions.East; break;
+            };
 
-                plyr.facing = Directions.West;
-                plyr.z_offset = 1.0f;
-                break;
-
-                case Directions.West:
-
-                plyr.facing = Directions.South;
-                plyr.z_offset = 1.0f;
-                break;
-
-                case Directions.East:
-
-                plyr.facing = Directions.North;
-                plyr.z_offset = 1.0f;
-                break;
-
-                case Directions.South:
-
-                plyr.facing = Directions.East;
-                plyr.z_offset = 1.0f;
-                break;
-            }
+            plyr.z_offset = 1.0f;
         }
 
         //TODO: Move to Navigation
@@ -1399,30 +1257,17 @@ namespace P3Net.Arx
         {
             switch (plyr.facing)
             {
-                case Directions.North:
+                case Directions.North: plyr.facing = Directions.East; break;
+                case Directions.West: plyr.facing = Directions.North; break;
+                case Directions.East: plyr.facing = Directions.South; break;
+                case Directions.South: plyr.facing = Directions.West; break;
+            };
 
-                plyr.facing = Directions.East;
-                plyr.z_offset = 1.0f;
-                break;
+            plyr.z_offset = 1.0f;
+        }
 
-                case Directions.West:
-
-                plyr.facing = Directions.North;
-                plyr.z_offset = 1.0f;
-                break;
-
-                case Directions.East:
-
-                plyr.facing = Directions.South;
-                plyr.z_offset = 1.0f;
-                break;
-
-                case Directions.South:
-                plyr.facing = Directions.West;
-                plyr.z_offset = 1.0f;
-                break;
-            }
-        }        
+        private static Texture teleBlack;
+        private static Texture teleGold;
         #endregion
 
         #region Review Data
@@ -1451,11 +1296,7 @@ namespace P3Net.Arx
         public static SoundBuffer smithyBuffer;
         public static bool smithyPlaying;
         public static Sound smithySound = new Sound();
-        public static Sprite tBackground = new Sprite();
-        public static Texture teleBlack;
-
-        public static int teleColour = 1;
-        public static Texture teleGold;
+        public static Sprite tBackground = new Sprite();        
 
         #endregion
     }

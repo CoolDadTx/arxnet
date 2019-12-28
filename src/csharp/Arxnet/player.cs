@@ -45,7 +45,7 @@ namespace P3Net.Arx
         // Secondary attributes
         public int speed { get; set; } = 10;
         public int stealth { get; set; } = 4;
-        
+
         // Health
         public int hp { get; set; } = 15;
         public int maxhp { get; set; } = 15;
@@ -65,7 +65,7 @@ namespace P3Net.Arx
         public int[] poison { get; set; } = new int[4]; // Four strengths of poison
         public int noticeability { get; set; }
         public int protection1 { get; set; }
-        public int protection2 { get; set; }        
+        public int protection2 { get; set; }
 
         // Position
         //TODO: Should location information be stored elsewhere or grouped together?
@@ -78,26 +78,7 @@ namespace P3Net.Arx
         public int zone { get; set; } = 0; // Inited at 1 but reset to 0 later in original code
         public int zoneSet { get; set; }
 
-        [Obsolete("Use MapSize")]
-        public int mapWidth
-        {
-            get => _mapSize.Width;
-            set => _mapSize.Width = value;
-        }
-
-        [Obsolete("Use MapSize")]
-        public int mapHeight
-        {
-            get => _mapSize.Height;
-            set => _mapSize.Height = value;
-        }
-
-        public Size MapSize
-        {
-            //TODO: Use auto property once obsolete removed
-            get => _mapSize;
-            set => _mapSize = value;
-        }
+        public Size MapSize { get; set; }
 
         // State
         //TODO: Group state management
@@ -285,27 +266,8 @@ namespace P3Net.Arx
         public bool movingForward { get; set; }
 
         public bool musicStyle { get; set; }
-
-        [Obsolete("Use OldLocation")]
-        public int oldx
-        {
-            get => _oldLocation.X;
-            set => _oldLocation.X = value;
-        }
-
-        [Obsolete("Use OldLocation")]
-        public int oldy
-        {
-            get => _oldLocation.Y;
-            set => _oldLocation.Y = value;
-        }
-
-        public Point OldLocation
-        {
-            //TODO: Make auto property once obsolete removed
-            get => _oldLocation;
-            set => _oldLocation = value;
-        }
+       
+        public Point OldLocation { get; private set; }
 
         public int ringCharges { get; set; }
         
@@ -318,25 +280,15 @@ namespace P3Net.Arx
         // counter that is used for flashing teleport sequence
         public int teleporting { get; set; }                        
 
-        [Obsolete("Use Position")]
-        public int x
-        {
-            get => _position.X;
-            set => _position.X = value;
-        }
-
-        [Obsolete("Use Position")]
-        public int y
-        {
-            get => _position.Y;
-            set => _position.Y = value;
-        }
-
         public Point Position        
-        {
-            //TODO: Make auto property once obsolete removed
+        {            
             get => _position;
-            set => _position = value;
+            set
+            {
+                //TODO: Going to try handling the saving of old location when setting Position instead of having the code do it manually
+                OldLocation = _position;
+                _position = value;
+            }
         }
 
         public float z_offset { get; set; } = 1;           
@@ -385,9 +337,7 @@ namespace P3Net.Arx
             speed += statBonuses[6];
         }
 
-        private Size _mapSize = new Size(64, 64);
-        private Point _position = new Point(63, 63);
-        private Point _oldLocation;
-        #endregion
+         private Point _position = new Point(63, 63);
+         #endregion
     }
 }

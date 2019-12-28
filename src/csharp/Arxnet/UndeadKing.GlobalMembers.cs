@@ -51,8 +51,7 @@ namespace P3Net.Arx
             }
 
             // Move the player outside the Undead Palace
-            plyr.x = 14;
-            plyr.y = 28;
+            plyr.Position = new System.Drawing.Point(14, 28);
 
             //MLT: Double to float
             plyr.z_offset = 1.6F; // position player just outside door
