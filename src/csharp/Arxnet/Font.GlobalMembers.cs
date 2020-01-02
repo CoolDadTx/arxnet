@@ -109,6 +109,7 @@ namespace P3Net.Arx
             }
         }
 
+        //TODO: Identical to version that doesn't accept area other than the first parameter to DrawChar, that should be the argument
         public static void DrawText ( int x, int y, string text )
         {
             for (var i = 0; i < text.Length; ++i)
@@ -121,7 +122,7 @@ namespace P3Net.Arx
                     DrawChar(statPanelY, x, y, char_no);
                 x++;
             }
-        }
+        }        
 
         public static void DrawText ( int x, int y, int number )
         {
@@ -206,7 +207,9 @@ namespace P3Net.Arx
 
             App.Draw(CharImage);
         }
-        
+
+        //TODO: Identical to version that doesn't accept area other than the first parameter to DrawChar, that should be the argument
+#pragma warning disable IDE0060  //Unused parameter        
         private static void DrawText ( int area, int x, int y, string text )
         {
             for (var i = 0; i < text.Length; ++i)
@@ -220,8 +223,8 @@ namespace P3Net.Arx
                     DrawChar(consoleY, x, y, char_no);
                 x++;
             }
-        }                        
-        
+        }
+#pragma warning restore IDE0060  //Unused parameter
         #endregion
 
         #region Review Data

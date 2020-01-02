@@ -9,6 +9,9 @@
  */
 using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
+using SFML.Graphics;
+using SFML.System;
 
 namespace P3Net.Arx
 {
@@ -77,7 +80,7 @@ namespace P3Net.Arx
         public Scenarios scenario { get; set; } = Scenarios.Unknown;
         public int zone { get; set; } = 0; // Inited at 1 but reset to 0 later in original code
         public int zoneSet { get; set; }
-
+        
         public Size MapSize { get; set; }
 
         // State

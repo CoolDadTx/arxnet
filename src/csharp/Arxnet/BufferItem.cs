@@ -20,25 +20,7 @@ namespace P3Net.Arx
                                        // 13 - worn, 14 - head, 15 - arms, 16 - legs, 17 - body
         public int location { get; set; }
 
-        public Point Position
-        {
-            get => _position;
-            set => _position = value;
-        }
-
-        [Obsolete("Use Position")]
-        public int x
-        {
-            get => _position.X;
-            set => _position.X = value;
-        }
-
-        [Obsolete("Use Position")]
-        public int y
-        {
-            get => _position.Y;
-            set => _position.Y = value;
-        }
+        public Point Position { get; set; }
 
         public int level { get; set; }
         public int hp { get; set; } // hp or no. of charges or no. of items for generic items like food packets
@@ -65,11 +47,5 @@ namespace P3Net.Arx
         public int melee { get; set; }
         public int ammo { get; set; }
         public int parry { get; set; }
-
-        #region Private Members
-
-        //TODO: Remove when obsolete removed
-        private Point _position;
-        #endregion
     }
 }

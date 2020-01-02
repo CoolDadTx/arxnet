@@ -556,19 +556,19 @@ namespace P3Net.Arx
         private static Inn[] Inns =
         {
             new Inn()
-            { name = "Green Boar Inn", costMultiplier = 1, jobProbability = 64, x = 9, y = 44 },
+            { name = "Green Boar Inn", costMultiplier = 1, jobProbability = 64, Position = new System.Drawing.Point(9, 44) },
             new Inn()
-            { name = "Lazy Griffin Inn", costMultiplier = 2, jobProbability = 154, x = 33, y = 11 },
+            { name = "Lazy Griffin Inn", costMultiplier = 2, jobProbability = 154, Position = new System.Drawing.Point(33, 11) },
             new Inn()
-            { name = "Sleeping Dragon Inn", costMultiplier = 0.5F, jobProbability = 64, x = 60, y = 57 },
+            { name = "Sleeping Dragon Inn", costMultiplier = 0.5F, jobProbability = 64, Position = new System.Drawing.Point(60, 57) },
             new Inn()
-            { name = "Traveller's Inn", costMultiplier = 6, jobProbability = 179, x = 32, y = 39 },
+            { name = "Traveller's Inn", costMultiplier = 6, jobProbability = 179, Position = new System.Drawing.Point(32, 39) },
             new Inn()
-            { name = "Midnight Inn", costMultiplier = 3, jobProbability = 56, x = 32, y = 40 },
+            { name = "Midnight Inn", costMultiplier = 3, jobProbability = 56, Position = new System.Drawing.Point(32, 40) },
             new Inn()
-            { name = "Warrior's Retreat", costMultiplier = 0.75F, jobProbability = 77, x = 28, y = 9 },
+            { name = "Warrior's Retreat", costMultiplier = 0.75F, jobProbability = 77, Position = new System.Drawing.Point(28, 9) },
             new Inn()
-            { name = "Royal Resort Inn", costMultiplier = 8, jobProbability = 102, x = 31, y = 60 }
+            { name = "Royal Resort Inn", costMultiplier = 8, jobProbability = 102, Position = new System.Drawing.Point(31, 60) }
         };
 
         //TODO: Load as data for map

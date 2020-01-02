@@ -652,6 +652,7 @@ namespace P3Net.Arx
             plyr.IncreaseExperience(opponentXP);
         }
 
+#pragma warning disable IDE0060  //Remove unused parameter
         private static int CalcOpponentWeaponDamage ( int weaponNo, float attackFactor, int attacker )
         {
             // CALCULATE MONSTER WEAPON / ATTACK DAMAGE
@@ -727,7 +728,7 @@ namespace P3Net.Arx
                 damageIndex++;
             }
 
-            // Compare weapon damages against ancounter armour values inc. vulnerabilities and invulnerabilities
+            // Compare weapon damages against encounter armour values inc. vulnerabilities and invulnerabilities
             // 0xff = invulnerable.
             // 0xf0 = absorbs power from this damage type.
             // 0x0f = takes double damage from this damage type.            
@@ -745,7 +746,9 @@ namespace P3Net.Arx
                 damages[10];
             return totalDamage;
         }
+#pragma warning restore IDE0060  //Remove unused parameter
 
+#pragma warning disable IDE0060  //Remove unused parameter
         private static int CalcPlayerWeaponDamage ( int weaponNo, float attackFactor, int attacker )
         {
             // CALCULATE PLAYER WEAPON / ATTACK DAMAGE
@@ -816,7 +819,8 @@ namespace P3Net.Arx
                 damages[10];
             return totalDamage;
         }
-                
+#pragma warning restore IDE0060  //Remove unused parameter
+
         private static void CheckForActiveOpponents ()
         {
             // Check first encounter slot

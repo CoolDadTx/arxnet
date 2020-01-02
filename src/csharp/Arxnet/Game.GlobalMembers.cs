@@ -361,10 +361,8 @@ namespace P3Net.Arx
             }
             for (var i = 0; i < 20; i++)
             {
-                if ((plyr.doorDetails[i].x == plyr.Position.X) &&
-                    (plyr.doorDetails[i].y == plyr.Position.Y) &&
-                    (plyr.doorDetails[i].level == plyr.map) &&
-                    (plyr.doorDetails[i].direction == doorFacing))
+                if (plyr.doorDetails[i].Position == plyr.Position && plyr.doorDetails[i].level == plyr.map &&
+                    plyr.doorDetails[i].direction == doorFacing)
                     doorAlreadyOpened = true;
             }
             return doorAlreadyOpened;

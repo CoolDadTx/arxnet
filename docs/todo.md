@@ -8,6 +8,10 @@
 - [X] Replace iostream logic
 - [X] Compile cleanly (minus obsoletes and styling warnings)
 
+## Issues
+
+- [ ] Freezes at create char counter screen, counters are not moving
+
 ## Architecture
 
 - [ ] Break out `GlobalMembers` in each file (and child types) into separate types based upon area
@@ -18,6 +22,7 @@
 - [ ] Convert public fields to properties
 - [ ] Get rid of global functions
 - [ ] Remove reliance on converter array logic
+- [ ] Move `ini` settings to config file
 
 ## Enhancements
 
@@ -33,7 +38,9 @@
 - [ ] Create a game clock to handle timing logic
 - [ ] Implement game loop with hooks so we can separate logic out as needed
 - [ ] Make load/save flexible to support versioned data (perhaps JSON because files aren't too big)
-- [ ] Implement event-style system for reacting to important events to decouple the code
+- [ ] Create `InputManager` to handle input for user
+- [ ] Add support for key bindings
+- [ ] Create `Screen` concept to handle various screens
 - [ ] Support unlimited # of items, spells, etc
 - [ ] Add extensibility points for adding new stuff (items, spells, etc)
 - [ ] Normalize music/graphics files so the various filename/path logic can be simplified

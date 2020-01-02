@@ -957,13 +957,13 @@ namespace P3Net.Arx
 
         public static int guildNo;
 
+        //TODO: Move to map data file
         public static Guild[] guilds =
         {
             new Guild()
             {
                 name = "Thieves Guild",
-                x = 43,
-                y = 29,
+                Position = new System.Drawing.Point(43, 29),
                 minAlignment = 64,
                 maxAlignment = 128,
                 minLevel = 2,
@@ -975,8 +975,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Blue Wizards Guild",
-                x = 18,
-                y = 16,
+                Position = new System.Drawing.Point(18, 16),
                 minAlignment = 120,
                 maxAlignment = 192,
                 minLevel = 2,
@@ -988,8 +987,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Light Wizards Guild",
-                x = 2,
-                y = 59,
+                Position = new System.Drawing.Point(2, 59),
                 minAlignment = 144,
                 maxAlignment = 255,
                 minLevel = 2,
@@ -1001,8 +999,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Green Wizards Academy",
-                x = 11,
-                y = 21,
+                Position = new System.Drawing.Point(11, 21),
                 minAlignment = 96,
                 maxAlignment = 160,
                 minLevel = 2,
@@ -1014,8 +1011,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Red Wizards University",
-                x = 47,
-                y = 49,
+                Position = new System.Drawing.Point(47, 49),
                 minAlignment = 48,
                 maxAlignment = 127,
                 minLevel = 2,
@@ -1027,8 +1023,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Dark Wizards Guild",
-                x = 33,
-                y = 42,
+                Position = new System.Drawing.Point(33, 42),
                 minAlignment = 0,
                 maxAlignment = 64,
                 minLevel = 2,
@@ -1040,8 +1035,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Star Wizards Guild",
-                x = 27,
-                y = 52,
+                Position = new System.Drawing.Point(27, 52),
                 minAlignment = 120,
                 maxAlignment = 176,
                 minLevel = 2,
@@ -1053,8 +1047,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Wizards of Chaos Guild",
-                x = 50,
-                y = 4,
+                Position = new System.Drawing.Point(50, 4),
                 minAlignment = 64,
                 maxAlignment = 128,
                 minLevel = 2,
@@ -1066,8 +1059,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Wizards of Law Guild",
-                x = 61,
-                y = 14,
+                Position = new System.Drawing.Point(61, 14),
                 minAlignment = 132,
                 maxAlignment = 208,
                 minLevel = 2,
@@ -1079,8 +1071,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Guild of Order",
-                x = 57,
-                y = 14,
+                Position = new System.Drawing.Point(57, 14),
                 minAlignment = 132,
                 maxAlignment = 255,
                 minLevel = 2,
@@ -1092,8 +1083,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Physicians Guild",
-                x = 5,
-                y = 49,
+                Position = new System.Drawing.Point(5, 49),
                 minAlignment = 128,
                 maxAlignment = 224,
                 minLevel = 2,
@@ -1105,8 +1095,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Assassins Guild",
-                x = 55,
-                y = 61,
+                Position = new System.Drawing.Point(55, 61),
                 minAlignment = 16,
                 maxAlignment = 112,
                 minLevel = 2,
@@ -1118,8 +1107,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Mercenaries' Guild",
-                x = 32,
-                y = 8,
+                Position = new System.Drawing.Point(32, 8),
                 minAlignment = 64,
                 maxAlignment = 128,
                 minLevel = 5,
@@ -1131,8 +1119,7 @@ namespace P3Net.Arx
             new Guild()
             {
                 name = "Paladins' Guild",
-                x = 25,
-                y = 19,
+                Position = new System.Drawing.Point(25, 19),
                 minAlignment = 152,
                 maxAlignment = 255,
                 minLevel = 5,
@@ -1164,11 +1151,12 @@ namespace P3Net.Arx
             {
                 for (var i = 0; i < numberOfGuilds; i++) // Max number of guild objects
                 {
-                    if ((guilds[i].x == plyr.Position.X) && (guilds[i].y == plyr.Position.Y))
+                    if (guilds[i].Position == plyr.Position)
                         guild_no = i; // The number of the guild you have entered
                 }
             } else if (plyr.scenario == Scenarios.Dungeon) // Dungeon
             {
+                //TODO: Dungeon should be using same rules
                 if (plyr.location == 49)
                     guild_no = 7; // chaos
                 if (plyr.location == 50)

@@ -30,7 +30,8 @@ namespace P3Net.Arx
                     // read first line as blank
                     reader.ReadLine();
 
-                    var fields = 5; // should be 45                    
+                    var fields = 5; // should be 45      
+                    var size = Size.Empty;
                     for (var a = 0; a < fields; ++a) // number of attributes - test for 33
                     {
                         var line = reader.ReadLine();
@@ -40,14 +41,17 @@ namespace P3Net.Arx
                         if (a == 0)
                             maps[i].filename = text;
                         if (a == 1)
-                            maps[i].width = Convert.ToInt32(text);
+                            size.Width = Convert.ToInt32(text);
                         if (a == 2)
-                            maps[i].height = Convert.ToInt32(text);
+                            size.Height = Convert.ToInt32(text);
                         if (a == 3)
                             maps[i].description = text;
                         if (a == 4)
                             maps[i].background = Convert.ToInt32(text);
-                    }
+                    };
+
+                    //TODO: Don't use array
+                    maps[i].Size = size;
                     reader.ReadLine();
                     i++;
                 }
@@ -142,6 +146,8 @@ namespace P3Net.Arx
                     //Read first line as blank
                     reader.ReadLine();
 
+                    var topLeft = Point.Empty;
+                    var bottomRight = Point.Empty;
                     for (var a = 0; a < fields; ++a) // number of attributes
                     {
                         var line = reader.ReadLine();
@@ -149,16 +155,20 @@ namespace P3Net.Arx
                         var text = line.Substring(idx + 2);
 
                         if (a == 0)
-                            zones2[i].y1 = Convert.ToInt32(text);
+                            topLeft.Y = Convert.ToInt32(text);
                         if (a == 1)
-                            zones2[i].x1 = Convert.ToInt32(text);
+                            topLeft.X = Convert.ToInt32(text);
                         if (a == 2)
-                            zones2[i].y2 = Convert.ToInt32(text);
+                            bottomRight.Y = Convert.ToInt32(text);
                         if (a == 3)
-                            zones2[i].x2 = Convert.ToInt32(text);
+                            bottomRight.X = Convert.ToInt32(text);
                         if (a == 4)
                             zones2[i].zoneRef = Convert.ToInt32(text);
                     }
+
+                    //TODO: don't use array
+                    zones2[i].TopLeft = topLeft;
+                    zones2[i].BottomRight = bottomRight;
                     reader.ReadLine();
                     i++;
                 }
@@ -499,70 +509,71 @@ namespace P3Net.Arx
 
         public static Teleport[] teleports =
         {
+            //TODO: Why are we using hex here?
             new Teleport()
-            { @ref = 0xe0, new_x = 0x12, new_y = 0x1E, new_map = 0, new_facing = 0xFF },
+            { @ref = 0xe0, Position = new Point(0x12, 0x1E), new_map = 0, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xe1, new_x = 0x12, new_y = 0x1B, new_map = 0, new_facing = 0x03 },
+            { @ref = 0xe1, Position = new Point(0x12, 0x1B), new_map = 0, new_facing = 0x03 },
             new Teleport()
-            { @ref = 0xe2, new_x = 0x13, new_y = 0x1B, new_map = 0, new_facing = 0x01 },
+            { @ref = 0xe2, Position = new Point(0x13, 0x1B), new_map = 0, new_facing = 0x01 },
             new Teleport()
-            { @ref = 0xe3, new_x = 0x0F, new_y = 0x17, new_map = 0, new_facing = 0x00 },
+            { @ref = 0xe3, Position = new Point(0x0F, 0x17), new_map = 0, new_facing = 0x00 },
             new Teleport()
-            { @ref = 0xe4, new_x = 0x1D, new_y = 0x17, new_map = 0, new_facing = 0x00 },
+            { @ref = 0xe4, Position = new Point(0x1D, 0x17), new_map = 0, new_facing = 0x00 },
             new Teleport()
-            { @ref = 0xe5, new_x = 0x05, new_y = 0x1A, new_map = 0, new_facing = 0xFF },
+            { @ref = 0xe5, Position = new Point(0x05, 0x1A), new_map = 0, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xe6, new_x = 0x14, new_y = 0x1F, new_map = 0, new_facing = 0x00 },
+            { @ref = 0xe6, Position = new Point(0x14, 0x1F), new_map = 0, new_facing = 0x00 },
             new Teleport()
-            { @ref = 0xe7, new_x = 0x10, new_y = 0x01, new_map = 0, new_facing = 0xFF },
+            { @ref = 0xe7, Position = new Point(0x10, 0x01), new_map = 0, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xe8, new_x = 0x0B, new_y = 0x01, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xe8, Position = new Point(0x0B, 0x01), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xe9, new_x = 0x11, new_y = 0x07, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xe9, Position = new Point(0x11, 0x07), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xea, new_x = 0x11, new_y = 0x0A, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xea, Position = new Point(0x11, 0x0A), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xeb, new_x = 0x0B, new_y = 0x1C, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xeb, Position = new Point(0x0B, 0x1C), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xec, new_x = 0x0B, new_y = 0x1F, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xec, Position = new Point(0x0B, 0x1F), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xed, new_x = 0x08, new_y = 0x0F, new_map = 1, new_facing = 0x80 },
+            { @ref = 0xed, Position = new Point(0x08, 0x0F), new_map = 1, new_facing = 0x80 },
             new Teleport()
-            { @ref = 0xee, new_x = 0x12, new_y = 0x09, new_map = 2, new_facing = 0x80 },
+            { @ref = 0xee, Position = new Point(0x12, 0x09), new_map = 2, new_facing = 0x80 },
             new Teleport()
-            { @ref = 0xef, new_x = 0x00, new_y = 0x01, new_map = 2, new_facing = 0xFF },
+            { @ref = 0xef, Position = new Point(0x00, 0x01), new_map = 2, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf0, new_x = 0x00, new_y = 0x1E, new_map = 0, new_facing = 0xFF },
+            { @ref = 0xf0, Position = new Point(0x00, 0x1E), new_map = 0, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf1, new_x = 0x01, new_y = 0x00, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xf1, Position = new Point(0x01, 0x00), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf2, new_x = 0x1E, new_y = 0x00, new_map = 0, new_facing = 0xFF },
+            { @ref = 0xf2, Position = new Point(0x1E, 0x00), new_map = 0, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf3, new_x = 0x1F, new_y = 0x1E, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xf3, Position = new Point(0x1F, 0x1E), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf4, new_x = 0x1F, new_y = 0x01, new_map = 3, new_facing = 0xFF },
+            { @ref = 0xf4, Position = new Point(0x1F, 0x01), new_map = 3, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf5, new_x = 0x01, new_y = 0x1F, new_map = 3, new_facing = 0xFF },
+            { @ref = 0xf5, Position = new Point(0x01, 0x1F), new_map = 3, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf6, new_x = 0x1E, new_y = 0x1F, new_map = 2, new_facing = 0xFF },
+            { @ref = 0xf6, Position = new Point(0x1E, 0x1F), new_map = 2, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf7, new_x = 0x00, new_y = 0x12, new_map = 5, new_facing = 0xFF },
+            { @ref = 0xf7, Position = new Point(0x00, 0x12), new_map = 5, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf8, new_x = 0x0D, new_y = 0x0F, new_map = 5, new_facing = 0xFF },
+            { @ref = 0xf8, Position = new Point(0x0D, 0x0F), new_map = 5, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xf9, new_x = 0x03, new_y = 0x01, new_map = 3, new_facing = 0xFF },
+            { @ref = 0xf9, Position = new Point(0x03, 0x01), new_map = 3, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xfa, new_x = 0x03, new_y = 0x1E, new_map = 1, new_facing = 0xFF },
+            { @ref = 0xfa, Position = new Point(0x03, 0x1E), new_map = 1, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xfb, new_x = 0x0B, new_y = 0x00, new_map = 4, new_facing = 0xFF },
+            { @ref = 0xfb, Position = new Point(0x0B, 0x00), new_map = 4, new_facing = 0xFF },
             new Teleport()
-            { @ref = 0xfc, new_x = 0x16, new_y = 0x07, new_map = 1, new_facing = 0x02 },
+            { @ref = 0xfc, Position = new Point(0x16, 0x07), new_map = 1, new_facing = 0x02 },
             new Teleport()
-            { @ref = 0xfd, new_x = 0x1A, new_y = 0x05, new_map = 1, new_facing = 0x00 },
+            { @ref = 0xfd, Position = new Point(0x1A, 0x05), new_map = 1, new_facing = 0x00 },
             new Teleport()
-            { @ref = 0xfe, new_x = 0x1C, new_y = 0x07, new_map = 1, new_facing = 0x02 },
+            { @ref = 0xfe, Position = new Point(0x1C, 0x07), new_map = 1, new_facing = 0x02 },
             new Teleport()
-            { @ref = 0xff, new_x = 0x18, new_y = 0x1B, new_map = 2, new_facing = 0x03 }
+            { @ref = 0xff, Position = new Point(0x18, 0x1B), new_map = 2, new_facing = 0x03 }
         };
         public static string tempString = new string(new char[100]); // temporary string
 
