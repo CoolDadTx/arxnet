@@ -16,7 +16,7 @@ using SFML.Window;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         #region Review Coins 
 
@@ -228,175 +228,26 @@ namespace P3Net.Arx
 
         //TODO: Move to input
         public static bool KeyPressed () => ReadKey() != "";
-
-        //TODO: Return key enum instead of string
+        
+        //TODO: Return virtual key instead        
+        // misc.cpp: 121: readKey()
         public static string ReadKey ()
         {
-            // Process events            
-            //while (App.pollEvent(evt))
-            //{
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Left))
-            //        keyString = "left";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Right))
-            //        keyString = "right";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Up))
-            //        keyString = "up";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Down))
-            //        keyString = "down";
-
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F1))
-            //        keyString = "F1";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F2))
-            //        keyString = "F2";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F3))
-            //        keyString = "F3";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F4))
-            //        keyString = "F4";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F5))
-            //        keyString = "F5";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F6))
-            //        keyString = "F6";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F7))
-            //        keyString = "F7";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F8))
-            //        keyString = "F8";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F10))
-            //        keyString = "F10";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F11))
-            //        keyString = "F11";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F12))
-            //        keyString = "F12";
-
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num0))
-            //        keyString = "0";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Comma))
-            //        keyString = ",";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Period))
-            //        keyString = ".";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num1))
-            //        keyString = "1";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num2))
-            //        keyString = "2";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num3))
-            //        keyString = "3";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num4))
-            //        keyString = "4";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num5))
-            //        keyString = "5";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num6))
-            //        keyString = "6";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num7))
-            //        keyString = "7";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num8))
-            //        keyString = "8";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Num9))
-            //        keyString = "9";
-
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.A))
-            //        keyString = "A";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.B))
-            //        keyString = "B";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.C))
-            //        keyString = "C";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.D))
-            //        keyString = "D"; // diag info
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.E))
-            //        keyString = "E"; // force encounter
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.F))
-            //        keyString = "F";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.G))
-            //        keyString = "G";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.H))
-            //        keyString = "H";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.I))
-            //        keyString = "I";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.J))
-            //        keyString = "J";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.K))
-            //        keyString = "K";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.L))
-            //        keyString = "L";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.M))
-            //        keyString = "M";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.N))
-            //        keyString = "N";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.O))
-            //        keyString = "O";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.P))
-            //        keyString = "P";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Q))
-            //        keyString = "Q";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.R))
-            //        keyString = "R";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.S))
-            //        keyString = "S";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.T))
-            //        keyString = "T";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.U))
-            //        keyString = "U";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.V))
-            //        keyString = "V";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.W))
-            //        keyString = "W";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.X))
-            //        keyString = "X";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Y))
-            //        keyString = "Y";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Z))
-            //        keyString = "Z";
-
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Space))
-            //        keyString = "SPACE";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Enter))
-            //        keyString = "RETURN";
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Backspace))
-            //        keyString = "BACKSPACE";
-
-            //    // Close window : exit
-            //    if (evt.Type == EventType.Closed)
-            //        keyString = "QUIT";
-
-            //    // Escape key : exit
-            //    if ((evt.Type == EventType.KeyPressed) && (evt.Key.Code == Keyboard.Key.Escape))
-            //        keyString = "ESC";
-            //}
-
-            //TODO: How to switch from polling to event-based input?
             var keyString = "";
-            EventHandler<TextEventArgs> handler = ( o, e ) => {
-                //TODO: Change this to juse use raw string value
-                switch (e.Unicode)
-                {
-                    case "\r":
-                    keyString = "RETURN";
-                    break;
-                    case " ":
-                    keyString = "SPACE";
-                    break;
-                    case "\b":
-                    keyString = "BACKSPACE";
-                    break;
-                    case "ESC":
-                    keyString = "ESC";
-                    break;
-
-                    //TODO: Functions, capital/lowercase letters
-                    default:
-                    keyString = e.Unicode;
-                    break;
-                };
-            };
-            EventHandler closeHandler = ( o, e ) => { keyString = "QUIT"; };
-
-            App.TextEntered += handler;
-            App.Closed += closeHandler;
-            do
+            var evt = App.PollEvents();
+            while (evt != null && !App.IsWindowClosing)                
             {
-                App.WaitAndDispatchEvents();
-            } while (String.IsNullOrEmpty(keyString));
+                if (evt is KeyEventArgs keyPress)
+                {
+                    keyString = keyPress.KeyString();
+                };
 
-            App.TextEntered -= handler;
-            App.Closed -= closeHandler;
+                evt = App.PollEvents();
+            };
+
+            //TODO: Figure out better way of reporting window close
+            if (App.IsWindowClosing)
+                return "QUIT";
 
             return keyString;
         }

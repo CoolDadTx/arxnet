@@ -22,7 +22,7 @@ using PrimitiveType = OpenTK.Graphics.OpenGL.PrimitiveType;
 namespace P3Net.Arx
 {
     //TODO: Separate low-level graphics stuff from specifics (e.g. draw texture from draw panel)
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         public static void Draw3DView ()
         {            

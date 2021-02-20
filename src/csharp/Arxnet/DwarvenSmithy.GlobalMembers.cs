@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         //TODO: Combine with load data
         public static void LoadDwarvenBinary ()

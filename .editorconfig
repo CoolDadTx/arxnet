@@ -188,6 +188,7 @@ csharp_new_line_before_members_in_anonymous_types                         = fals
 csharp_new_line_between_query_expression_clauses                          = false
 
 # Indenting
+csharp_indent_switch_labels = true
 csharp_indent_case_contents                                               = false
 csharp_indent_switch_labels                                               = true
 csharp_indent_labels                                                      = flush_left
@@ -229,7 +230,7 @@ csharp_space_between_emptyn_square_brackets                               = fals
 csharp_space_between_square_brackets                                      = false
 
 # Wrapping
-csharp_preserve_single_line_statements                                    = false
+csharp_preserve_single_line_statements                                    = true
 csharp_preserve_single_line_blocks                                        = true
 
 ###
@@ -299,3 +300,6 @@ dotnet_naming_style.start_with_s_underscore.required_prefix               = s_
 dotnet_naming_style.start_with_underscore.capitalization                  = camel_case
 dotnet_naming_style.start_with_underscore.required_prefix                 = _
 
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none

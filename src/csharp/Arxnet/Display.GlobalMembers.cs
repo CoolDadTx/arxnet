@@ -21,7 +21,7 @@ using Arxnet.OpenTK.Compatibility;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         public static void CreateGameWindow ()
         {
@@ -29,7 +29,7 @@ namespace P3Net.Arx
 
             var styles = windowMode == WindowMode.Window ? Styles.Close : Styles.Fullscreen;
 
-            App = new RenderWindow(new VideoMode((uint)WindowSize.Width, (uint)WindowSize.Height), title, styles);
+            App = new InputRenderWindow(new VideoMode((uint)WindowSize.Width, (uint)WindowSize.Height), title, styles);
 
             // Print OpenGL settings to game console for information
             var settings = App.Settings;
@@ -1080,7 +1080,7 @@ namespace P3Net.Arx
         public static int shopPictureY { get; set; }
 
         // Main window
-        public static RenderWindow App { get; set; }
+        public static InputRenderWindow App { get; set; }
 
         public static bool mainMenuQuit { get; set; }
 

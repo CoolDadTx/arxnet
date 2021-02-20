@@ -11,7 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         //TODO: Move to a game clock
         public static void AddDay ()

@@ -15,7 +15,7 @@ using SFML.System;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         // Main game loop (excluding main menu)
         public static void GameLoop ()

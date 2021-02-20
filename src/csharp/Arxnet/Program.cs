@@ -45,7 +45,7 @@ namespace P3Net.Arx
                     case "6": GlobalMembers.ToggleMusic(); break;
                     case "7": GlobalMembers.ToggleAndInitializeFont(); break;
                     
-                    case "0":
+                    case "0": done = GlobalMembers.ConfirmQuit(); break;
                     case "QUIT": done = true; break;
                 };
             };

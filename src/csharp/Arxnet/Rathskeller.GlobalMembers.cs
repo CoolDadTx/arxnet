@@ -19,7 +19,7 @@ namespace P3Net.Arx
      * enclosed booth???
      * all music and on screen lyrics
      */     
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         //TODO: Move to its own module with init logic
         public static void RunRathskeller ()

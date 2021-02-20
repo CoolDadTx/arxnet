@@ -11,7 +11,7 @@ using System;
 
 namespace P3Net.Arx
 {    
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         //TODO: Make a module a first class citizen with control over the game loop, available items, etc
         public static void RunModule ( Modules module )

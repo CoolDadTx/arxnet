@@ -13,7 +13,7 @@ using System.IO;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {
         // Load settings from an arx.ini configuration file		
         public static bool LoadConfig ()

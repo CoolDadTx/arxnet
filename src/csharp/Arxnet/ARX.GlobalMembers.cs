@@ -12,8 +12,13 @@ using System;
 namespace P3Net.Arx
 {
     //TODO: Move the game menu logic to its own helper class
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {                   
+        public static bool ConfirmQuit ()
+        {
+            return true;
+        }
+
         //TODO: Move to City module
         public static void CreateCityCharacter ()
         {

@@ -14,7 +14,7 @@ using SFML.Audio;
 
 namespace P3Net.Arx
 {
-    public partial class GlobalMembers
+    public static partial class GlobalMembers
     {        
         //TODO: Combine with core load and move to data file
         public static void LoadCitySmithyBinary ()
