@@ -17,7 +17,7 @@ using SFML.Window;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 
-using Arxnet.OpenTK.Compatibility;
+using P3Net.Arx.OpenTK.Compatibility;
 
 namespace P3Net.Arx
 {

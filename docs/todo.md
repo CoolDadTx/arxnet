@@ -10,13 +10,17 @@
 
 ## Issues
 
-- [ ] Freezes at create char counter screen, counters are not moving
+- [X] Freezes at create char counter screen, counters are not moving
 - [ ] OpenGL settings don't seem to init right but this is the same behavior as the native code
+- [ ] Background images are rendered but not buildings
+- [ ] Attack menu not working
+- [ ] Quit or clicking X on window does not display main menu
 
 ## Architecture
 
 Interesting [read](https://gameprogrammingpatterns.com)
 
+- [ ] OpenTK 4.x completely changed how rendering works making existing code incompatible for now. Sticking with 3.x
 - [ ] Break out `GlobalMembers` in each file (and child types) into separate types based upon area
 - [ ] Create interface for sound so it can be replaced
 - [ ] Create interface for graphics so it can be replaced
@@ -56,3 +60,4 @@ Interesting [read](https://gameprogrammingpatterns.com)
 - [ ] Add JSON support for files to make it easier to manage refer to [this](https://gameprogrammingpatterns.com/prototype.html) for an interesting "prototype" idea to reduce data dups
 - [ ] Consider adding state class(es) to handle switch transitions such as attack, defend, shop, etc. Also useful for transitioning graphics/sound/etc
 - [ ] Move sound (and maybe others) to an event queue so it doesn't hold up game and we can handle multiple sounds at once without issues
+- [ ] Sounds should not freeze screen until completed

@@ -254,7 +254,14 @@ namespace P3Net.Arx
 
         #endregion
 
-        public static int Hex2Dec ( string s ) => Int32.Parse(s, NumberStyles.HexNumber);
+        public static int Hex2Dec ( string s )
+        {
+            //Have to strip off hex specifier, if any
+            if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || s.StartsWith("0h", StringComparison.OrdinalIgnoreCase))
+                s = s.Substring(2, s.Length - 2);
+
+            return Int32.Parse(s, NumberStyles.HexNumber);
+        }
 
         public static void ModuleMessage ( string txt )
         {

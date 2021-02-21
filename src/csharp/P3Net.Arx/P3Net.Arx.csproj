@@ -1,19 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>P3Net.Arx</RootNamespace>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>    
     <AssemblyName>Arxnet</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="arx.ini" />
@@ -26,11 +17,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CSFML" Version="2.5.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.0" />
-    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.1" />
+    <PackageReference Include="OpenTK" Version="3.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Arxnet.OpenTK.Compatibility\Arxnet.OpenTK.Compatibility.csproj" />
+    <ProjectReference Include="..\P3Net.Arx.OpenTK.Compatibility\P3Net.Arx.OpenTK.Compatibility.csproj" />
+	<ProjectReference Include="..\P3Net.Arx.Sfml\P3Net.Arx.Sfml.csproj" />
     <ProjectReference Include="..\SFML (2.5 Fix)\SFML.Audio\SFML.Audio.csproj" />
     <ProjectReference Include="..\SFML (2.5 Fix)\SFML.Graphics\SFML.Graphics.csproj" />
     <ProjectReference Include="..\SFML (2.5 Fix)\SFML.System\SFML.System.csproj" />

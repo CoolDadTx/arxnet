@@ -84,29 +84,29 @@ namespace P3Net.Arx
 
         public static void CyText ( int y, string str )
         {
-            var char_count = 0;
-            var current_string = "";
+            const int maxTextLength = 40;
 
-            while (char_count <= str.Length)
+            if (str.Length > maxTextLength)
             {
-                var current_char = str.Substring(char_count, 1);
+                Console.WriteLine($"WARNING: CyText({y}, '{str}') - String is longer than allowed 40 characters");
+                str = str.Substring(0, maxTextLength);
+            };
 
-                if ((char_count == str.Length) || (current_char == "@"))
-                {
-                    var current_string_length = current_string.Length;
-                    var x = ((40 - current_string_length) / 2) + 1;
-
-                    DrawText(consoleY, x, y, current_string);
-
-                    y++;
-                    char_count++;
-                    current_string = "";
-                } else
-                {
-                    current_string += current_char;
-                    char_count++;
-                }
+            //If the string contains no @ then we'll just write as is otherwise we'll split the string to multiple lines
+            var index = str.IndexOf('@');
+            if (index < 0)
+            {
+                DrawText(consoleY, x, y, str);
+                return;
             }
+
+            //HACK: Split the string, not performant
+            var items = str.Split('@');
+            foreach (var item in items)
+            {
+                DrawText(consoleY, x, y, str);
+                ++y;
+            };            
         }
 
         //TODO: Identical to version that doesn't accept area other than the first parameter to DrawChar, that should be the argument

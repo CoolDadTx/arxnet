@@ -254,7 +254,7 @@ namespace P3Net.Arx
             DrawAtariAnimation();
             UpdateEncounterStatusText();
             if (waitingForSpaceKey)
-                CyText(3, consoleMessages[0]);
+                CyText(3, OutputWindow.Instance.GetMessage());
 
             if (graphicMode == DisplayOptions.AlternateLarge)
                 DrawConsoleBackground();
@@ -263,7 +263,7 @@ namespace P3Net.Arx
         #region Review Data
 
         public static bool checkForTreasure;
-        public static string[] consoleMessages = new string[MAX_CONSOLE_MESSAGES];
+        
         public static int curOpponent; // 0-7
 
         //TODO: Move to map or random encounters or something
@@ -474,9 +474,7 @@ namespace P3Net.Arx
         public static bool flashTextOn;
         public static int groundTurnsRemaining;
         
-        public static string key;
-        public static readonly int MAX_CONSOLE_MESSAGES = 10;
-
+        public static string key;        
         public static readonly int MAX_OPPONENTS = 8;
 
         //TODO: Move to map or random encounters or something
@@ -1048,34 +1046,13 @@ namespace P3Net.Arx
             if (foundTreasure)
                 GetItems();
         }
-        
-        private static void ClearConsoleMessages ()
-        {
-            // Sets all console message slots to empty
-            for (var i = 0; i < MAX_CONSOLE_MESSAGES; ++i)
-                consoleMessages[i] = "NO MESSAGE";
-        }
+
+        private static void ClearConsoleMessages () => OutputWindow.Instance.Clear();
 
         private static void ConsoleMessage ( string messageText )
-        {
-            var messageNotAddedToQueue = true;
-            var messagesIndex = 0;
-            while (messageNotAddedToQueue)
-            {
-                if (consoleMessages[messagesIndex] == "NO MESSAGE")
-                {
-                    consoleMessages[messagesIndex] = messageText;
-                    waitingForSpaceKey = true;
-                    messageNotAddedToQueue = false;
-                }
-                messagesIndex++;
-                if (messagesIndex > MAX_CONSOLE_MESSAGES)
-                {
-                    // Will currently discard the message
-                    Console.Write("ERROR: Console messages maximum exceeded!\n");
-                    messageNotAddedToQueue = false; // To break out of loop after reporting error
-                }
-            }
+        {                  
+            if (OutputWindow.Instance.Write(messageText))
+                waitingForSpaceKey = true;                
         }
 
         private static void DetermineOpponentOpeningMessage ()
@@ -1160,7 +1137,7 @@ namespace P3Net.Arx
                 if (key == "SPACE")
                 {
                     UpdateConsoleMessages(); // Checks for further messages to be printed.
-                    if (consoleMessages[0] == "NO MESSAGE")
+                    if (OutputWindow.Instance.GetMessage() == "NO MESSAGE")
                         waitingForSpaceKey = false; // player pressed space to acknowledge last message read
                 }
 
@@ -2418,17 +2395,7 @@ namespace P3Net.Arx
             encounterRunning = false;
         }
 
-        private static void UpdateConsoleMessages ()
-        {
-            // Moves messages along so index [0] contains next message to be printed (if any).
-            for (var i = 0; i < MAX_CONSOLE_MESSAGES; ++i)
-            {
-                if (i == (MAX_CONSOLE_MESSAGES - 1))
-                    consoleMessages[i] = "NO MESSAGE";
-                else
-                    consoleMessages[i] = consoleMessages[i + 1];
-            }
-        }
+        private static void UpdateConsoleMessages () => OutputWindow.Instance.RemoveMessage();
 
         private static void UpdateEncounterStatusText ()
         {

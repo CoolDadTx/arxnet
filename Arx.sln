@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arxnet", "src\csharp\Arxnet\Arxnet.csproj", "{541FAC88-A0DE-4976-AD8C-26E279C547C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P3Net.Arx", "src\csharp\P3Net.Arx\P3Net.Arx.csproj", "{541FAC88-A0DE-4976-AD8C-26E279C547C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{E9C4E959-CF5A-4146-9523-316C690E6069}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solutio
 		docs\todo.md = docs\todo.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arxnet.OpenTK.Compatibility", "src\csharp\Arxnet.OpenTK.Compatibility\Arxnet.OpenTK.Compatibility.csproj", "{9D6E71D0-782D-4CB3-9D25-0E5B05A95C8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P3Net.Arx.OpenTK.Compatibility", "src\csharp\P3Net.Arx.OpenTK.Compatibility\P3Net.Arx.OpenTK.Compatibility.csproj", "{9D6E71D0-782D-4CB3-9D25-0E5B05A95C8C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFML (2.5 Fix)", "SFML (2.5 Fix)", "{B415E077-14AC-4414-A525-C3328F955BDD}"
 EndProject
@@ -26,6 +26,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFML.System", "src\csharp\SFML (2.5 Fix)\SFML.System\SFML.System.csproj", "{3C3EC725-B7AD-4E57-8056-80126F80036C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFML.Window", "src\csharp\SFML (2.5 Fix)\SFML.Window\SFML.Window.csproj", "{3DD1C65F-1798-4889-A406-8BE29995A94D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P3Net.Arx.Sfml", "src\csharp\P3Net.Arx.Sfml\P3Net.Arx.Sfml.csproj", "{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{D06FC50A-BF96-48D4-A4E1-8495FF09B5E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -207,16 +211,44 @@ Global
 		{3DD1C65F-1798-4889-A406-8BE29995A94D}.Release|x64.Build.0 = Release|Any CPU
 		{3DD1C65F-1798-4889-A406-8BE29995A94D}.Release|x86.ActiveCfg = Release|Any CPU
 		{3DD1C65F-1798-4889-A406-8BE29995A94D}.Release|x86.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|Any CPU.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|x64.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|x64.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|x86.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug (Native)|x86.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|x64.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Debug|x86.Build.0 = Debug|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|Any CPU.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|Any CPU.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|x64.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|x64.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|x86.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release (Native)|x86.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|x64.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|x64.Build.0 = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{541FAC88-A0DE-4976-AD8C-26E279C547C7} = {D06FC50A-BF96-48D4-A4E1-8495FF09B5E9}
 		{349039A4-BF29-46B2-8A85-26C776291EB2} = {E9C4E959-CF5A-4146-9523-316C690E6069}
+		{9D6E71D0-782D-4CB3-9D25-0E5B05A95C8C} = {D06FC50A-BF96-48D4-A4E1-8495FF09B5E9}
+		{B415E077-14AC-4414-A525-C3328F955BDD} = {D06FC50A-BF96-48D4-A4E1-8495FF09B5E9}
 		{F49F9035-5D9F-4A28-AA23-4F0ADB797EFB} = {B415E077-14AC-4414-A525-C3328F955BDD}
 		{D49E33DA-B5E8-4041-B761-1BA1422C1966} = {B415E077-14AC-4414-A525-C3328F955BDD}
 		{3C3EC725-B7AD-4E57-8056-80126F80036C} = {B415E077-14AC-4414-A525-C3328F955BDD}
 		{3DD1C65F-1798-4889-A406-8BE29995A94D} = {B415E077-14AC-4414-A525-C3328F955BDD}
+		{A6933B3F-15D1-4CF3-8196-4EC3255DD41B} = {D06FC50A-BF96-48D4-A4E1-8495FF09B5E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71A6421C-41A9-4A8E-AA1B-02C4236FB71D}

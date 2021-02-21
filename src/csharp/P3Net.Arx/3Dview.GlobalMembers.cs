@@ -18,6 +18,8 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 using PrimitiveType = OpenTK.Graphics.OpenGL.PrimitiveType;
+using System.Collections.Generic;
+using P3Net.Arx.Sfml.Graphics;
 
 namespace P3Net.Arx
 {
@@ -63,23 +65,27 @@ namespace P3Net.Arx
         }
 
         public static void LoadBackgroundNames ()
-        {
-            for (var i = 0; i < numberOfBackgrounds; i++)
-                backgroundNames[i] = "";
-
+        {            
             var filename = graphicMode.UseAlternateTextures() ? "data/map/backgroundsUpdated.txt" : "data/map/backgrounds.txt";
 
-            //TODO: Ignoring # of backgrounds - numberOfBackgrounds
+            var backgrounds = new List<Texture>();
             var lines = File.ReadAllLines(filename);
             for (var i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
                 var idx = line.IndexOf('=');
-                var text = line.Substring(idx + 2);
+                if (idx >= 0)
+                {
+                    var text = line.Substring(idx + 2);
 
-                backgroundNames[i] = text;
-                background[i] = new Texture("data/images/backgrounds/" + text + ".png");
+                    //Using a named texture here to eliminate an extra array
+                    ////background[i] = texture;
+                    var texture = new NamedTexture(text, "data/images/backgrounds/" + text + ".png");                    
+                    backgrounds.Add(texture);
+                };
             };
+
+            background = backgrounds.ToArray();
         }
 
         public static void LoadTextureNames ()
@@ -618,20 +624,20 @@ namespace P3Net.Arx
         #region Review Data
 
         // Storage for textures
-        public static readonly int numberOfTextures = 68;
-        public static readonly int numberOfBackgrounds = 49; //was 46
-        public static uint[] texture = new uint[numberOfTextures];
-        public static Texture[] background = new Texture[numberOfBackgrounds];
+        public const int numberOfTextures = 68;        
+        public static uint[] texture = new uint[numberOfTextures];        
         public static string[] textureNames = new string[numberOfTextures];
-        public static string[] backgroundNames = new string[numberOfBackgrounds];
+
+        public const int numberOfBackgrounds = 49; //was 46
+        public static Texture[] background = new Texture[numberOfBackgrounds];        
 
         public static int filter; // Which Filter To Use
         public static FogMode[] fogMode = new FogMode[] { FogMode.Exp, FogMode.Exp2, FogMode.Linear }; // Storage For Three Types Of Fog
-        public static int fogfilter = 1; // Which Fog To Use
+        public const int fogfilter = 1; // Which Fog To Use
         public static float[] fogColor = { 0.0f, 0.0f, 0.0f, 1.0f }; // Fog Color
 
-        public static int depth = 33; // should be 13 was 33
-        public static int columns = 25; // should be an odd number 25
+        public const int depth = 33; // should be 13 was 33
+        public const int columns = 25; // should be an odd number 25
         public static int frontwall;
         public static int leftwall;
         public static int rightwall;

@@ -13,13 +13,14 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Platform;
 
-namespace Arxnet.OpenTK.Compatibility
+namespace P3Net.Arx.OpenTK.Compatibility
 {
     public static class OpenTKContext
     {
         public static void Initialize ( IntPtr windowHandle )
         {
             Toolkit.Init();
+
 
             //FIX: Work around issue with OpenTK and SFML (https://en.sfml-dev.org/forums/index.php?topic=18276.0)
             var windowInfo = Utilities.CreateWindowsWindowInfo(windowHandle);
@@ -29,6 +30,6 @@ namespace Arxnet.OpenTK.Compatibility
             s_context.LoadAll();
         }
 
-        private static GraphicsContext s_context;
+        private static IGraphicsContext s_context;
     }
 }

@@ -22,10 +22,13 @@ namespace P3Net.Arx
 
     public static class DisplayOptionsExtensions
     {
+        //TODO: Make this an interface or facade so this is not needed everywhere
         public static bool UseAlternateTextures ( this DisplayOptions source ) => source != DisplayOptions.AtariSmall;
 
+        //TODO: Make this an interface or facade so this is not needed everywhere
         public static bool UseLargeSize ( this DisplayOptions source ) => source == DisplayOptions.AlternateLarge;
 
+        //TODO: Make this an interface or facade so this is not needed everywhere
         public static bool UseOriginalSize ( this DisplayOptions source ) => source != DisplayOptions.AlternateLarge;
     }
 }
