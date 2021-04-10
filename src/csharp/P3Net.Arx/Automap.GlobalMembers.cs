@@ -74,7 +74,7 @@ namespace P3Net.Arx
         {
             if (plyr.miniMapOn)
             {
-                if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Module)) // shopping?
+                if ((graphicMode == GraphicsMode.AlternateLarge) && (plyr.status != GameStates.Module)) // shopping?
                 {
                     var rectangle2 = new RectangleShape() {
                                             Size = new Vector2f(176, 176),

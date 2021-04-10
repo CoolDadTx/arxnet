@@ -9,46 +9,57 @@
  */
 using System;
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+using P3Net.Arx.Graphics;
+
 namespace P3Net.Arx
 {
     /// <summary>Represents the main program.</summary>
-    public static class Program
+    public class Program
     {
-        public static void Main ()
+        public static void Main ( string[] args )
         {
-            //TODO: Init game layer
-            if (!GlobalMembers.LoadConfig())
-                return; // load screen resolution from arx.ini
-
-            GlobalMembers.CreateGameWindow();
-
-            GlobalMembers.DispInit();
-            GlobalMembers.InitFont();
-            GlobalMembers.LoadLogoImage();
-
-            GlobalMembers.InitSaveGameDescriptions();
-
-            //TODO: Move to menu handler class
-            var done = false;
-            while (!done)
+            using (var host = CreateHostBuilder(args).Build())
             {
-                GlobalMembers.ClearDisplay();
-                GlobalMembers.DisplayMainMenu();
-                GlobalMembers.UpdateDisplay();
+                var engine = host.Services.GetRequiredService<GameEngine>();
+                engine.Run();
 
-                switch (GlobalMembers.GetSingleKey())
+                try
                 {
-                    case "1": GlobalMembers.CreateCityCharacter(); break;
-                    case "2": GlobalMembers.CreateDungeonCharacter(); break;
-                    case "3": GlobalMembers.LoadCharacter(); break;
-                    case "4": GlobalMembers.DisplayAcknowledgements(); break;
-                    case "6": GlobalMembers.ToggleMusic(); break;
-                    case "7": GlobalMembers.ToggleAndInitializeFont(); break;
-                    
-                    case "0": done = GlobalMembers.ConfirmQuit(); break;
-                    case "QUIT": done = true; break;
-                };
+                    host.Run();
+                } catch (OperationCanceledException)
+                { /* Ignore */ };
             };
         }
+
+        #region Private Members
+
+        private static IHostBuilder CreateHostBuilder ( string[] args ) =>  Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(ConfigureLogging)
+                .ConfigureAppConfiguration(ConfigureConfiguration)
+                .ConfigureServices(ConfigureServices);       
+
+        private static void ConfigureConfiguration ( IConfigurationBuilder builder )
+        {
+            //Default configuration uses: appsettings.json, appsettings.env.json, envvars, cmd line                                               
+        }
+
+        private static void ConfigureLogging ( HostBuilderContext context, ILoggingBuilder builder )
+        {
+            //Default configuration uses - console, debug, EventSource, EventLog            
+        }
+
+        private static void ConfigureServices ( HostBuilderContext context, IServiceCollection services )
+        {
+            services.AddSingleton<GameEngine>();
+
+            //Display            
+            services.Configure<DisplaySettings>(context.Configuration.GetSection("display"));
+        }
+        #endregion
     }
 }

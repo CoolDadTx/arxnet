@@ -7,16 +7,29 @@
     <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="arx.ini" />
+    <None Remove="appsettings.json" />
     <None Remove="OpenTK.dll.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="arx.ini">
+    <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CSFML" Version="2.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.1" />
     <PackageReference Include="OpenTK" Version="3.3.1" />
   </ItemGroup>
@@ -34,6 +47,6 @@
     </Content>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)data&quot; &quot;$(TargetDir)data&quot; /Y /R /S /I&#xD;&#xA;del &quot;$(TargetDir)data\arx.ini&quot;" />
+    <Exec Command="xcopy &quot;$(SolutionDir)data&quot; &quot;$(TargetDir)data&quot; /Y /R /S /I" />
   </Target>
 </Project>

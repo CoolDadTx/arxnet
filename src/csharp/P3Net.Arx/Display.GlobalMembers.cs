@@ -18,11 +18,35 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 
 using P3Net.Arx.OpenTK.Compatibility;
+using P3Net.Arx.Graphics;
 
 namespace P3Net.Arx
 {
     public static partial class GlobalMembers
     {
+        public static readonly Drawing.Size MinimumWindowSize = new Drawing.Size(640, 480);
+
+        public static void LoadConfig ( DisplaySettings settings )
+        {
+            settings ??= new DisplaySettings();
+
+            var size = new Drawing.Size(settings.Width, settings.Height);
+
+            // Minimum window requirement is currently 640 x 480 pixels
+            if (size.Width < MinimumWindowSize.Width || size.Height < MinimumWindowSize.Height)
+            {
+                Console.Write("WARNING: A minimum window size of 640 x 480 pixels is required.");
+                Console.WriteLine();
+
+                size = MinimumWindowSize;
+            };
+
+            windowMode = settings.FullScreen ? WindowMode.FullScreen : WindowMode.Window;
+            graphicMode = settings.GraphicsMode;
+
+            WindowSize = size;
+        }
+
         public static void CreateGameWindow ()
         {
             var title = "Alternate Reality X " + version;
@@ -88,7 +112,7 @@ namespace P3Net.Arx
             // Calculate new image width and height based on viewport size
             //var encWidth = (int)(viewWidth / 4.5);
             //var encHeight = (int)(viewHeight / 1.125);
-            
+
             /* SET POSITION OF RESIZED IMAGE ON SCREEN */
             var encX = (WindowSize.Width / 2) - 32;
             var encY = (viewPortY + ViewSize.Height) - 130;
@@ -98,7 +122,7 @@ namespace P3Net.Arx
             // DRAW DISPLAY AND FINAL ENCOUNTER IMAGE
             DispMain();
 
-            if (graphicMode == DisplayOptions.AtariSmall)
+            if (graphicMode == GraphicsMode.AtariSmall)
                 App.Draw(encImage);
         }
 
@@ -242,7 +266,7 @@ namespace P3Net.Arx
 
             /* Original small 3D view */
             Glu.Perspective(45, (float)(ViewSize.Width / ViewSize.Height), 0.1, 100);
-            if (graphicMode != DisplayOptions.AlternateLarge)
+            if (graphicMode != GraphicsMode.AlternateLarge)
             {
                 var z = WindowSize.Height - (viewPortY + ViewSize.Height);
 
@@ -259,7 +283,7 @@ namespace P3Net.Arx
         public static void DrawConsoleBackground ()
         {
             /* Draws a transparent box with yellow border around the console window whilst exploring and in large 3D view mode */
-            if ((plyr.status != GameStates.Module) && (graphicMode == DisplayOptions.AlternateLarge)) // Whilst not shopping
+            if ((plyr.status != GameStates.Module) && (graphicMode == GraphicsMode.AlternateLarge)) // Whilst not shopping
             {
                 var rectangle = new RectangleShape() {
                     Size = new Vector2f(670, 182),
@@ -416,13 +440,13 @@ namespace P3Net.Arx
             DrawStatsPanel();
             DrawCompass();
             DrawAutomap();
-            if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != GameStates.Encounter))
+            if ((graphicMode == GraphicsMode.AlternateLarge) && (plyr.status != GameStates.Encounter))
                 DrawConsoleBackground();
         }
 
         //TODO: Move to create character
         public static void DrawImage ( string imagename, Drawing.Point pos ) => DrawImage(imagename, pos.X, pos.Y);
-            
+
         public static void DrawImage ( string imagename, int x, int y )
         {
             // Counter images for Dungeon gate character creation
@@ -704,7 +728,7 @@ namespace P3Net.Arx
         public static void DrawStatsPanel ()
         {
             //TODO: What is state 5?
-            if ((graphicMode == DisplayOptions.AlternateLarge) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
+            if ((graphicMode == GraphicsMode.AlternateLarge) && (plyr.status != (GameStates)5) && (plyr.status != GameStates.Module)) // not shopping
             {
                 var rectangle = new RectangleShape() {
                     Size = new Vector2f(640, 110), // 640, 110
@@ -803,7 +827,7 @@ namespace P3Net.Arx
         {
             if (plyr.compasses > 0)
             {
-                if ((plyr.status != GameStates.Module) && (graphicMode == DisplayOptions.AlternateLarge)) // if exploring and full screen draw a background
+                if ((plyr.status != GameStates.Module) && (graphicMode == GraphicsMode.AlternateLarge)) // if exploring and full screen draw a background
                 {
                     var x = 16;
                     var y = (WindowSize.Height - 128) / 2;
@@ -840,7 +864,7 @@ namespace P3Net.Arx
 
                 compass.Texture = texture;
 
-                if (graphicMode == DisplayOptions.AlternateLarge)
+                if (graphicMode == GraphicsMode.AlternateLarge)
                 {
                     var x = 16;
                     var y = (WindowSize.Height - 128) / 2;
@@ -992,7 +1016,7 @@ namespace P3Net.Arx
 
             encImage.TextureRect = new IntRect(tileX, tileY, 64, 128);
         }
-        
+
         //TODO: Clean this up
         private static void SetScreenValues ()
         {
@@ -1008,7 +1032,7 @@ namespace P3Net.Arx
             consoleX = (WindowSize.Width - 640) / 2; // Center in middle of window width
 
             /* Original small 3D view */
-            if (graphicMode.UseOriginalSize())            
+            if (graphicMode.UseOriginalSize())
             {
                 ViewSize = new Drawing.Size(288, 144);
                 viewPortX = (WindowSize.Width - ViewSize.Width) / 2;
@@ -1041,10 +1065,10 @@ namespace P3Net.Arx
             lyricX = (WindowSize.Width - 640) / 2;
             lyricY = shopPictureY - 18;
 
-        }        
-        
-        private static void DrawLogo () => App.Draw(LogoSprite);
+        }
 
+        private static void DrawLogo () => App.Draw(LogoSprite);
+        
         #endregion 
 
         #region Review Data
@@ -1052,13 +1076,17 @@ namespace P3Net.Arx
         public static Sprite encImage { get; set; } = new Sprite();
 
         public const string version = "0.82";
+                
+        //TODO: Map to options?
+        public static WindowMode windowMode { get; private set; }
 
-        public static WindowMode windowMode { get; set; }
+        //TODO: Map to options?
+        public static GraphicsMode graphicMode { get; private set; }
 
-        public static DisplayOptions graphicMode { get; set; }
+        //TODO: Remove Size type, map to Options?
+        public static Drawing.Size WindowSize { get; private set; }
 
-        public static Drawing.Size WindowSize { get; set; }
-
+        //TODO: Remove Size type, map to Options?
         public static Drawing.Size ViewSize { get; set; }
 
         public static int viewPortX { get; set; }

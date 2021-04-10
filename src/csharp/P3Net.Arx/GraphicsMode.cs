@@ -10,25 +10,23 @@
 using System;
 
 namespace P3Net.Arx
-{
-    //TODO: Make a class with options to control resolution, texture quality, etc
-
-    public enum DisplayOptions
+{    
+    public enum GraphicsMode
     {
         AtariSmall = 0,
         AlternateSmall = 1,
         AlternateLarge = 2
     }
 
-    public static class DisplayOptionsExtensions
+    public static class GraphicsModeExtensions
     {
         //TODO: Make this an interface or facade so this is not needed everywhere
-        public static bool UseAlternateTextures ( this DisplayOptions source ) => source != DisplayOptions.AtariSmall;
+        public static bool UseAlternateTextures ( this GraphicsMode source ) => source != GraphicsMode.AtariSmall;
 
         //TODO: Make this an interface or facade so this is not needed everywhere
-        public static bool UseLargeSize ( this DisplayOptions source ) => source == DisplayOptions.AlternateLarge;
+        public static bool UseLargeSize ( this GraphicsMode source ) => source == GraphicsMode.AlternateLarge;
 
         //TODO: Make this an interface or facade so this is not needed everywhere
-        public static bool UseOriginalSize ( this DisplayOptions source ) => source != DisplayOptions.AlternateLarge;
+        public static bool UseOriginalSize ( this GraphicsMode source ) => source != GraphicsMode.AlternateLarge;
     }
 }

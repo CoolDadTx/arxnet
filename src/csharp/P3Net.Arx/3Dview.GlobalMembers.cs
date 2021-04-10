@@ -114,15 +114,15 @@ namespace P3Net.Arx
 
             switch (graphicMode)
             {
-                case DisplayOptions.AtariSmall:
+                case GraphicsMode.AtariSmall:
                 {
                     scaleX = ViewSize.Width / 360F;
                     scaleY = ViewSize.Height / 190F;
                     break;
                 };
 
-                case DisplayOptions.AlternateSmall:
-                case DisplayOptions.AlternateLarge:
+                case GraphicsMode.AlternateSmall:
+                case GraphicsMode.AlternateLarge:
                 {
                     scaleX = ViewSize.Width / 1024F;
                     scaleY = (ViewSize.Height / 2F) / 384F;
@@ -347,10 +347,10 @@ namespace P3Net.Arx
             {
                 switch (graphicMode)
                 {
-                    case DisplayOptions.AtariSmall: GL.Disable(EnableCap.Fog); break;
+                    case GraphicsMode.AtariSmall: GL.Disable(EnableCap.Fog); break;
 
-                    case DisplayOptions.AlternateSmall:
-                    case DisplayOptions.AlternateLarge: GL.Enable(EnableCap.Fog); break;
+                    case GraphicsMode.AlternateSmall:
+                    case GraphicsMode.AlternateLarge: GL.Enable(EnableCap.Fog); break;
 
                     default: throw new NotSupportedException("Unknown graphicMode");
                 };
@@ -394,7 +394,7 @@ namespace P3Net.Arx
             var depthdistantnear = (-depth * 2) + 3;
 
             // Original graphic style for standard height walls?
-            if (graphicMode == DisplayOptions.AtariSmall)
+            if (graphicMode == GraphicsMode.AtariSmall)
             {
                 frontheight = 1;
                 leftheight = 1;
@@ -434,7 +434,7 @@ namespace P3Net.Arx
                 texture_no = zones[plyr.zoneSet].floor;
             if (plyr.floorTexture > 0)
                 texture_no = plyr.floorTexture;
-            if ((plyr.scenario == 0) && (plyr.floorTexture == 0) && (graphicMode == DisplayOptions.AtariSmall))
+            if ((plyr.scenario == 0) && (plyr.floorTexture == 0) && (graphicMode == GraphicsMode.AtariSmall))
                 texture_no = 0;
             if (plyr.zone != 99)
                 texture_no = (plyr.floorTexture == 0) ? zones[plyr.zoneSet].floor : plyr.floorTexture;
